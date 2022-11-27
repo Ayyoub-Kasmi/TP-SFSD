@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1669578465 source:d:\tp\sfsd\tp-sfsd\tp\main.c
+	<stdio.h>
+	<stdlib.h>
+	"bib.h"
+
+1669578397 d:\tp\sfsd\tp-sfsd\tp\bib.h
+
