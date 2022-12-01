@@ -7,12 +7,16 @@
 
 #include <stdbool.h>
 
-#define MAX 15
-#define MAX_CHAINE 15
-
+#define MAX 250
+#define T_NUM_IDENTIFICATION 4
+#define T_ANNEE_SCOLARISATION 1
+#define T_GENRE 1
+#define T_EFF 1
+#define T_LONGEUR 4  // MAY CHANGE
 struct Entete{
-    int LastBloc;
-    int NumbrOfRecords;
+    int numberOfBlocs;
+    int NumbrOfCharsInsered;
+    int numberOfCharsSupressed
 };
 typedef struct Entete Entete;
 
@@ -29,8 +33,8 @@ struct Record{
 typedef struct Record Record;
 
 struct Buffer{
-    Record tab[MAX];
-    int maxIndex;
+    char tab[MAX];
+    int positionLibre;
 };
 typedef struct Buffer Buffer;
 
@@ -59,6 +63,10 @@ bool recherche(Fichier* fichier, int k, int* i, int* j, Buffer* buffer);
 void insertion(Fichier* fichier, Record record, Buffer* buffer);
 
 void supression(Fichier* fichier, int k, Buffer* buffer);
+
+void ecrireChaine(Fichier* fichier, Buffer* buffer,char* chaine, int taille, int* i, int* j);
+
+void lirechaine(Fichier* fichier, Buffer* buffer, char* chaine, int taille, int* i, int* j);
 
 
 #endif //TP1_SFSD_TOVCFUNCTIONS_H

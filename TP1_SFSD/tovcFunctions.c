@@ -9,17 +9,21 @@
 
 void setEntete(Fichier *fichier, int pos, int value) {
     if (pos == 1) {
-        fichier->entete.LastBloc = value;
+        fichier->entete.numberOfBlocs = value;
     } else if (pos == 2) {
-        fichier->entete.NumbrOfRecords = value;
+        fichier->entete.NumbrOfCharsInsered = value;
+    } else if (pos == 3){
+        fichier->entete.numberOfCharsSupressed = value;
     }
 }
 
 int getEntete(Fichier *fichier, int pos) {
     if (pos == 1) {
-        return fichier->entete.LastBloc;
+        return fichier->entete.numberOfBlocs;
     } else if (pos == 2) {
-        return fichier->entete.NumbrOfRecords;
+        return fichier->entete.NumbrOfCharsInsered;
+    } else if(pos == 3){
+        return fichier->entete.numberOfCharsSupressed;
     } else return NULL;
 }
 
@@ -37,6 +41,7 @@ Fichier* ouvrirFichier( char *name, char mode) {
         fichier->file = fopen(name, "wb+");
         setEntete(fichier, 1, 0);
         setEntete(fichier, 2, 0);
+        setEntete(fichier, 3, 0);
         rewind(getFile(fichier));
         fwrite(&fichier->entete, sizeof(Entete), 1, getFile(fichier));
     } else {//ancien fichier
@@ -68,106 +73,131 @@ void ecrireBloc(Fichier* fichier, int i, Buffer* buffer){
     //setEntete(fichier, 2, getEntete(fichier,2) + 1); on les fait individuellement dans chaque fonction
 }
 
-void chargementInitiale(Fichier *fichier, int n, Buffer* buffer) {
-    int i = 0, j = 0;
-    Record record;
-    //Buffer buffer;
-    for (int k = 0; k < n; ++k) {
-        printf("La cle: ");
-        scanf("%d", &record.key);
-        printf("L\'information: ");
-        scanf("%d", &record.data);
-        printf("\n");
-        if (j < MAX) {
-            buffer->tab[j] = record;
-            j++;
-        } else {
-            buffer->maxIndex = j - 1;
-            //fwrite(&buffer, sizeof(Buffer), 1, getFile(fichier));
-            ecrireBloc(fichier, i, buffer);
-            i++;
-            buffer->tab[0] = record;
-            j = 1;
-        }
-    }
-    buffer->maxIndex = j - 1;
-    //fwrite(&buffer, sizeof(Buffer), 1, getFile(fichier));
-    ecrireBloc(fichier, i, buffer);
-    setEntete(fichier, 1, i);
-    setEntete(fichier, 2, n);
-}
+//void chargementInitiale(Fichier *fichier, int n, Buffer* buffer) {
+//    int i = 0, j = 0;
+//    Record record;
+//    //Buffer buffer;
+//    for (int k = 0; k < n; ++k) {
+//        printf("La cle: ");
+//        scanf("%d", &record.key);
+//        printf("L\'information: ");
+//        scanf("%d", &record.data);
+//        printf("\n");
+//        if (j < MAX) {
+//            buffer->tab[j] = record;
+//            j++;
+//        } else {
+//            buffer->positionLibre = j - 1;
+//            //fwrite(&buffer, sizeof(Buffer), 1, getFile(fichier));
+//            ecrireBloc(fichier, i, buffer);
+//            i++;
+//            buffer->tab[0] = record;
+//            j = 1;
+//        }
+//    }
+//    buffer->positionLibre = j - 1;
+//    //fwrite(&buffer, sizeof(Buffer), 1, getFile(fichier));
+//    ecrireBloc(fichier, i, buffer);
+//    setEntete(fichier, 1, i);
+//    setEntete(fichier, 2, n);
+//}
+//
+//void printFile(Fichier* fichier) {
+//    Buffer buffer;
+//    buffer.positionLibre = 0;
+//
+//    for(int i = 0; i <= getEntete(fichier,1); ++i) {
+//        lireBloc(fichier, i, &buffer);
+//        for (int j = 0; j <= buffer.positionLibre; j++) {
+//            printf("\nData: %d, Key: %d \n", buffer.tab[j].data, buffer.tab[j].key);
+//        }
+//    }
+//}
+//
+//bool recherche(Fichier* fichier, int k, int* i, int* j, Buffer* buffer){
+//    *i = 0;
+//    *j = 0;
+//    bool trouv = false;
+//    while((*i <= getEntete(fichier, 1)) && (!trouv)){
+//        lireBloc(fichier, *i, buffer);
+//        while(*j <= buffer->positionLibre){
+//            if(buffer->tab[*j].key == k){
+//                trouv = true;
+//                break;
+//            }else (*j)++;
+//        }
+//        if(!trouv) (*i)++;
+//    }
+//    if(trouv){
+//        return true;
+//    }else{
+//        return false;
+//    }
+//}
+//
+//void insertion(Fichier* fichier, Record record, Buffer* buffer){
+//
+//    lireBloc(fichier, getEntete(fichier,1), buffer);
+//    if(buffer->positionLibre < MAX - 1){
+//        buffer->tab[buffer->positionLibre] = record;
+//        buffer->positionLibre++;
+//    } else {
+//        buffer->tab[0] = record;
+//        buffer->positionLibre = 0;
+//        setEntete(fichier, 1, getEntete(fichier, 1));
+//    }
+//    ecrireBloc(fichier , getEntete(fichier, 1), buffer);
+//    setEntete(fichier, 2, getEntete(fichier, 2) + 1);
+//
+//}
+//
+//void supression(Fichier* fichier, int k, Buffer* buffer){
+//    int i, j;
+//    Record record;
+//
+//    if(recherche(fichier, k, &i, &j, buffer)){
+//        lireBloc(fichier, i ,buffer);
+//        record = buffer->tab[buffer->positionLibre];
+//        buffer->positionLibre --;
+//        if(buffer->positionLibre < 0) setEntete(fichier, 1, getEntete(fichier, 1) - 1);
+//        ecrireBloc(fichier, i, buffer);
+//        lireBloc(fichier, i ,buffer);
+//        buffer->tab[j] = record;
+//        ecrireBloc(fichier, i, buffer);
+//        setEntete(fichier, 2, getEntete(fichier, 2) - 1);
+//    }
+//
+//}
 
-void printFile(Fichier* fichier) {
-    Buffer buffer;
-    buffer.maxIndex = 0;
-
-    for(int i = 0; i <= getEntete(fichier,1); ++i) {
-        lireBloc(fichier, i, &buffer);
-        for (int j = 0; j <= buffer.maxIndex; j++) {
-            printf("\nData: %d, Key: %d \n", buffer.tab[j].data, buffer.tab[j].key);
-        }
-    }
-}
-
-bool recherche(Fichier* fichier, int k, int* i, int* j, Buffer* buffer){
-    *i = 0;
-    *j = 0;
-    bool trouv = false;
-    while((*i <= getEntete(fichier, 1)) && (!trouv)){
-        lireBloc(fichier, *i, buffer);
-        while(*j <= buffer->maxIndex){
-            if(buffer->tab[*j].key == k){
-                trouv = true;
-                break;
-            }else (*j)++;
-        }
-        if(!trouv) (*i)++;
-    }
-    if(trouv){
-        return true;
-    }else{
-        return false;
-    }
-}
-
-void insertion(Fichier* fichier, Record record, Buffer* buffer){
-
-    lireBloc(fichier, getEntete(fichier,1), buffer);
-    if(buffer->maxIndex < MAX -1){
-        buffer->tab[buffer->maxIndex] = record;
-        buffer->maxIndex++;
-    } else {
-        buffer->tab[0] = record;
-        buffer->maxIndex = 0;
-        setEntete(fichier, 1, getEntete(fichier, 1));
-    }
-    ecrireBloc(fichier , getEntete(fichier, 1), buffer);
-    setEntete(fichier, 2, getEntete(fichier, 2) + 1);
-
-}
-
-void supression(Fichier* fichier, int k, Buffer* buffer){
-    int i, j;
-    Record record;
-
-    if(recherche(fichier, k, &i, &j, buffer)){
-        lireBloc(fichier, i ,buffer);
-        record = buffer->tab[buffer->maxIndex];
-        buffer->maxIndex --;
-        if(buffer->maxIndex < 0) setEntete(fichier, 1, getEntete(fichier,1) - 1);
-        ecrireBloc(fichier, i, buffer);
-        lireBloc(fichier, i ,buffer);
-        buffer->tab[j] = record;
-        ecrireBloc(fichier, i, buffer);
-        setEntete(fichier, 2, getEntete(fichier, 2) - 1);
-    }
-
-}
-
-void ecrireChaine(Fichier* fichier, char* chaine, int taille, int* i, int* j){
+void ecrireChaine(Fichier* fichier, Buffer* buffer,char* chaine, int taille, int* i, int* j){
     int k = 0;
 
     for (int k = 0; k < taille; ++k) {
-        if (j < MAX_CHAINE)
+        if (*j < MAX){
+            buffer->tab[*j] = chaine[k];
+            (*j)++;
+        }else{
+            buffer->positionLibre = (*j);
+            ecrireBloc(fichier, *i, buffer);
+            (*i)++;
+            buffer->tab[0] = chaine[k];
+            (*j) = 1;
+        }
     }
+    setEntete(fichier, 2, getEntete(fichier,2) + taille);
+}
+
+void lirechaine(Fichier* fichier, Buffer* buffer, char* chaine, int taille, int* i, int* j){
+    for (int k = 0; k < taille; ++k) {
+        if(*j < buffer->positionLibre){
+            chaine[k] = buffer->tab[*j];
+        }else{
+            (*i)++;
+            lireBloc(fichier, *i, buffer);
+            chaine[k] = buffer->tab[0];
+            (*j) = 0;
+    }
+        (*j)++;
+    }
+
 }
