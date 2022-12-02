@@ -1,3 +1,0 @@
-/Users/aoufarfares/Documents/GitHub/TP-SFSD/TP1_SFSD/cmake-build-debug/CMakeFiles/TP1_SFSD.dir
-/Users/aoufarfares/Documents/GitHub/TP-SFSD/TP1_SFSD/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/aoufarfares/Documents/GitHub/TP-SFSD/TP1_SFSD/cmake-build-debug/CMakeFiles/rebuild_cache.dir
