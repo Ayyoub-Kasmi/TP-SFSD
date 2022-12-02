@@ -36,6 +36,7 @@ int main() {
 
     getFirstName(&firstName, 4);
     getlastNameAndGender(&lastName, &gender, 3);
+    printf("hello world\n");
 
     float tableOfMarks[MaxNumberOfSubjects];
     getMarks(tableOfMarks, 3);
