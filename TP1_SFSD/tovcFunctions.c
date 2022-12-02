@@ -6,14 +6,13 @@
 #include <stdlib.h>
 #include "tovcFunctions.h"
 #include <stdbool.h>
-#include <time.h>
 
 void setEntete(Fichier *fichier, int pos, int value) {
     if (pos == 1) {
         fichier->entete.numberOfBlocs = value;
     } else if (pos == 2) {
         fichier->entete.NumbrOfCharsInsered = value;
-    } else if (pos == 3) {
+    } else if (pos == 3){
         fichier->entete.numberOfCharsSupressed = value;
     }
 }
@@ -23,9 +22,9 @@ int getEntete(Fichier *fichier, int pos) {
         return fichier->entete.numberOfBlocs;
     } else if (pos == 2) {
         return fichier->entete.NumbrOfCharsInsered;
-    } else if (pos == 3) {
+    } else if(pos == 3){
         return fichier->entete.numberOfCharsSupressed;
-    } else return NULL;
+    } else return 0; //conflict with return type "int" <====================================================
 }
 
 void setFile(Fichier *fichier, FILE *f) {
@@ -36,8 +35,8 @@ FILE *getFile(Fichier *fichier) {
     return fichier->file;
 }
 
-Fichier *ouvrirFichier(char *name, char mode) {
-    Fichier *fichier = malloc(sizeof(fichier));
+Fichier* ouvrirFichier( char *name, char mode) {
+    Fichier * fichier = malloc(sizeof (Fichier));
     if (mode == 'N') { //Nouveau fichier
         fichier->file = fopen(name, "wb+");
         setEntete(fichier, 1, 0);
@@ -63,13 +62,13 @@ void fermerFichier(Fichier *fichier) {
     free(fichier);
 }
 
-void lireBloc(Fichier *fichier, int i, Buffer *buffer) {
-    fseek(getFile(fichier), sizeof(Entete) + sizeof(Buffer) * i, 0);
+void lireBloc(Fichier* fichier, int i, Buffer* buffer){
+    fseek(getFile(fichier), sizeof(Entete) + sizeof(Buffer)*i, 0);
     fread(buffer, sizeof(Buffer), 1, getFile(fichier));
 }
 
-void ecrireBloc(Fichier *fichier, int i, Buffer *buffer) {
-    fseek(getFile(fichier), sizeof(Entete) + sizeof(Buffer) * i, 0);
+void ecrireBloc(Fichier* fichier, int i, Buffer* buffer){
+    fseek(getFile(fichier), sizeof(Entete) + sizeof(Buffer)*i, 0);
     fwrite(buffer, sizeof(Buffer), 1, getFile(fichier));
     //setEntete(fichier, 2, getEntete(fichier,2) + 1); on les fait individuellement dans chaque fonction
 }
@@ -84,7 +83,7 @@ void ecrireBloc(Fichier *fichier, int i, Buffer *buffer) {
 //        printf("L\'information: ");
 //        scanf("%d", &record.data);
 //        printf("\n");
-//        if (j < MAX_LOF) {
+//        if (j < MAX) {
 //            buffer->tab[j] = record;
 //            j++;
 //        } else {
@@ -139,7 +138,7 @@ void ecrireBloc(Fichier *fichier, int i, Buffer *buffer) {
 //void insertion(Fichier* fichier, Record record, Buffer* buffer){
 //
 //    lireBloc(fichier, getEntete(fichier,1), buffer);
-//    if(buffer->positionLibre < MAX_LOF - 1){
+//    if(buffer->positionLibre < MAX - 1){
 //        buffer->tab[buffer->positionLibre] = record;
 //        buffer->positionLibre++;
 //    } else {
@@ -170,14 +169,12 @@ void ecrireBloc(Fichier *fichier, int i, Buffer *buffer) {
 //
 //}
 
-void ecrireChaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
-    int k = 0;
-
+void ecrireChaine(Fichier* fichier, Buffer* buffer,char* chaine, int taille, int* i, int* j){
     for (int k = 0; k < taille; ++k) {
-        if (*j < MAX) {
+        if (*j < MAX){
             buffer->tab[*j] = chaine[k];
             (*j)++;
-        } else {
+        }else{
             buffer->positionLibre = (*j);
             ecrireBloc(fichier, *i, buffer);
             (*i)++;
@@ -185,78 +182,20 @@ void ecrireChaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, in
             (*j) = 1;
         }
     }
-    setEntete(fichier, 2, getEntete(fichier, 2) + taille);
+    setEntete(fichier, 2, getEntete(fichier,2) + taille);
 }
 
-void lirechaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
+void lirechaine(Fichier* fichier, Buffer* buffer, char* chaine, int taille, int* i, int* j){
     for (int k = 0; k < taille; ++k) {
-        if (*j < buffer->positionLibre) {
+        if(*j < buffer->positionLibre){
             chaine[k] = buffer->tab[*j];
-        } else {
+        }else{
             (*i)++;
             lireBloc(fichier, *i, buffer);
             chaine[k] = buffer->tab[0];
             (*j) = 0;
-        }
+    }
         (*j)++;
-    }
-
-}
-
-int generateStudentID(int seed) {
-    int randomID;
-    srand((unsigned) time(0) + seed);
-    for (int counter = 0; counter < 2; ++counter) {
-        //this loop is to ensure the randomness of the generated value
-        randomID = rand() % 10000;
-    }
-    return randomID;
-}
-
-int GenerateStudentsId(StudentsIdTable *studentsIdTable) {
-    return 0;
-}
-
-void searchStudentId(StudentsIdTable *studentsIdTable, int id, int *i, bool *found) {
-    //normal binary search in the studentsIdTable
-    *found = false;
-    if (studentsIdTable->nb > 0) {
-        int inf = 0;
-        int sup = studentsIdTable->nb - 1;
-        while ((inf <= sup) && (!(*found))) {
-            i = (inf + sup) / 2;
-            if (id > studentsIdTable->tab[*i]) {
-                inf = *i + 1;
-            } else if (id < studentsIdTable->tab[*i]) {
-                sup = *i - 1;
-            } else {
-                (*found) = true;
-            }
-        }
-        if (!(*found)) {
-            *i = inf;
-        }
-    } else {
-        *i = 0;
-    }
-}
-
-void insertStudentId(StudentsIdTable *studentsIdTable, int id) {
-    //insertion with delays to keep the order in the studentsIdTable
-    if (studentsIdTable->nb <= 0) {
-        studentsIdTable->tab[0] = id;
-        studentsIdTable->nb++;
-    } else {
-        int i = 0;
-        bool found = false;
-        searchStudentId(studentsIdTable, id, &i, &found);
-        if (!found) {
-            for (int k = studentsIdTable->nb; k >= i; --k) {
-                studentsIdTable->tab[k] = studentsIdTable->tab[k - 1];
-            }
-            studentsIdTable->tab[i] = id;
-            studentsIdTable->nb++;
-        }
     }
 
 }
