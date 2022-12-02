@@ -1,6 +1,2 @@
 TP1_SFSD/cmake-build-debug/
-TP1_SFSD/cmake-build-debug/Testing/Temporary/LastTest.log
-*.log
-TP1_SFSD/cmake-build-debug/CMakeFiles/TP1_SFSD.dir/main.c.obj
-TP1_SFSD/cmake-build-debug/CMakeFiles/TP1_SFSD.dir/objects.a
-TP1_SFSD/cmake-build-debug/TP1_SFSD.exe
+.idea
