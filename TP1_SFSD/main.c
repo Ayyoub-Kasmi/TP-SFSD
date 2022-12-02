@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h>
 #include "tovcFunctions.h"
+#include "LnOF-library.h"
 
 
 int main() {

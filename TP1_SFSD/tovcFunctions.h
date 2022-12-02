@@ -13,6 +13,7 @@
 #define T_GENRE 1
 #define T_EFF 1
 #define T_LONGEUR 4  // MAY CHANGE
+#define FIRST_LOAD 750
 struct Entete{
     int numberOfBlocs;
     int NumbrOfCharsInsered;
@@ -37,6 +38,12 @@ struct Buffer{
     int positionLibre;
 };
 typedef struct Buffer Buffer;
+
+typedef struct {
+//    TDATA tab[MAX_LOF];
+    int tab[FIRST_LOAD];
+    int nb; //number of elements within the block
+} StudentsIdTable;
 
 void setEntete(Fichier *fichier, int pos, int value);
 
