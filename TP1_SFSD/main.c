@@ -21,6 +21,7 @@ float tableOfMarks[MAX_NUMBER_OF_SUBJECTS];
 
 int main() {
     //string buffers:
+<<<<<<< Updated upstream
      firstName = (char*)malloc(sizeof(char)*MAX_FIRST_NAME_SIZE);
      lastName = (char*)malloc(sizeof(char)*MAX_LAST_NAME_SIZE);
      gender = (char*)malloc(sizeof(char)*2);
