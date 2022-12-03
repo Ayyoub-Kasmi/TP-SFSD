@@ -3,9 +3,90 @@
 #include <time.h>
 #include <string.h>
 #include "tovcFunctions.h"
+
 #include "fileManipulationFunctions.h"
 
-//global variables declaration:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Ayyoub's code
+ //global variables declaration:
     const int numberOfSubjectsPerLevel[6] =  {4, 5, 5, 7, 7, 7}; //just an example, not real data
                     //we can also declare the names of subjects as a matrix of Levels-Subjects, if we need the names
     //string buffers:
@@ -29,16 +110,18 @@ int main() {
 
     //Accessing names files
 
-    /*These three variables will be declared as a global variable and be used as string buffers */
-    char *firstName = (char*)malloc(sizeof(char)*MaxFirstNameSize);
-    char *lastName = (char*)malloc(sizeof(char)*MaxLastNameSize);
-    char *gender = (char*)malloc(sizeof(char));
+    /*These three variables will be declared as a global variable and be used as string buffers
+char *firstName = (char*)malloc(sizeof(char)*MaxFirstNameSize);
+char *lastName = (char*)malloc(sizeof(char)*MaxLastNameSize);
+char *gender = (char*)malloc(sizeof(char));
 
-    getFirstName(&firstName, 4);
-    getlastNameAndGender(&lastName, &gender, 3);
-    printf("\nhello world\n");
+getFirstName(&firstName, 4);
+getlastNameAndGender(&lastName, &gender, 3);
+printf("\nhello world\n");
 
-    float tableOfMarks[MaxNumberOfSubjects];
-    getMarks(tableOfMarks, 3);
-    return 0;
+float tableOfMarks[MaxNumberOfSubjects];
+getMarks(tableOfMarks, 3);
+return 0;
 }
+
+*/
