@@ -1,3 +1,14 @@
-TP1_SFSD/cmake-build-debug/
+TP1_SFSD/cmake-build-debug/*/
+.ninja_deps
+.ninja_log
+*.ninja
+*.cmake
+CMakeCache.txt
+*.exe
+*.cbp
+*.layout
+.DS_Store
+Makefile
+TP1_SFSD/*/TP1_SFSD
 .idea
 .idea/
