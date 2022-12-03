@@ -3,4 +3,4 @@ project(TP1_SFSD C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(TP1_SFSD main.c tovcFunctions.h tovcFunctions.c)
+add_executable(TP1_SFSD main.c tovcFunctions.h tovcFunctions.c fileManipulationFunctions.c fileManipulationFunctions.h)

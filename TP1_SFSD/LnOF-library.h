@@ -1,15 +1,15 @@
 #ifndef UNTITLED_FILES_LIBRARY_H
 #define UNTITLED_FILES_LIBRARY_H
 
-#define MAX_LOF 120 //This is the maximum size of a block
+#define MAX 4 //This is the maximum size of a block
 
 //typedef struct {
 //    int data;
 //}TDATA;
 
 typedef struct {
-//    TDATA tab[MAX_LOF];
-    int tab[MAX_LOF];
+//    TDATA tab[MAX];
+    int tab[MAX];
     int nb; //number of elements within the block
     int next; //pointer to the next block in the file
 } BUFF;
