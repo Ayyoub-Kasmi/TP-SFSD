@@ -13,7 +13,8 @@
 #define T_GENRE 1
 #define T_EFF 1
 #define T_LONGEUR 4  // MAY CHANGE
-#define FIRST_LOAD 750
+#define FIRST_LOAD_OF_STUDENTS 750
+#define FIRST_LOAD_OF_ROOMS 30
 struct Entete{
     int numberOfBlocs;
     int NumbrOfCharsInsered;
@@ -40,10 +41,14 @@ struct Buffer{
 typedef struct Buffer Buffer;
 
 typedef struct {
-//    TDATA tab[MAX_LOF];
-    int tab[FIRST_LOAD];
+    int tab[FIRST_LOAD_OF_STUDENTS];
     int nb; //number of elements within the block
-} StudentsIdTable;
+} StudentsIdArray;
+
+typedef struct {
+    int tab[FIRST_LOAD_OF_ROOMS];
+    int nb; //number of elements within the block
+} RoomIdArray;
 
 void setEntete(Fichier *fichier, int pos, int value);
 
@@ -75,5 +80,28 @@ void ecrireChaine(Fichier* fichier, Buffer* buffer,char* chaine, int taille, int
 
 void lirechaine(Fichier* fichier, Buffer* buffer, char* chaine, int taille, int* i, int* j);
 
+int generate4positionInt(int seed);
+
+void generateStudentId(StudentsIdArray *studentsIdArray);
+
+void searchStudentId(StudentsIdArray *studentsIdArray, int id, int *i, bool *found);
+
+void insertStudentId(StudentsIdArray *studentsIdArray, int id);
+
+void insertStudentIdWithoutSearching(StudentsIdArray *studentsIdArray, int id, int i);
+
+int generate2positionInt(int seed);
+
+int generateTheLevel(int seed);
+
+void generateClassId(RoomIdArray *roomIdArray);
+
+void searchRoomNumber(RoomIdArray *roomIdArray, int roomNumber, bool *found);
+
+void searchClassId(RoomIdArray *roomIdArray, int id, int *i, bool *found);
+
+void insertRoomId(RoomIdArray *roomIdArray, int id);
+
+void insertRoomIdWithoutSearching(RoomIdArray *roomIdArray, int id, int i);
 
 #endif //TP1_SFSD_TOVCFUNCTIONS_H
