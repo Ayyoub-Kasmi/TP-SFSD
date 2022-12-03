@@ -1,28 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "tovcFunctions.h"
 #include "DataManipulation.h"
+
+//Global variables declaration:
 
 StudentsIdArray studentsIdArray;
 ClassIdArray roomIdArray;
 
-//global variables declaration:
 const int numberOfSubjectsPerLevel[6] =  {4, 5, 5, 7, 7, 7}; //just an example, not real data
-    //we can also declare the names of subjects as a matrix of Levels-Subjects, if we need the names
+//we can also declare the names of subjects as a matrix of Levels-Subjects, if we need the names
+
+//Strings buffers
+char *firstName;
+char *lastName;
+char *gender;
 
 //Marks buffer:
 float tableOfMarks[MAX_NUMBER_OF_SUBJECTS];
 
-char *firstName;
-char *lastName;
-char *gender;
 
 int main() {
     //string buffers:
      firstName = (char*)malloc(sizeof(char)*MAX_FIRST_NAME_SIZE);
      lastName = (char*)malloc(sizeof(char)*MAX_LAST_NAME_SIZE);
      gender = (char*)malloc(sizeof(char)*2);
-//
+
 //    //Generation of random IDs for 3 students
 //    int seed = 0;
 //    int id;
@@ -40,9 +42,6 @@ int main() {
 //
 //    studentsIdArray.nb = 0;
 //    studentsIdArray.nb = 0;
-    getlastNameAndGender(&lastName, &gender, 1);
-    printf("Last name: %s\ngender:  %s\n", lastName, gender);
-    printf("hello world\n");
 
 //    for (int i = 0; i < 30; ++i) {
 //        generateClassId(&roomIdArray);

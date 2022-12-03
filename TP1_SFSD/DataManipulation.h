@@ -74,5 +74,6 @@ void insertRoomId(ClassIdArray *roomIdArray, int id);
 
 void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i);
 
+void createSchoolYear();
 
 #endif //TP1_SFSD_DATAMANIPULATION_H

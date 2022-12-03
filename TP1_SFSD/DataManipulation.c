@@ -1,7 +1,3 @@
-//
-// Created by hp on 12/2/2022.
-//
-
 #include "DataManipulation.h"
 #include "tovcFunctions.h"
 #include <stdlib.h>
@@ -10,7 +6,6 @@
 #include <stdbool.h>
 
 /*************************************** Auxiliary functions ***********************************************/
-
 
 // Générer aléatoirement le numéro d’identification de l’élève
 int generateStudentID(int seed){
@@ -272,10 +267,10 @@ void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i) {
 
 /*************************************** Main functions ***********************************************/
 
-//intiialize file:
+//initialize file:
 /*
- 1- create student array => avoid repition of id
- 2- create classes array => avoid repition of class id
+ 1- create student array => avoid repetition of id
+ 2- create classes array => avoid repetition of class id
  3- forEachClass {
     for(i: 1 => studentPerClass){
         get a student id
@@ -289,6 +284,7 @@ void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i) {
 void createSchoolYear(){
     int year = CURRENT_YEAR;
     Student student;
+    getlastNameAndGender(&student.lastName, &student.gender, 1);
 
     ClassIdArray classIdArray;
     classIdArray.nb = 0;
@@ -305,8 +301,9 @@ void createSchoolYear(){
     for (int i = 0; i < FIRST_LOAD_OF_CLASSES; ++i) {
         for (int j = 0; j < STUENDT_PER_CLASS; ++j) {
             //get student information
-            student.id = 1234;
-            student.class = 202;
+
+            student.id = 1234; //re-adjust: take an id from the ids table
+            student.class = 202; //re-adjust: take an identifier from the classes table
             getFirstName(&student.firstName, 1); //integrate the random number inside the function
             getlastNameAndGender(&student.lastName, &student.gender, 3); //change gender from array[1] to char
             student.gender = 'X';
