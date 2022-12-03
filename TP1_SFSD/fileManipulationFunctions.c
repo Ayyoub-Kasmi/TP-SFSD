@@ -51,7 +51,7 @@ void getMarks(float *tableOfMarks, int level) {
     //I will suppose that all necessary information is saved in a global table (array)
     int numberOfSubjects = numberOfSubjectsPerLevel[level];
 
-    for (int i = 0; i < numberOfSubjects; ++i) {;
+    for (int i = 0; i < numberOfSubjects; ++i) {
         tableOfMarks[i] = rand() % 41 * 0.25; //0.25 * 40 = 10
         srand( (unsigned) time(NULL)+i);
     }

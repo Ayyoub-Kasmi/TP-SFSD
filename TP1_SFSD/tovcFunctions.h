@@ -17,8 +17,8 @@
 #define FIRST_LOAD_OF_ROOMS 30
 struct Entete{
     int numberOfBlocs;
-    int NumbrOfCharsInsered;
-    int numberOfCharsSupressed
+    int NumbrOfCharsInserted;
+    int numberOfCharsDeleted
 };
 typedef struct Entete Entete;
 

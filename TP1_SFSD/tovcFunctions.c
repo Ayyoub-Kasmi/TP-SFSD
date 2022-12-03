@@ -12,9 +12,9 @@ void setEntete(Fichier *fichier, int pos, int value) {
     if (pos == 1) {
         fichier->entete.numberOfBlocs = value;
     } else if (pos == 2) {
-        fichier->entete.NumbrOfCharsInsered = value;
+        fichier->entete.NumbrOfCharsInserted = value;
     } else if (pos == 3) {
-        fichier->entete.numberOfCharsSupressed = value;
+        fichier->entete.numberOfCharsDeleted = value;
     }
 }
 
@@ -22,10 +22,10 @@ int getEntete(Fichier *fichier, int pos) {
     if (pos == 1) {
         return fichier->entete.numberOfBlocs;
     } else if (pos == 2) {
-        return fichier->entete.NumbrOfCharsInsered;
+        return fichier->entete.NumbrOfCharsInserted;
     } else if (pos == 3) {
-        return fichier->entete.numberOfCharsSupressed;
-    } else return NULL;
+        return fichier->entete.numberOfCharsDeleted;
+    } else return -1; // <====== NULL is incompatible with int type
 }
 
 void setFile(Fichier *fichier, FILE *f) {
@@ -171,7 +171,6 @@ void ecrireBloc(Fichier *fichier, int i, Buffer *buffer) {
 //}
 
 void ecrireChaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
-    int k = 0;
 
     for (int k = 0; k < taille; ++k) {
         if (*j < MAX) {
@@ -215,8 +214,6 @@ int generate4positionInt(int seed) {
 
 void generateStudentId(StudentsIdArray *studentsIdArray) {
     int i = 0;
-    int j = 0;
-    int k = 0;
     int id = 0;
     bool found = true;
     if (studentsIdArray->nb <= 0) {
@@ -318,9 +315,6 @@ int generateTheLevel(int seed) {
 }
 
 void generateClassId(RoomIdArray *roomIdArray) {
-    int i = 0;
-    int j = 0;
-    int k = 0;
     int id = 0;
     bool found = true;
     if (roomIdArray->nb <= 0) {

@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <string.h>
 #include "tovcFunctions.h"
 #include "fileManipulationFunctions.h"
 
@@ -12,15 +10,15 @@ RoomIdArray roomIdArray;
 const int numberOfSubjectsPerLevel[6] =  {4, 5, 5, 7, 7, 7}; //just an example, not real data
     //we can also declare the names of subjects as a matrix of Levels-Subjects, if we need the names
 
-//string buffers:
-char *firstName = (char*)malloc(sizeof(char)*MaxFirstNameSize);
-char *lastName = (char*)malloc(sizeof(char)*MaxLastNameSize);
-char *gender = (char*)malloc(sizeof(char));
-
 //Marks buffer:
-float tableOfMarks[MaxNumberOfSubjects]
+float tableOfMarks[MaxNumberOfSubjects];
 
 int main() {
+    //string buffers:
+    char *firstName = (char*)malloc(sizeof(char)*MaxFirstNameSize);
+    char *lastName = (char*)malloc(sizeof(char)*MaxLastNameSize);
+    char *gender = (char*)malloc(sizeof(char));
+
     //Generation of random IDs for 3 students
     int seed = 0;
     int id;
@@ -34,7 +32,6 @@ int main() {
     getlastNameAndGender(&lastName, &gender, 3);
     printf("\nhello world\n");
 
-    float tableOfMarks[MaxNumberOfSubjects];
     getMarks(tableOfMarks, 3);
 
     studentsIdArray.nb = 0;
