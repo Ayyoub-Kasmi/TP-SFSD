@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "DataManipulation.h"
+#include <string.h>
 
 //Global variables declaration:
 
@@ -18,12 +19,24 @@ char *gender;
 //Marks buffer:
 float tableOfMarks[MAX_NUMBER_OF_SUBJECTS];
 
+//File buffer:
+Buffer buffer;
 
 int main() {
+
+    int i = 0;
+    int j = 0;
+    char testString[BUFFER_SIZE];
+    Fichier* fichier = ouvrirFichier("2022_STUDENTS", 'N');
+    createSchoolYear(fichier, &buffer, &i, &j);
+    j = 0;
+    lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
+    fermerFichier(fichier);
     //string buffers:
-     firstName = (char*)malloc(sizeof(char)*MAX_FIRST_NAME_SIZE);
-     lastName = (char*)malloc(sizeof(char)*MAX_LAST_NAME_SIZE);
-     gender = (char*)malloc(sizeof(char)*2);
+//     firstName = (char*)malloc(sizeof(char)*MAX_FIRST_NAME_SIZE);
+//     lastName = (char*)malloc(sizeof(char)*MAX_LAST_NAME_SIZE);
+//     gender = (char*)malloc(sizeof(char)*2);
+
 
 //    //Generation of random IDs for 3 students
 //    int seed = 0;
@@ -49,8 +62,15 @@ int main() {
 //
 //    for (int i = 0; i < 30; ++i) {
 //        printf("%d\n", roomIdArray.tab[i]);
-//    }
-
+//    }//
+//createSchoolYear();
+//char buffer[30] = "Hello";
+//    printf("%lu", strlen(buffer));
+//
+//    int i1 = 247;
+//    char str[4];
+//    sprintf(str, "%d", i1);
+//    printf("\n%s %d", str, strlen(str));
     return 0;
 }
 

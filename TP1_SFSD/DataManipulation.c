@@ -2,15 +2,16 @@
 #include "tovcFunctions.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
 #include <stdbool.h>
+#include <string.h>
+#include <time.h>
 
 /*************************************** Auxiliary functions ***********************************************/
 
 // Générer aléatoirement le numéro d’identification de l’élève
-int generateStudentID(int seed){
+int generateStudentID(int seed) {
     int randomID;
-    srand( (unsigned) time(0) + seed);
+    srand((unsigned) time(0) + seed);
     for (int counter = 0; counter < 2; ++counter) {
         //this loop is to ensure the randomness of the generated value
         randomID = rand() % 10000;
@@ -18,33 +19,37 @@ int generateStudentID(int seed){
     return randomID;
 }
 
-void getFirstName(char **firstName, int number) {
+void getFirstName(char *firstName, int number) {
     //open the first names file
     FILE *firstNameFile;
     firstNameFile = fopen(FIRST_NAMES_FILE_PATH, "r");
+    if (firstNameFile == NULL) {
+        printf("First name file not found!\n");
+        exit(1);
+    }
 
     //read the first name from the file
     for (int counter = 0; counter < number; ++counter) {
-        //the current solution to read the nth name is to use a for loop until we reach the desired string
-        fscanf(firstNameFile, "%[^,],", *firstName);
+        //the current solution is to read the nth name is to use a for loop until we reach the desired string
+        fscanf(firstNameFile, "%[^,],", firstName);
     }
 
 }
 
-void getlastNameAndGender(char **lastName, char *gender, int number) {
+void getlastNameAndGender(char *lastName, char *gender, int number) {
     FILE *lastNameAndGenderFile;
     lastNameAndGenderFile = fopen(LAST_NAMES_AND_GENDER_FILE_PATH, "r");
-    if (lastNameAndGenderFile == NULL){
+    if (lastNameAndGenderFile == NULL) {
         printf("Last names & genders file not found!\n");
         exit(1);
     }
 
     //Max number of names is currently 614
-    if(number > 614) number = number % 614;
+    if (number > 614) number = number % 614;
 
     //read the first name from the file
     for (int counter = 0; counter < number; ++counter) {
-        fscanf(lastNameAndGenderFile, "%[^,],%[^;];", *lastName, gender);
+        fscanf(lastNameAndGenderFile, "%[^,],%[^;];", lastName, gender);
     }
 }
 
@@ -55,7 +60,7 @@ void getMarks(float *tableOfMarks, int level) {
 
     for (int i = 0; i < numberOfSubjects; ++i) {
         tableOfMarks[i] = rand() % 41 * 0.25; //0.25 * 40 = 10
-        srand( (unsigned) time(NULL)+i);
+        srand((unsigned) time(NULL) + i);
     }
 }
 
@@ -101,7 +106,7 @@ void searchStudentId(StudentsIdArray *studentsIdArray, int id, int *i, bool *fou
                 (*found) = true;
             }
         }
-        if ((!(*found)) ) {
+        if ((!(*found))) {
             *i = inf;
         }
     } else {
@@ -204,7 +209,7 @@ void searchClassId(ClassIdArray *roomIdArray, int id, int *i, bool *found) {
                 (*found) = true;
             }
         }
-        if ((!(*found)) ) {
+        if ((!(*found))) {
             *i = inf;
         }
     } else {
@@ -219,7 +224,7 @@ void searchRoomNumber(ClassIdArray *roomIdArray, int roomNumber, bool *found) {
         //the search will be sequentiel due to the classes that are ordered by the school level and then the
         //roomNumber
         for (int j = 0; j < roomIdArray->nb; ++j) {
-            if (roomIdArray->tab[j] % 100 == roomNumber){
+            if (roomIdArray->tab[j] % 100 == roomNumber) {
                 *found = true;
             }
         }
@@ -281,37 +286,121 @@ void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i) {
  }
 */
 
-void createSchoolYear(){
+void createSchoolYear(Fichier *fichier, Buffer *buffer, int* i, int* j) {
     int year = CURRENT_YEAR;
+    *i = 0;
+    *j = 0;
     Student student;
-    getlastNameAndGender(&student.lastName, &student.gender, 1);
 
     ClassIdArray classIdArray;
     classIdArray.nb = 0;
     StudentsIdArray studentsIdArray;
     studentsIdArray.nb = 0;
+    int firstNamePosition = generate4positionInt(13) % FIRST_NAME_FILE_SIZE; //upgarde this part with constante
+    int lastNamePosition = generate4positionInt(15) % FIRST_NAME_FILE_SIZE;
 
-    for (int i = 0; i < FIRST_LOAD_OF_CLASSES; ++i) {
+    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
         generateClassId(&classIdArray);
     }
-    for (int i = 0; i < FIRST_LOAD_OF_STUDENTS; ++i) {
+    for (int k = 0; k < FIRST_LOAD_OF_STUDENTS; ++k) {
         generateStudentId(&studentsIdArray);
     }
 
-    for (int i = 0; i < FIRST_LOAD_OF_CLASSES; ++i) {
-        for (int j = 0; j < STUENDT_PER_CLASS; ++j) {
+    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
+        for (int l = 0; l < STUDENT_PER_CLASS; ++l) {
             //get student information
+            firstNamePosition = generate4positionInt(k * STUDENT_PER_CLASS + l) % FIRST_NAME_FILE_SIZE;
+            lastNamePosition = generate4positionInt(k * STUDENT_PER_CLASS + l) % FIRST_NAME_FILE_SIZE;
+            student.id = studentsIdArray.tab[k * STUDENT_PER_CLASS + l];
+            student.class = classIdArray.tab[k];
+            getFirstName(student.firstName, firstNamePosition); //integrate the random number inside the function
+            getlastNameAndGender(student.lastName, &student.gender,
+                                 lastNamePosition); //change gender from array[1] to char
 
-            student.id = 1234; //re-adjust: take an id from the ids table
-            student.class = 202; //re-adjust: take an identifier from the classes table
-            getFirstName(&student.firstName, 1); //integrate the random number inside the function
-            getlastNameAndGender(&student.lastName, &student.gender, 3); //change gender from array[1] to char
-            student.gender = 'X';
-            int level = student.class /100;
+            int level = student.class / 100;
             getMarks(student.marks, level);
+            printf("id: %d, class: %d, firstname: %s, lastname: %s, gender: %c \n", student.id, student.class,
+                   student.firstName, student.lastName, student.gender);
+            writeStudent(fichier, &student, buffer, &k, &l);
 
-            //writeStudent(file, e, buff);
         }
     }
+
+    setEntete(fichier, 1, *i); //Number of the last block
+    setEntete(fichier, 2 ,BUFFER_SIZE * (*i + 1) + (*j) + 1); //Total number of characters in the file
+    setEntete(fichier, 2, 0); //number of chars deleted
+
+}
+
+void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, int *j) {
+    /*
+         Structure of data inside the file (or buffer):
+
+         1- Size of the first name
+         2- Size of the last name
+         3- Class id
+         4- Student id
+         5- isDeleted (boolean)
+         6- Marks array
+         7- Gender
+         8- fFirst name
+         9- Last name
+    */
+    int firstNameSize = (int) strlen(student->firstName);
+    int lastNameSize = (int) strlen(student->lastName);
+
+
+    //Write First Name size
+    char firstNameSizeString[FIRSTNAME_LENGTH_SIZE + 1]; //+1 for the '\0' character
+    sprintf(firstNameSizeString, "%d%d", firstNameSize / 10,
+            firstNameSize % 10); //firstNameSize can be a number of one digit
+    ecrireChaine(fichier, buffer, firstNameSizeString, FIRSTNAME_LENGTH_SIZE, i, j);
+
+    //Write LastName size
+    char lastNameSizeString[LASTNAME_LENGTH_SIZE + 1]; //+1 for the '\0' character
+    sprintf(lastNameSizeString, "%d%d", lastNameSize / 10,
+            lastNameSize % 10); //lastNameSize can be a number of one digit
+    ecrireChaine(fichier, buffer, lastNameSizeString, LASTNAME_LENGTH_SIZE, i, j);
+
+    //Write ClassID
+    char classIDString[CLASS_ID_SIZE + 1];//don't forget the 'p'
+    sprintf(classIDString, "%d%d%d", student->class / 100, student->class / 10, student->class % 10); //
+    ecrireChaine(fichier, buffer, classIDString, CLASS_ID_SIZE, i, j);
+
+    //Write ID
+    char studentIdString[STUDENT_ID_SIZE + 1];
+    sprintf(studentIdString, "%d%d%d%d", student->id / 1000, student->id / 100, student->id / 10, student->id % 10);
+    ecrireChaine(fichier, buffer, studentIdString, STUDENT_ID_SIZE, i, j);
+
+    //Write isDeleted
+    ecrireChaine(fichier, buffer, &student->isDeleted, IS_DELETED_SIZE, i, j);
+
+    //Write marks array
+    int level = student->class / 100;
+    int markWholePart;
+    int markDecimalPart;
+    int intMark;
+    char markWholePartString[WHOLE_PART_SIZE + 1];
+    char markDecimalPartString[DECIMAL_PART_SIZE + 1];
+    for (int k = 0; k < numberOfSubjectsPerLevel[level]; ++k) {
+        intMark = (int) student->marks[k] * 1000;
+        markWholePart = intMark / 100;
+        markDecimalPart = intMark % 100;
+
+        sprintf(classIDString, "%d%d", markWholePart / 10, markWholePart % 10);
+        sprintf(classIDString, "%d%d", markDecimalPart / 10, markDecimalPart % 10);
+
+        ecrireChaine(fichier, buffer, markWholePartString, IS_DELETED_SIZE, i, j);
+        ecrireChaine(fichier, buffer, markDecimalPartString, IS_DELETED_SIZE, i, j);
+    }
+
+    //Write gender
+    ecrireChaine(fichier, buffer, &student->gender, GENDER_SIZE, i, j);
+
+    //Write First and Last names
+    ecrireChaine(fichier, buffer, student->firstName, firstNameSize, i, j);
+    ecrireChaine(fichier, buffer, student->lastName, lastNameSize, i, j);
+
+    if (*i > getEntete(fichier, 1)) setEntete(fichier, 1,*i);
 
 }

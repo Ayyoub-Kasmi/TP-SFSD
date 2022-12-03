@@ -2,6 +2,7 @@
 #define TP1_SFSD_DATAMANIPULATION_H
 
 #include <stdbool.h>
+#include "tovcFunctions.h"
 //definition of system constants
 #define BUFFER_SIZE 250
 #define STUDENT_ID_SIZE 4
@@ -10,12 +11,14 @@
 #define SCHOOL_LEVEL_SIZE 1
 #define GENDER_SIZE 1
 #define EFF_SIZE 1
-#define LENGTH_SIZE 4  // MAY CHANGE
-#define STUENDT_PER_CLASS 4
+#define LASTNAME_LENGTH_SIZE 2  // MAY CHANGE
+#define FIRSTNAME_LENGTH_SIZE 2
+#define STUDENT_PER_CLASS 4
 #define FIRST_LOAD_OF_STUDENTS 120
 #define FIRST_LOAD_OF_CLASSES 30
 #define FIRST_NAMES_FILE_PATH "firstNames.txt" //this is the alternative for the moment
 #define LAST_NAMES_AND_GENDER_FILE_PATH "lastNamesAndGender.txt"
+#define FIRST_NAME_FILE_SIZE 614
 #define MAX_FIRST_NAME_SIZE 30
 #define MAX_LAST_NAME_SIZE 30
 #define MAX_NUMBER_OF_SUBJECTS 7
@@ -36,17 +39,18 @@ typedef struct {
 typedef struct {
     int id;
     int class;
-    char *firstName;
-    char *lastName;
+    char firstName[MAX_FIRST_NAME_SIZE];
+    char lastName[MAX_LAST_NAME_SIZE];
     char gender;
+    char isDeleted;
     float marks[MAX_NUMBER_OF_SUBJECTS];
 } Student;
 //functions of part 1
 // a-
 int generateStudentID(int seed);
 // c-
-void getFirstName(char **firstName, int number);
-void getlastNameAndGender(char **lastName, char *gender, int number);
+void getFirstName(char *firstName, int number);
+void getlastNameAndGender(char *lastName, char *gender, int number);
 // d-
 void getMarks(float *tableOfMarks, int level);
 
@@ -74,6 +78,8 @@ void insertRoomId(ClassIdArray *roomIdArray, int id);
 
 void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i);
 
-void createSchoolYear();
+void createSchoolYear(Fichier *fichier, Buffer *buffer, int* i, int* j);
+
+void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, int *j);
 
 #endif //TP1_SFSD_DATAMANIPULATION_H

@@ -12,6 +12,7 @@
 #define BUFFER_SIZE 250
 #define STUDENT_ID_SIZE 4
 #define CLASS_ID_SIZE 3
+#define IS_DELETED_SIZE 1
 #define CLASS_NUMBER_SIZE 2
 #define SCHOOL_LEVEL_SIZE 1
 #define GENDER_SIZE 1
@@ -19,6 +20,8 @@
 #define LENGTH_SIZE 4  // MAY CHANGE
 #define FIRST_LOAD_OF_STUDENTS 120
 #define FIRST_LOAD_OF_CLASSES 30
+#define WHOLE_PART_SIZE 2
+#define DECIMAL_PART_SIZE 2
 struct Entete{
     int numberOfBlocs;
     int NumbrOfCharsInserted;
