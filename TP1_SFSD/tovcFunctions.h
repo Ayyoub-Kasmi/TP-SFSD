@@ -6,19 +6,23 @@
 #define TP1_SFSD_TOVCFUNCTIONS_H
 
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#define MAX 250
-#define T_NUM_IDENTIFICATION 4
-#define T_ANNEE_SCOLARISATION 1
-#define T_GENRE 1
-#define T_EFF 1
-#define T_LONGEUR 4  // MAY CHANGE
-#define FIRST_LOAD_OF_STUDENTS 750
-#define FIRST_LOAD_OF_ROOMS 30
+#define BUFFER_SIZE 250
+#define STUDENT_ID_SIZE 4
+#define CLASS_ID_SIZE 3
+#define CLASS_NUMBER_SIZE 2
+#define SCHOOL_LEVEL_SIZE 1
+#define GENDER_SIZE 1
+#define EFF_SIZE 1
+#define LENGTH_SIZE 4  // MAY CHANGE
+#define FIRST_LOAD_OF_STUDENTS 120
+#define FIRST_LOAD_OF_CLASSES 30
 struct Entete{
     int numberOfBlocs;
     int NumbrOfCharsInserted;
-    int numberOfCharsDeleted
+    int numberOfCharsDeleted;
 };
 typedef struct Entete Entete;
 
@@ -35,20 +39,12 @@ struct Record{
 typedef struct Record Record;
 
 struct Buffer{
-    char tab[MAX];
+    char tab[BUFFER_SIZE];
     int positionLibre;
 };
 typedef struct Buffer Buffer;
 
-typedef struct {
-    int tab[FIRST_LOAD_OF_STUDENTS];
-    int nb; //number of elements within the block
-} StudentsIdArray;
 
-typedef struct {
-    int tab[FIRST_LOAD_OF_ROOMS];
-    int nb; //number of elements within the block
-} RoomIdArray;
 
 void setEntete(Fichier *fichier, int pos, int value);
 
@@ -80,28 +76,5 @@ void ecrireChaine(Fichier* fichier, Buffer* buffer,char* chaine, int taille, int
 
 void lirechaine(Fichier* fichier, Buffer* buffer, char* chaine, int taille, int* i, int* j);
 
-int generate4positionInt(int seed);
-
-void generateStudentId(StudentsIdArray *studentsIdArray);
-
-void searchStudentId(StudentsIdArray *studentsIdArray, int id, int *i, bool *found);
-
-void insertStudentId(StudentsIdArray *studentsIdArray, int id);
-
-void insertStudentIdWithoutSearching(StudentsIdArray *studentsIdArray, int id, int i);
-
-int generate2positionInt(int seed);
-
-int generateTheLevel(int seed);
-
-void generateClassId(RoomIdArray *roomIdArray);
-
-void searchRoomNumber(RoomIdArray *roomIdArray, int roomNumber, bool *found);
-
-void searchClassId(RoomIdArray *roomIdArray, int id, int *i, bool *found);
-
-void insertRoomId(RoomIdArray *roomIdArray, int id);
-
-void insertRoomIdWithoutSearching(RoomIdArray *roomIdArray, int id, int i);
 
 #endif //TP1_SFSD_TOVCFUNCTIONS_H

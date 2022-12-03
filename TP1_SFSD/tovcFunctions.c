@@ -74,6 +74,40 @@ void ecrireBloc(Fichier *fichier, int i, Buffer *buffer) {
     //setEntete(fichier, 2, getEntete(fichier,2) + 1); on les fait individuellement dans chaque fonction
 }
 
+void ecrireChaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
+
+    for (int k = 0; k < taille; ++k) {
+        if (*j < BUFFER_SIZE) {
+            buffer->tab[*j] = chaine[k];
+            (*j)++;
+        } else {
+            buffer->positionLibre = (*j);
+            ecrireBloc(fichier, *i, buffer);
+            (*i)++;
+            buffer->tab[0] = chaine[k];
+            (*j) = 1;
+        }
+    }
+    setEntete(fichier, 2, getEntete(fichier, 2) + taille); //move this to "Ecrire Enregistrement
+}
+
+void lirechaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
+    for (int k = 0; k < taille; ++k) {
+        if (*j < buffer->positionLibre) {
+            chaine[k] = buffer->tab[*j];
+        } else {
+            (*i)++;
+            lireBloc(fichier, *i, buffer);
+            chaine[k] = buffer->tab[0];
+            (*j) = 0;
+        }
+        (*j)++;
+    }
+
+}
+
+
+
 //void chargementInitiale(Fichier *fichier, int n, Buffer* buffer) {
 //    int i = 0, j = 0;
 //    Record record;
@@ -169,244 +203,3 @@ void ecrireBloc(Fichier *fichier, int i, Buffer *buffer) {
 //    }
 //
 //}
-
-void ecrireChaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
-
-    for (int k = 0; k < taille; ++k) {
-        if (*j < MAX) {
-            buffer->tab[*j] = chaine[k];
-            (*j)++;
-        } else {
-            buffer->positionLibre = (*j);
-            ecrireBloc(fichier, *i, buffer);
-            (*i)++;
-            buffer->tab[0] = chaine[k];
-            (*j) = 1;
-        }
-    }
-    setEntete(fichier, 2, getEntete(fichier, 2) + taille);
-}
-
-void lirechaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
-    for (int k = 0; k < taille; ++k) {
-        if (*j < buffer->positionLibre) {
-            chaine[k] = buffer->tab[*j];
-        } else {
-            (*i)++;
-            lireBloc(fichier, *i, buffer);
-            chaine[k] = buffer->tab[0];
-            (*j) = 0;
-        }
-        (*j)++;
-    }
-
-}
-
-int generate4positionInt(int seed) {
-    int randomID;
-    srand((unsigned) time(0) + seed);
-    for (int counter = 0; counter < 2; ++counter) {
-        //this loop is to ensure the randomness of the generated value
-        randomID = rand() % 10000;
-    }
-    return randomID;
-}
-
-void generateStudentId(StudentsIdArray *studentsIdArray) {
-    int i = 0;
-    int id = 0;
-    bool found = true;
-    if (studentsIdArray->nb <= 0) {
-        id = generate4positionInt(id);
-        insertStudentId(studentsIdArray, id);
-        return;
-    }
-    while (found) {
-        id = generate4positionInt(id);
-        searchStudentId(studentsIdArray, id, &i, &found);
-    }
-    insertStudentIdWithoutSearching(studentsIdArray, id, i);
-}
-
-void searchStudentId(StudentsIdArray *studentsIdArray, int id, int *i, bool *found) {
-    //normal binary search in the studentsIdArray
-    *found = false;
-    if (studentsIdArray->nb > 0) {
-        int inf = 0;
-        int sup = studentsIdArray->nb - 1;
-        while ((inf <= sup) && (!(*found))) {
-            *i = (inf + sup) / 2;
-            if (id > studentsIdArray->tab[*i]) {
-                inf = *i + 1;
-            } else if (id < studentsIdArray->tab[*i]) {
-                sup = *i - 1;
-            } else {
-                (*found) = true;
-            }
-        }
-        if ((!(*found)) ) {
-            *i = inf;
-        }
-    } else {
-        *i = 0;
-    }
-}
-
-void insertStudentId(StudentsIdArray *studentsIdArray, int id) {
-    //insertion with delays to keep the order in the studentsIdArray
-    if (studentsIdArray->nb <= 0) {
-        studentsIdArray->tab[0] = id;
-        studentsIdArray->nb++;
-    } else {
-        int i = 0;
-        bool found = false;
-        searchStudentId(studentsIdArray, id, &i, &found);
-        if (!found) {
-            if (id < studentsIdArray->tab[i]) {
-                for (int k = studentsIdArray->nb; k >= i; --k) {
-                    studentsIdArray->tab[k] = studentsIdArray->tab[k - 1];
-                }
-            }
-            studentsIdArray->tab[i] = id;
-            studentsIdArray->nb++;
-        }
-    }
-
-}
-
-void insertStudentIdWithoutSearching(StudentsIdArray *studentsIdArray, int id, int i) {
-    //insertion with delays to keep the order in the studentsIdArray
-    if (studentsIdArray->nb <= 0) {
-        studentsIdArray->tab[0] = id;
-        studentsIdArray->nb++;
-    } else {
-        if (id < studentsIdArray->tab[i]) {
-            for (int k = studentsIdArray->nb; k > i; --k) {
-                studentsIdArray->tab[k] = studentsIdArray->tab[k - 1];
-            }
-        }
-        studentsIdArray->tab[i] = id;
-        studentsIdArray->nb++;
-
-    }
-
-}
-
-int generate2positionInt(int seed) {
-    int randomID;
-    srand((unsigned) time(0) + seed);
-    for (int counter = 0; counter < 2; ++counter) {
-        //this loop is to ensure the randomness of the generated value
-        randomID = (rand() % 100) + 1; // So that the room numbers will be from 1 to 100
-    }
-    return randomID;
-}
-
-int generateTheLevel(int seed) {
-    int randomID;
-    srand((unsigned) time(0) + seed);
-    randomID = rand() % 10;
-    while (randomID > 5) {
-        //this loop is to ensure the randomness of the generated value
-        randomID = rand() % 10;
-        // we'll consider for now that 0 represents the preparative year and we'll change it later
-    }
-    return randomID;
-}
-
-void generateClassId(RoomIdArray *roomIdArray) {
-    int id = 0;
-    bool found = true;
-    if (roomIdArray->nb <= 0) {
-        id = generate2positionInt(id);
-        id += 100 * generateTheLevel(id);
-        insertRoomId(roomIdArray, id);
-        return;
-    }
-    while (found) {
-        id = generate2positionInt(id);
-        searchRoomNumber(roomIdArray, id, &found);
-    }
-    id += 100 * generateTheLevel(id);
-    insertRoomId(roomIdArray, id);
-}
-
-void searchClassId(RoomIdArray *roomIdArray, int id, int *i, bool *found) {
-    //normal binary search in the studentsIdArray
-    *found = false;
-    if (roomIdArray->nb > 0) {
-        int inf = 0;
-        int sup = roomIdArray->nb - 1;
-        while ((inf <= sup) && (!(*found))) {
-            *i = (inf + sup) / 2;
-            if (id > roomIdArray->tab[*i]) { // to check only the room number and ignore the last one
-                inf = *i + 1;
-            } else if (id < roomIdArray->tab[*i]) {
-                sup = *i - 1;
-            } else {
-                (*found) = true;
-            }
-        }
-        if ((!(*found)) ) {
-            *i = inf;
-        }
-    } else {
-        *i = 0;
-    }
-}
-
-void searchRoomNumber(RoomIdArray *roomIdArray, int roomNumber, bool *found) {
-    //normal binary search in the studentsIdArray
-    *found = false;
-    if (roomIdArray->nb > 0) {
-        //the search will be sequentiel due to the classes that are ordered by the school level and then the
-        //roomNumber
-        for (int j = 0; j < roomIdArray->nb; ++j) {
-            if (roomIdArray->tab[j] % 100 == roomNumber){
-                *found = true;
-            }
-        }
-    }
-}
-
-void insertRoomId(RoomIdArray *roomIdArray, int id) {
-    //insertion with delays to keep the order in the studentsIdArray
-    if (roomIdArray->nb <= 0) {
-        roomIdArray->tab[0] = id;
-        roomIdArray->nb++;
-    } else {
-        int i = 0;
-        bool found = false;
-        searchClassId(roomIdArray, id, &i, &found);
-        if (!found) {
-            if (id < roomIdArray->tab[i]) {
-                for (int k = roomIdArray->nb; k >= i; --k) {
-                    roomIdArray->tab[k] = roomIdArray->tab[k - 1];
-                }
-            }
-            roomIdArray->tab[i] = id;
-            roomIdArray->nb++;
-        }
-    }
-
-}
-
-void insertRoomIdWithoutSearching(RoomIdArray *roomIdArray, int id, int i) {
-    //insertion with delays to keep the order in the studentsIdArray
-    if (roomIdArray->nb <= 0) {
-        roomIdArray->tab[0] = id;
-        roomIdArray->nb++;
-    } else {
-        if (id < roomIdArray->tab[i]) {
-            for (int k = roomIdArray->nb; k > i; --k) {
-                roomIdArray->tab[k] = roomIdArray->tab[k - 1];
-            }
-        }
-        roomIdArray->tab[i] = id;
-        roomIdArray->nb++;
-
-    }
-
-}
-
-

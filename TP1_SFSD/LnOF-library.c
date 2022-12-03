@@ -144,7 +144,7 @@ void initialFileCreation(LnOF* file){
         buffer.nb++;
 
         // if the buffer is full
-        if(buffer.nb == MAX){
+        if(buffer.nb == BUFFER_SIZE){
             buffer.next = currentBlockNumber + 1; //for an initial file creation, blocks will be in sequence
             fwrite(&buffer, sizeof(BUFF), 1, file->pointer);
             currentBlockNumber++;
@@ -233,7 +233,7 @@ void insertElement(LnOF* file, int value){
     }
 
     //update the header information
-    setHeader(file, 4, (firstFreeIndex+1)%MAX);
+    setHeader(file, 4, (firstFreeIndex+1) % BUFFER_SIZE);
     setHeader(file, 6, getHeaderInformation(file, 6)+1);
 }
 
