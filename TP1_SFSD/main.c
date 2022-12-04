@@ -30,7 +30,11 @@ int main() {
     Fichier* fichier = ouvrirFichier("2022_STUDENTS", 'N');
     createSchoolYear(fichier, &buffer, &i, &j);
     j = 0;
+//    lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
+    lireBloc(fichier, i, &buffer);
     lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
+    //after the end of each string there is '\0' so we have to eliminate it
+    printf("%s", testString);
     fermerFichier(fichier);
     //string buffers:
 //     firstName = (char*)malloc(sizeof(char)*MAX_FIRST_NAME_SIZE);

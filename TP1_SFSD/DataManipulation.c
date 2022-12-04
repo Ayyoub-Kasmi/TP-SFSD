@@ -364,12 +364,12 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
 
     //Write ClassID
     char classIDString[CLASS_ID_SIZE + 1];//don't forget the 'p'
-    sprintf(classIDString, "%d%d%d", student->class / 100, student->class / 10, student->class % 10); //
+    sprintf(classIDString, "%d%d%d", student->class / 100, (student->class / 10)%10, student->class % 10); //
     ecrireChaine(fichier, buffer, classIDString, CLASS_ID_SIZE, i, j);
 
     //Write ID
     char studentIdString[STUDENT_ID_SIZE + 1];
-    sprintf(studentIdString, "%d%d%d%d", student->id / 1000, student->id / 100, student->id / 10, student->id % 10);
+    sprintf(studentIdString, "%d%d%d%d", student->id / 1000, (student->id / 100)%10, (student->id / 10)%10, student->id % 10);
     ecrireChaine(fichier, buffer, studentIdString, STUDENT_ID_SIZE, i, j);
 
     //Write isDeleted
@@ -387,8 +387,8 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
         markWholePart = intMark / 100;
         markDecimalPart = intMark % 100;
 
-        sprintf(classIDString, "%d%d", markWholePart / 10, markWholePart % 10);
-        sprintf(classIDString, "%d%d", markDecimalPart / 10, markDecimalPart % 10);
+        sprintf(markWholePartString, "%d%d", (markWholePart / 10)%10, markWholePart % 10);
+        sprintf(markDecimalPartString, "%d%d", (markDecimalPart / 10)%10, markDecimalPart % 10);
 
         ecrireChaine(fichier, buffer, markWholePartString, IS_DELETED_SIZE, i, j);
         ecrireChaine(fichier, buffer, markDecimalPartString, IS_DELETED_SIZE, i, j);
@@ -401,6 +401,8 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
     ecrireChaine(fichier, buffer, student->firstName, firstNameSize, i, j);
     ecrireChaine(fichier, buffer, student->lastName, lastNameSize, i, j);
 
-    if (*i > getEntete(fichier, 1)) setEntete(fichier, 1,*i);
+    setEntete(fichier, 1,*i);
+    if (*j >= buffer->positionLibre) buffer->positionLibre = *j;
+    ecrireBloc(fichier, *i, buffer);
 
 }
