@@ -23,8 +23,8 @@
 #define MAX_LAST_NAME_SIZE 30
 #define MAX_NUMBER_OF_SUBJECTS 7
 #define CURRENT_YEAR 2022
-
-extern const int numberOfSubjectsPerLevel[6];
+#define MARK_WHOLE_PART_LENGTH 2
+#define DECIMAL_WHOLE_PART_LENGTH 2
 
 typedef struct {
     int tab[FIRST_LOAD_OF_STUDENTS];
@@ -45,6 +45,12 @@ typedef struct {
     char isDeleted;
     float marks[MAX_NUMBER_OF_SUBJECTS];
 } Student;
+
+//Global variables:
+extern const int numberOfSubjectsPerLevel[6];
+extern Buffer buffer;
+
+
 //functions of part 1
 // a-
 int generateStudentID(int seed);

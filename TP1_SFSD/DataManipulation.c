@@ -319,10 +319,14 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int* i, int* j) {
 
             int level = (student.class / 100)%10;
             getMarks(student.marks, level);
-            printf("id: %d, class: %d, firstname: %s, lastname: %s, gender: %c \n", student.id, student.class,
-                   student.firstName, student.lastName, student.gender);
-            *i = k;
-            *j = l;
+//            printf("id: %d, class: %d, firstname: %s, lastname: %s, gender: %c \n", student.id, student.class,
+//                   student.firstName, student.lastName, student.gender);
+
+            student.isDeleted = '0';
+//            *i = k; //These instructions are total nonsense
+//            *j = l;
+            printf("current block: %d\t", *i);
+            printf("position libre: %d\n", *j);
             writeStudent(fichier, &student, buffer, i, j);
 
         }
@@ -332,6 +336,7 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int* i, int* j) {
     setEntete(fichier,2, *j); //Last position in the lastBloc
     setEntete(fichier, 3 ,BUFFER_SIZE * (*i + 1) + (*j) + 1); //Total number of characters in the file
     setEntete(fichier, 4, 0); //number of chars deleted
+
 
 }
 
@@ -386,15 +391,15 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
     char markWholePartString[WHOLE_PART_SIZE + 1];
     char markDecimalPartString[DECIMAL_PART_SIZE + 1];
     for (int k = 0; k < numberOfSubjectsPerLevel[level]; ++k) {
-        intMark = (int) student->marks[k] * 1000;
+        intMark = student->marks[k] * 100;
         markWholePart = intMark / 100;
         markDecimalPart = intMark % 100;
 
         sprintf(markWholePartString, "%d%d", (markWholePart / 10)%10, markWholePart % 10);
         sprintf(markDecimalPartString, "%d%d", (markDecimalPart / 10)%10, markDecimalPart % 10);
 
-        ecrireChaine(fichier, buffer, markWholePartString, IS_DELETED_SIZE, i, j);
-        ecrireChaine(fichier, buffer, markDecimalPartString, IS_DELETED_SIZE, i, j);
+        ecrireChaine(fichier, buffer, markWholePartString, MARK_WHOLE_PART_LENGTH, i, j);
+        ecrireChaine(fichier, buffer, markDecimalPartString, DECIMAL_WHOLE_PART_LENGTH, i, j);
     }
 
     //Write gender

@@ -24,10 +24,34 @@ Buffer buffer;
 
 int main() {
 
+//    float x = 7.5;
+//    int IntX = x*100;
+//    int number = 20;
+//    printf("number: %d\n", number);
+//    printf("IntX: %d\n", IntX);
+
     int i = 0;
     int j = 0;
     char testString[BUFFER_SIZE];
     Fichier* fichier = ouvrirFichier("2022_STUDENTS", 'N');
+
+    //Custom student for test
+//    Student student;
+//    student.id = 1;
+//    student.class = 115;
+//    strcpy(student.firstName ,"Houari");
+//    printf("firstname: %s\n", student.firstName);
+//    strcpy(student.lastName, "Mohammed");
+//    student.gender = 'M';
+//    student.isDeleted = '0';
+//    student.marks[0] = 10.00;
+//    student.marks[1] = 7.5;
+//    student.marks[2] = 9.25;
+//    student.marks[3] = 5.5;
+//    student.marks[4] = 8.0;
+
+//    writeStudent(fichier, &student,  &buffer, &i,&j);
+//    printf("i after writing: %d\nj after writing: %d\n", i, j);
     createSchoolYear(fichier, &buffer, &i, &j);
     j = 0;
     i = 0;
@@ -37,7 +61,11 @@ int main() {
     //after the end of each string there is '\0' so we have to eliminate it
     printf("%s", testString);
     fermerFichier(fichier);
-    //string buffers:
+
+    return 0;
+}
+
+//string buffers:
 //     firstName = (char*)malloc(sizeof(char)*MAX_FIRST_NAME_SIZE);
 //     lastName = (char*)malloc(sizeof(char)*MAX_LAST_NAME_SIZE);
 //     gender = (char*)malloc(sizeof(char)*2);
@@ -51,6 +79,7 @@ int main() {
 //        printf("ID[%d]: %d\n", i, id);
 //        seed = id; //we will use the previous ID value as a seed
 //    }
+
 //
 //    getFirstName(&firstName, 4);
 //    getlastNameAndGender(&lastName, &gender, 3);
@@ -76,8 +105,7 @@ int main() {
 //    char str[4];
 //    sprintf(str, "%d", i1);
 //    printf("\n%s %d", str, strlen(str));
-    return 0;
-}
+
 
 //    int i1 = 247593;
 //    char str[10];
