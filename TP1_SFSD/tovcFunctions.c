@@ -47,6 +47,7 @@ Fichier *ouvrirFichier(char *name, char mode) {
         setEntete(fichier, 1, 0);
         setEntete(fichier, 2, 0);
         setEntete(fichier, 3, 0);
+        setEntete(fichier, 4, 0);
         rewind(getFile(fichier));
         fwrite(&fichier->entete, sizeof(Entete), 1, getFile(fichier));
     } else {//ancien fichier
