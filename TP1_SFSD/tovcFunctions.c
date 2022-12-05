@@ -12,9 +12,11 @@ void setEntete(Fichier *fichier, int pos, int value) {
     if (pos == 1) {
         fichier->entete.numberOfBlocs = value;
     } else if (pos == 2) {
-        fichier->entete.NumbrOfCharsInserted = value;
+        fichier->entete.lastPositionInTheLastBloc = value;
     } else if (pos == 3) {
-        fichier->entete.numberOfCharsDeleted = value;
+        fichier->entete.NumberOfCharsInserted = value;
+    } else if (pos == 4) {
+        fichier->entete.numberOfCharsDeleted;
     }
 }
 
@@ -22,8 +24,10 @@ int getEntete(Fichier *fichier, int pos) {
     if (pos == 1) {
         return fichier->entete.numberOfBlocs;
     } else if (pos == 2) {
-        return fichier->entete.NumbrOfCharsInserted;
+        return fichier->entete.lastPositionInTheLastBloc;
     } else if (pos == 3) {
+        return fichier->entete.NumberOfCharsInserted;
+    } else if (pos == 4) {
         return fichier->entete.numberOfCharsDeleted;
     } else return -1; // <====== NULL is incompatible with int type
 }
@@ -88,20 +92,30 @@ void ecrireChaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, in
             (*j) = 1;
         }
     }
-    setEntete(fichier, 2, getEntete(fichier, 2) + taille); //move this to "Ecrire Enregistrement
+    setEntete(fichier, 3, getEntete(fichier, 3) + taille); //move this to "Ecrire Enregistrement
 }
 
 void lirechaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
     for (int k = 0; k < taille; ++k) {
-        if (*j < buffer->positionLibre) {
-            chaine[k] = buffer->tab[*j];
+        if (*i == getEntete(fichier, 1)) {
+            if (*j < getEntete(fichier, 2)) {
+                chaine[k] = buffer->tab[*j];
+                (*j)++;
+            } else return;
         } else {
-            (*i)++;
-            lireBloc(fichier, *i, buffer);
-            chaine[k] = buffer->tab[0];
-            (*j) = 0;
+            if (*j < BUFFER_SIZE) {
+                (*i)++;
+                lireBloc(fichier, *i, buffer);
+                chaine[k] = buffer->tab[0];
+                (*j) = 0;
+            } else {
+                (*i)++;
+                lireBloc(fichier, *i, buffer);
+                chaine[k] = buffer->tab[0];
+                (*j) = 0;
+            }
+            (*j)++;
         }
-        (*j)++;
     }
 
 }

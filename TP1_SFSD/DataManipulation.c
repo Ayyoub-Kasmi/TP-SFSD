@@ -56,7 +56,7 @@ void getlastNameAndGender(char *lastName, char *gender, int number) {
 void getMarks(float *tableOfMarks, int level) {
     //The level will determine the number and type of subjects to generate marks for
     //I will suppose that all necessary information is saved in a global table (array)
-    int numberOfSubjects = numberOfSubjectsPerLevel[level];
+    int numberOfSubjects = numberOfSubjectsPerLevel[level]; // probleme here
 
     for (int i = 0; i < numberOfSubjects; ++i) {
         tableOfMarks[i] = rand() % 41 * 0.25; //0.25 * 40 = 10
@@ -317,18 +317,21 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int* i, int* j) {
             getlastNameAndGender(student.lastName, &student.gender,
                                  lastNamePosition); //change gender from array[1] to char
 
-            int level = student.class / 100;
+            int level = (student.class / 100)%10;
             getMarks(student.marks, level);
             printf("id: %d, class: %d, firstname: %s, lastname: %s, gender: %c \n", student.id, student.class,
                    student.firstName, student.lastName, student.gender);
-            writeStudent(fichier, &student, buffer, &k, &l);
+            *i = k;
+            *j = l;
+            writeStudent(fichier, &student, buffer, i, j);
 
         }
     }
 
     setEntete(fichier, 1, *i); //Number of the last block
-    setEntete(fichier, 2 ,BUFFER_SIZE * (*i + 1) + (*j) + 1); //Total number of characters in the file
-    setEntete(fichier, 2, 0); //number of chars deleted
+    setEntete(fichier,2, *j); //Last position in the lastBloc
+    setEntete(fichier, 3 ,BUFFER_SIZE * (*i + 1) + (*j) + 1); //Total number of characters in the file
+    setEntete(fichier, 4, 0); //number of chars deleted
 
 }
 
@@ -364,7 +367,7 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
 
     //Write ClassID
     char classIDString[CLASS_ID_SIZE + 1];//don't forget the 'p'
-    sprintf(classIDString, "%d%d%d", student->class / 100, (student->class / 10)%10, student->class % 10); //
+    sprintf(classIDString, "%d%d%d", (student->class / 100)%10, (student->class / 10)%10, student->class % 10); //
     ecrireChaine(fichier, buffer, classIDString, CLASS_ID_SIZE, i, j);
 
     //Write ID
@@ -376,7 +379,7 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
     ecrireChaine(fichier, buffer, &student->isDeleted, IS_DELETED_SIZE, i, j);
 
     //Write marks array
-    int level = student->class / 100;
+    int level = (student->class / 100)%10;
     int markWholePart;
     int markDecimalPart;
     int intMark;
@@ -403,6 +406,7 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
 
     setEntete(fichier, 1,*i);
     if (*j >= buffer->positionLibre) buffer->positionLibre = *j;
+    setEntete(fichier, 2, *j);
     ecrireBloc(fichier, *i, buffer);
 
 }

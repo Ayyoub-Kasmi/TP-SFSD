@@ -30,6 +30,7 @@ int main() {
     Fichier* fichier = ouvrirFichier("2022_STUDENTS", 'N');
     createSchoolYear(fichier, &buffer, &i, &j);
     j = 0;
+    i = 0;
 //    lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
     lireBloc(fichier, i, &buffer);
     lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);

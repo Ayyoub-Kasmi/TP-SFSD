@@ -24,7 +24,8 @@
 #define DECIMAL_PART_SIZE 2
 struct Entete{
     int numberOfBlocs;
-    int NumbrOfCharsInserted;
+    int lastPositionInTheLastBloc;
+    int NumberOfCharsInserted;
     int numberOfCharsDeleted;
 };
 typedef struct Entete Entete;
