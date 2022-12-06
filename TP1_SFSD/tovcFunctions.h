@@ -79,6 +79,6 @@ void supression(Fichier* fichier, int k, Buffer* buffer);
 void ecrireChaine(Fichier* fichier, Buffer* buffer,char* chaine, int taille, int* i, int* j);
 
 void lirechaine(Fichier* fichier, Buffer* buffer, char* chaine, int taille, int* i, int* j);
-
+void lirechaine2(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j);
 
 #endif //TP1_SFSD_TOVCFUNCTIONS_H

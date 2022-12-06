@@ -121,6 +121,32 @@ void lirechaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int 
 
 }
 
+void lirechaine2(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
+    for (int k = 0; k < taille; ++k) {
+        if (*i == getEntete(fichier, 1)) {
+            //if the current bloc is the last block
+
+            if (*j < getEntete(fichier, 2)) {
+                //if j is before the free position
+                chaine[k] = buffer->tab[*j];
+                (*j)++;
+            } else return;
+
+        } else {
+            if (*j < BUFFER_SIZE) {
+                //if the current character is not the last character in the buffer
+                chaine[k] = buffer->tab[*j];
+            } else {
+                //if the limit of the buffer is exceeded, so move to the next block
+                (*i)++;
+                lireBloc(fichier, *i, buffer);
+                chaine[k] = buffer->tab[0];
+            }
+            (*j)++;
+        }
+    }
+}
+
 
 
 //void chargementInitiale(Fichier *fichier, int n, Buffer* buffer) {

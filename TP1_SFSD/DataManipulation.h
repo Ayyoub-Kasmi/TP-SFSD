@@ -74,13 +74,14 @@ int generate2positionInt(int seed);
 
 int generateTheLevel(int seed);
 
-void generateClassId(ClassIdArray *roomIdArray);
+void generateClassId(ClassIdArray *classIdArray);
 
-void searchRoomNumber(ClassIdArray *roomIdArray, int roomNumber, bool *found);
+void checkRoomNumber(ClassIdArray *roomIdArray, int roomNumber, bool *found);
+void checkClassID(ClassIdArray *classIdArray, int classID, bool *found);
 
 void searchClassId(ClassIdArray *roomIdArray, int id, int *i, bool *found);
 
-void insertRoomId(ClassIdArray *roomIdArray, int id);
+void insertClassId(ClassIdArray *roomIdArray, int id);
 
 void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i);
 

@@ -157,40 +157,52 @@ void insertStudentIdWithoutSearching(StudentsIdArray *studentsIdArray, int id, i
 int generate2positionInt(int seed) {
     int randomID;
     srand((unsigned) time(0) + seed);
-    for (int counter = 0; counter < 2; ++counter) {
-        //this loop is to ensure the randomness of the generated value
-        randomID = (rand() % 100) + 1; // So that the room numbers will be from 1 to 100
-    }
-    return randomID;
+//    for (int counter = 0; counter < 2; ++counter) {
+//        //this loop is to ensure the randomness of the generated value
+//        randomID = (rand() % 98) + 1; // So that the room numbers will be from 1 to 100
+//    }
+    return rand()%98+1;
 }
 
 int generateTheLevel(int seed) {
-    int randomID;
+    int level;
     srand((unsigned) time(0) + seed);
-    randomID = rand() % 10;
-    while (randomID > 5) {
-        //this loop is to ensure the randomness of the generated value
-        randomID = rand() % 10;
-        // we'll consider for now that 0 represents the preparative year and we'll change it later
-    }
-    return randomID;
+//    level = rand() % 10;
+//    while (level > 5) {
+//        //this loop is to ensure the randomness of the generated value
+//        level = rand() % 10;
+//        // we'll consider for now that 0 represents the preparative year and we'll change it later
+//    }
+    level = rand() % 6;
+    return level;
 }
 
-void generateClassId(ClassIdArray *roomIdArray) {
-    int id = 0;
+void generateClassId(ClassIdArray *classIdArray) {
+    //initialize classIdArray.nb with 0 (outside) before running this function
+
+    int classID = 0, classNumber = 0, level = 0;
+    int seed = classIdArray->tab[classIdArray->nb];
+    if(classIdArray->nb != 0) seed+=classIdArray->tab[classIdArray->nb -1 ];
+
+    //generate a "unique" class number
     bool found = true;
-    if (roomIdArray->nb <= 0) {
-        id = generate2positionInt(id);
-        id += 100 * generateTheLevel(id);
-        insertRoomId(roomIdArray, id);
-        return;
-    }
     while (found) {
-        id = generate2positionInt(id);
-        searchRoomNumber(roomIdArray, id, &found);
+        classNumber = generate2positionInt(seed);
+        checkRoomNumber(classIdArray, classNumber, &found);
+        seed = classNumber;
     }
-    id += 100 * generateTheLevel(id);
-    insertRoomId(roomIdArray, id);
+    //class number has been generated. Now assign a "unique" level for this class
+    found = true;
+    int temp = classNumber;
+    while (found) {
+        level = generateTheLevel(seed);
+        temp = classNumber + 100*level;
+        checkClassID(classIdArray, temp, &found);
+        seed=classIdArray->tab[classIdArray->nb];
+    }
+    classID = temp;
+
+    insertClassId(classIdArray, classID);
 }
 
 void searchClassId(ClassIdArray *roomIdArray, int id, int *i, bool *found) {
@@ -217,38 +229,52 @@ void searchClassId(ClassIdArray *roomIdArray, int id, int *i, bool *found) {
     }
 }
 
-void searchRoomNumber(ClassIdArray *roomIdArray, int roomNumber, bool *found) {
+void checkRoomNumber(ClassIdArray *roomIdArray, int roomNumber, bool *found) {
     //normal binary search in the studentsIdArray
+
     *found = false;
     if (roomIdArray->nb > 0) {
-        //the search will be sequentiel due to the classes that are ordered by the school level and then the
+        //the search will be sequentiel since the classes that are ordered by the school level and then the
         //roomNumber
         for (int j = 0; j < roomIdArray->nb; ++j) {
             if (roomIdArray->tab[j] % 100 == roomNumber) {
                 *found = true;
+//                printf("FOUND!\troomIdArray: %d\troomNumber: %d\n", roomIdArray->tab[j], roomNumber);
             }
         }
     }
 }
 
-void insertRoomId(ClassIdArray *roomIdArray, int id) {
+void checkClassID(ClassIdArray *classIdArray, int classID, bool *found){
+    *found = false;
+    if (classIdArray->nb > 0) {
+        //the search will be sequential since the classes that are ordered by the school level and then the
+        //classID
+        for (int j = 0; j < classIdArray->nb; ++j) {
+            if (classIdArray->tab[j] == classID) {
+                *found = true;
+//                printf("FOUND!\tclassIdArray: %d\tclassID: %d\n", classIdArray->tab[j], classID);
+            }
+        }
+    }
+}
+void insertClassId(ClassIdArray *roomIdArray, int id) {
     //insertion with delays to keep the order in the studentsIdArray
-    if (roomIdArray->nb <= 0) {
+    if (roomIdArray->nb == 0) {
         roomIdArray->tab[0] = id;
         roomIdArray->nb++;
     } else {
         int i = 0;
         bool found = false;
         searchClassId(roomIdArray, id, &i, &found);
-        if (!found) {
-            if (id < roomIdArray->tab[i]) {
-                for (int k = roomIdArray->nb; k >= i; --k) {
-                    roomIdArray->tab[k] = roomIdArray->tab[k - 1];
-                }
+
+        if (id < roomIdArray->tab[i]) {
+            for (int k = roomIdArray->nb; k >= i; --k) {
+                roomIdArray->tab[k] = roomIdArray->tab[k - 1];
             }
-            roomIdArray->tab[i] = id;
-            roomIdArray->nb++;
         }
+        roomIdArray->tab[i] = id;
+        roomIdArray->nb++;
     }
 
 }
@@ -313,20 +339,17 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int* i, int* j) {
             lastNamePosition = generate4positionInt(k * STUDENT_PER_CLASS + l) % FIRST_NAME_FILE_SIZE;
             student.id = studentsIdArray.tab[k * STUDENT_PER_CLASS + l];
             student.class = classIdArray.tab[k];
+            printf("student class: %d\n", student.class);
             getFirstName(student.firstName, firstNamePosition); //integrate the random number inside the function
             getlastNameAndGender(student.lastName, &student.gender,
                                  lastNamePosition); //change gender from array[1] to char
 
-            int level = (student.class / 100)%10;
+            int level = (student.class / 100)%10; //refactor it using variables
             getMarks(student.marks, level);
 //            printf("id: %d, class: %d, firstname: %s, lastname: %s, gender: %c \n", student.id, student.class,
 //                   student.firstName, student.lastName, student.gender);
 
             student.isDeleted = '0';
-//            *i = k; //These instructions are total nonsense
-//            *j = l;
-            printf("current block: %d\t", *i);
-            printf("position libre: %d\n", *j);
             writeStudent(fichier, &student, buffer, i, j);
 
         }
@@ -413,5 +436,4 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
     if (*j >= buffer->positionLibre) buffer->positionLibre = *j;
     setEntete(fichier, 2, *j);
     ecrireBloc(fichier, *i, buffer);
-
 }

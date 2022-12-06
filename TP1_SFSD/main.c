@@ -24,18 +24,82 @@ Buffer buffer;
 
 int main() {
 
-//    float x = 7.5;
-//    int IntX = x*100;
-//    int number = 20;
-//    printf("number: %d\n", number);
-//    printf("IntX: %d\n", IntX);
-
+    buffer.positionLibre = 0;
     int i = 0;
     int j = 0;
     char testString[BUFFER_SIZE];
     Fichier* fichier = ouvrirFichier("2022_STUDENTS", 'N');
 
     //Custom student for test
+    Student student;
+    student.id = 3333;
+    student.class = 222;
+    strcpy(student.firstName ,"Houari");
+    printf("firstname: %s\n", student.firstName);
+    strcpy(student.lastName, "Mohammed");
+    student.gender = 'M';
+    student.isDeleted = '0';
+    student.marks[0] = 10.00;
+    student.marks[1] = 7.5;
+    student.marks[2] = 9.25;
+    student.marks[3] = 5.5;
+    student.marks[4] = 8.0;
+    writeStudent(fichier, &student,  &buffer, &i,&j);
+
+    student.id = 9999;
+    student.class = 444; //level is 4, number of subjects is 7
+    strcpy(student.firstName ,"Sediki");
+    printf("firstname: %s\n", student.firstName);
+    strcpy(student.lastName, "Raouf");
+    student.gender = 'M';
+    student.isDeleted = '0';
+    student.marks[0] = 11.11;
+    student.marks[1] = 22.22;
+    student.marks[2] = 33.33;
+    student.marks[3] = 44.44;
+    student.marks[4] = 55.55;
+    student.marks[5] = 66.66;
+    student.marks[6] = 77.77;
+    writeStudent(fichier, &student,  &buffer, &i,&j);
+
+//    createSchoolYear(fichier, &buffer, &i, &j);
+    j = 0;
+    i = 0;
+//    lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j); //
+    lireBloc(fichier, i, &buffer);
+    buffer.positionLibre = 99;
+    lirechaine2(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
+    //after the end of each string there is '\0' so we have to eliminate it
+    printf("%s", testString);
+    fermerFichier(fichier);
+
+    return 0;
+}
+//    ClassIdArray classIdArray;
+//    classIdArray.nb = 0;
+//    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
+//        generateClassId(&classIdArray);
+//    }
+//    printf("array.nb: %d\n", classIdArray.nb);
+//
+//    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
+//        printf("class: %d, array.nb: %d\n", classIdArray.tab[k] ,classIdArray.nb);
+//    }
+
+//    int id = 0;
+//    bool found;
+//    ClassIdArray classIdArray;
+//    classIdArray.nb = 6;
+//    classIdArray.tab[0]=223  ;
+//    classIdArray.tab[1]= 400 ;
+//    classIdArray.tab[2]= 305 ;
+//    classIdArray.tab[3]= 416 ;
+//    classIdArray.tab[4]=  520;
+//    classIdArray.tab[5]=  310;
+//    checkRoomNumber(&classIdArray, 0, &found);
+//    printf("found: %d\n", found);
+
+//Custom student for test
 //    Student student;
 //    student.id = 1;
 //    student.class = 115;
@@ -52,19 +116,6 @@ int main() {
 
 //    writeStudent(fichier, &student,  &buffer, &i,&j);
 //    printf("i after writing: %d\nj after writing: %d\n", i, j);
-    createSchoolYear(fichier, &buffer, &i, &j);
-    j = 0;
-    i = 0;
-//    lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
-    lireBloc(fichier, i, &buffer);
-    lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
-    //after the end of each string there is '\0' so we have to eliminate it
-    printf("%s", testString);
-    fermerFichier(fichier);
-
-    return 0;
-}
-
 //string buffers:
 //     firstName = (char*)malloc(sizeof(char)*MAX_FIRST_NAME_SIZE);
 //     lastName = (char*)malloc(sizeof(char)*MAX_LAST_NAME_SIZE);
