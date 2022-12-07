@@ -37,6 +37,12 @@ typedef struct {
 } ClassIdArray;
 
 typedef struct {
+    char tab[FIRST_LOAD_OF_CLASSES][MAX_LAST_NAME_SIZE + MAX_FIRST_NAME_SIZE + GENDER_SIZE];
+    //a 2D array to sort the names alphabetically before inserting them
+    int nb; //number of elements within the lines
+} StudentsNamesArray;
+
+typedef struct {
     int id;
     int class;
     char firstName[MAX_FIRST_NAME_SIZE];
@@ -89,4 +95,8 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int* i, int* j);
 
 void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, int *j);
 
+
+
+
+void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, int* i, bool *found);
 #endif //TP1_SFSD_DATAMANIPULATION_H
