@@ -52,6 +52,14 @@ typedef struct {
     float marks[MAX_NUMBER_OF_SUBJECTS];
 } Student;
 
+typedef struct {
+    char firstName[MAX_FIRST_NAME_SIZE];
+    char lastName[MAX_LAST_NAME_SIZE];
+    char gender;
+    int firstNameSize;
+    int lastNameSize;
+} NameProperties;
+
 //Global variables:
 extern const int numberOfSubjectsPerLevel[6];
 extern Buffer buffer;
@@ -83,6 +91,7 @@ int generateTheLevel(int seed);
 void generateClassId(ClassIdArray *classIdArray);
 
 void checkRoomNumber(ClassIdArray *roomIdArray, int roomNumber, bool *found);
+
 void checkClassID(ClassIdArray *classIdArray, int classID, bool *found);
 
 void searchClassId(ClassIdArray *roomIdArray, int id, int *i, bool *found);
@@ -95,8 +104,12 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int* i, int* j);
 
 void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, int *j);
 
-
-
+void generateStudentName(StudentsNamesArray *studentsNamesArray);
 
 void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, int* i, bool *found);
+
+void insertStudentName(StudentsNamesArray *studentsNamesArray, char* fullName);
+
+void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, char *fullName, int firstNameSize,
+                                       int lastNameSize, int i);
 #endif //TP1_SFSD_DATAMANIPULATION_H

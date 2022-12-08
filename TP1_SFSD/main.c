@@ -9,6 +9,7 @@
 
 StudentsIdArray studentsIdArray;
 ClassIdArray roomIdArray;
+StudentsNamesArray studentsNamesArray;
 
 const int numberOfSubjectsPerLevel[6] =  {4, 5, 5, 7, 7, 7}; //just an example, not real data
 //we can also declare the names of subjects as a matrix of Levels-Subjects, if we need the names
@@ -89,6 +90,14 @@ int main() {
     result = strncmp( buffer2, buffer1, index);
     printf( "\nstrncmp: compares only the first %i characters\n", index);
     print_result( result, buffer2, buffer1, index );
+
+    studentsNamesArray.nb = 0;
+    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
+        generateStudentName(&studentsNamesArray);
+    }
+    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
+        printf("%s\n", studentsNamesArray.tab[k]);
+    }
 
     return 0;
 }

@@ -328,6 +328,8 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int *i, int *j) {
     classIdArray.nb = 0;
     StudentsIdArray studentsIdArray;
     studentsIdArray.nb = 0;
+    StudentsNamesArray studentsNamesArray;
+    studentsNamesArray.nb = 0;
     int firstNamePosition = generate4positionInt(13) % FIRST_NAME_FILE_SIZE; //upgarde this part with constante
     int lastNamePosition = generate4positionInt(15) % FIRST_NAME_FILE_SIZE;
 
@@ -337,18 +339,22 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int *i, int *j) {
     for (int k = 0; k < FIRST_LOAD_OF_STUDENTS; ++k) {
         generateStudentId(&studentsIdArray);
     }
+    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
+        generateStudentName(&studentsNamesArray);
+    }
 
     for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
         for (int l = 0; l < STUDENT_PER_CLASS; ++l) {
             //get student information
-            firstNamePosition = generate4positionInt(k * STUDENT_PER_CLASS + l) % FIRST_NAME_FILE_SIZE;
-            lastNamePosition = generate4positionInt(k * STUDENT_PER_CLASS + l) % FIRST_NAME_FILE_SIZE;
+//            firstNamePosition = generate4positionInt(k * STUDENT_PER_CLASS + l) % FIRST_NAME_FILE_SIZE;
+//            lastNamePosition = generate4positionInt(k * STUDENT_PER_CLASS + l) % FIRST_NAME_FILE_SIZE;
             student.id = studentsIdArray.tab[k * STUDENT_PER_CLASS + l];
             student.class = classIdArray.tab[k];
             printf("student class: %d\n", student.class);
-            getFirstName(student.firstName, firstNamePosition); //integrate the random number inside the function
-            getlastNameAndGender(student.lastName, &student.gender,
-                                 lastNamePosition); //change gender from array[1] to char
+//            getFirstName(student.firstName, firstNamePosition); //integrate the random number inside the function
+//            getlastNameAndGender(student.lastName, &student.gender,
+//                                 lastNamePosition);
+// change gender from array[1] to char
 
             int level = (student.class / 100) % 10; //refactor it using variables
             getMarks(student.marks, level);
@@ -379,9 +385,9 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
          4- Student id
          5- isDeleted (boolean)
          6- Marks array
-         7- Gender
-         8- fFirst name
-         9- Last name
+         7- First name
+         8- Last name
+         9- Gender
     */
     int firstNameSize = (int) strlen(student->firstName);
     int lastNameSize = (int) strlen(student->lastName);
@@ -432,12 +438,14 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
         ecrireChaine(fichier, buffer, markDecimalPartString, DECIMAL_WHOLE_PART_LENGTH, i, j);
     }
 
-    //Write gender
-    ecrireChaine(fichier, buffer, &student->gender, GENDER_SIZE, i, j);
+
 
     //Write First and Last names
     ecrireChaine(fichier, buffer, student->firstName, firstNameSize, i, j);
     ecrireChaine(fichier, buffer, student->lastName, lastNameSize, i, j);
+
+    //Write gender
+    ecrireChaine(fichier, buffer, &student->gender, GENDER_SIZE, i, j);
 
     setEntete(fichier, 1, *i);
     if (*j >= buffer->positionLibre) buffer->positionLibre = *j;
@@ -454,10 +462,19 @@ void generateStudentName(StudentsNamesArray *studentsNamesArray) {
     char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + GENDER_SIZE];
     char gender;
     int randomSeed = 0;
+    int firstNameSize;
+    int lastNameSize;
     if (studentsNamesArray->nb <= 0) {
         getFirstName(firstName, 0); //integrate the random number inside the function
         getlastNameAndGender(lastName, &gender,
                              0);
+        //we first have to put the first caractere before concatinating
+        firstNameSize = (int) strlen(firstName);
+        lastNameSize = (int) strlen(lastName);
+        strcpy(fullName, firstName);
+        strcat(fullName, lastName);
+        strcat(fullName, &gender);
+        insertStudentNameWithoutSearching(studentsNamesArray, fullName, firstNameSize, lastNameSize, i);
         return;
     }
     while (found) {
@@ -465,12 +482,14 @@ void generateStudentName(StudentsNamesArray *studentsNamesArray) {
         getFirstName(firstName, randomSeed); //integrate the random number inside the function
         getlastNameAndGender(lastName, &gender,
                              randomSeed);
-        strcat(fullName, &gender);
-        strcat(fullName, firstName);
+        firstNameSize = (int) strlen(firstName);
+        lastNameSize = (int) strlen(lastName);
+        strcpy(fullName, firstName);
         strcat(fullName, lastName);
-        searchStudentName(studentsNamesArray, fullName, &id, &found);
+        strcat(fullName, &gender);
+        searchStudentName(studentsNamesArray, fullName, &i, &found);
     }
-    insertStudentIdWithoutSearching(studentsNamesArray, id, i);
+    insertStudentNameWithoutSearching(studentsNamesArray, fullName, firstNameSize, lastNameSize, i);
 }
 
 void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, int *i, bool *found) {
@@ -489,7 +508,7 @@ void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, i
             *i = (inf + sup) / 2;
             numberOfCharsToCompare = (int) strlen(fullName);
             if (numberOfCharsToCompare > strlen(studentsNamesArray->tab[*i]))
-                numberOfCharsToCompare = strlen(studentsNamesArray->tab[*i]);
+                numberOfCharsToCompare = (int) strlen(studentsNamesArray->tab[*i]);
             if (strncmp(fullName, studentsNamesArray->tab[*i], numberOfCharsToCompare) > 0) {
                 inf = *i + 1;
             } else if (strncmp(fullName, studentsNamesArray->tab[*i], numberOfCharsToCompare) < 0) {
@@ -497,9 +516,9 @@ void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, i
             } else { //two levels of comparing to ensure the correctness of the functions.
                 if (strcmp(fullName, studentsNamesArray->tab[*i]) > 0) {
                     inf = *i + 1;
-                }else if (strcmp(fullName, studentsNamesArray->tab[*i]) < 0){
+                } else if (strcmp(fullName, studentsNamesArray->tab[*i]) < 0) {
                     sup = *i - 1;
-                } else{
+                } else {
                     (*found) = true;
                 }
             }
@@ -512,7 +531,7 @@ void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, i
     }
 }
 
-void insertStudentName(StudentsNamesArray *studentsNamesArray, char* fullName) {
+void insertStudentName(StudentsNamesArray *studentsNamesArray, char *fullName) {
     //insertion with delays to keep the order in the studentsNamesArray
     if (studentsNamesArray->nb <= 0) {
         strcpy(studentsNamesArray->tab[0], fullName);
@@ -525,28 +544,31 @@ void insertStudentName(StudentsNamesArray *studentsNamesArray, char* fullName) {
             if (strcmp(fullName, studentsNamesArray->tab[i]) < 0) { // !!! we have to recheck this
                 for (int k = studentsNamesArray->nb; k >= i; --k) {
                     strcpy(studentsNamesArray->tab[k], studentsNamesArray->tab[k - 1]);
+                    //add the size to the structure
                 }
             }
-            strcpy(studentsNamesArray->tab[0], fullName);;
+            strcpy(studentsNamesArray->tab[0], fullName);
             studentsNamesArray->nb++;
         }
     }
 
 }
 
-void insertStudentNameWithoutSearching(StudentsIdArray *studentsIdArray, int id, int i) {
+void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, char *fullName, int firstNameSize,
+                                       int lastNameSize, int i) {
     //insertion with delays to keep the order in the studentsIdArray
-    if (studentsIdArray->nb <= 0) {
-        studentsIdArray->tab[0] = id;
-        studentsIdArray->nb++;
+    if (studentsNamesArray->nb <= 0) {
+        strcpy(studentsNamesArray->tab[0], fullName);
+        studentsNamesArray->nb++;
+        //ad the size of the name adn the size of the last name !!!
     } else {
-        if (id < studentsIdArray->tab[i]) {
-            for (int k = studentsIdArray->nb; k > i; --k) {
-                studentsIdArray->tab[k] = studentsIdArray->tab[k - 1];
+        if (strcmp(fullName, studentsNamesArray->tab[i]) < 0) {
+            for (int k = studentsNamesArray->nb; k > i; --k) {
+                strcpy(studentsNamesArray->tab[k], studentsNamesArray->tab[k - 1]);
             }
         }
-        studentsIdArray->tab[i] = id;
-        studentsIdArray->nb++;
+        strcpy(studentsNamesArray->tab[i], fullName);
+        studentsNamesArray->nb++;
 
     }
 
