@@ -19,42 +19,42 @@ int generateStudentID(int seed) {
     return randomID;
 }
 
-void getFirstName(char *firstName, int number) {
+void getLastName(char *lastName, int number) {
     //open the first names file
-    FILE *firstNameFile;
-    firstNameFile = fopen(FIRST_NAMES_FILE_PATH, "r");
-    if (firstNameFile == NULL) {
+    FILE *lastNameFile;
+    lastNameFile = fopen(LAST_NAMES_FILE_PATH, "r");
+    if (lastNameFile == NULL) {
         printf("First name file not found!\n");
         exit(1);
     }
     //"number" was kept to ensure the randomness of the firstNameposition value
-    int firstNamePosition = generate4positionInt(number) % FIRST_NAME_FILE_SIZE;
+    int lastNamePosition = generate4positionInt(number) % FIRST_NAME_FILE_SIZE;
 
     //read the first name from the file
-    for (int counter = 0; counter < firstNamePosition; ++counter) {
+    for (int counter = 0; counter < lastNamePosition; ++counter) {
 
         //the current solution is to read the nth name is to use a for loop until we reach the desired string
-        fscanf(firstNameFile, "%[^,],", firstName);
+        fscanf(lastNameFile, "%[^,],", lastName);
     }
 
 }
 
-void getlastNameAndGender(char *lastName, char *gender, int number) {
-    FILE *lastNameAndGenderFile;
-    lastNameAndGenderFile = fopen(LAST_NAMES_AND_GENDER_FILE_PATH, "r");
-    if (lastNameAndGenderFile == NULL) {
-        printf("Last names & genders file not found!\n");
+void getFirstNameAndGender(char *firstName, char *gender, int number) {
+    FILE *FirstNameAndGenderFile;
+    FirstNameAndGenderFile = fopen(FIRST_NAMES_AND_GENDER_FILE_PATH, "r");
+    if (FirstNameAndGenderFile == NULL) {
+        printf("first names & genders file not found!\n");
         exit(1);
     }
     //"number" was kept to ensure the randomness of the lastNamePosition value
 
 
     //Max number of names is currently 614
-    int lastNamePosition = generate4positionInt(number) % FIRST_NAME_FILE_SIZE;
+    int FirstNamePosition = generate4positionInt(number) % FIRST_NAME_FILE_SIZE;
 
     //read the first name from the file
-    for (int counter = 0; counter < lastNamePosition; ++counter) {
-        fscanf(lastNameAndGenderFile, "%[^,],%[^;];", lastName, gender);
+    for (int counter = 0; counter < FirstNamePosition; ++counter) {
+        fscanf(FirstNameAndGenderFile, "%[^,],%[^;];", firstName, gender);
     }
 }
 
@@ -103,9 +103,9 @@ void searchStudentId(StudentsIdArray *studentsIdArray, int id, int *i, bool *fou
         int sup = studentsIdArray->nb - 1;
         while ((inf <= sup) && (!(*found))) {
             *i = (inf + sup) / 2;
-            if (id > studentsIdArray->tab[*i]) {
+            if (id > studentsIdArray->tab[*i].id) {
                 inf = *i + 1;
-            } else if (id < studentsIdArray->tab[*i]) {
+            } else if (id < studentsIdArray->tab[*i].id) {
                 sup = *i - 1;
             } else {
                 (*found) = true;
@@ -122,19 +122,19 @@ void searchStudentId(StudentsIdArray *studentsIdArray, int id, int *i, bool *fou
 void insertStudentId(StudentsIdArray *studentsIdArray, int id) {
     //insertion with delays to keep the order in the studentsIdArray
     if (studentsIdArray->nb <= 0) {
-        studentsIdArray->tab[0] = id;
+        studentsIdArray->tab[0].id = id;
         studentsIdArray->nb++;
     } else {
         int i = 0;
         bool found = false;
         searchStudentId(studentsIdArray, id, &i, &found);
         if (!found) {
-            if (id < studentsIdArray->tab[i]) {
+            if (id < studentsIdArray->tab[i].id) {
                 for (int k = studentsIdArray->nb; k >= i; --k) {
                     studentsIdArray->tab[k] = studentsIdArray->tab[k - 1];
                 }
             }
-            studentsIdArray->tab[i] = id;
+            studentsIdArray->tab[i].id = id;
             studentsIdArray->nb++;
         }
     }
@@ -144,15 +144,15 @@ void insertStudentId(StudentsIdArray *studentsIdArray, int id) {
 void insertStudentIdWithoutSearching(StudentsIdArray *studentsIdArray, int id, int i) {
     //insertion with delays to keep the order in the studentsIdArray
     if (studentsIdArray->nb <= 0) {
-        studentsIdArray->tab[0] = id;
+        studentsIdArray->tab[0].id = id;
         studentsIdArray->nb++;
     } else {
-        if (id < studentsIdArray->tab[i]) {
+        if (id < studentsIdArray->tab[i].id) {
             for (int k = studentsIdArray->nb; k > i; --k) {
                 studentsIdArray->tab[k] = studentsIdArray->tab[k - 1];
             }
         }
-        studentsIdArray->tab[i] = id;
+        studentsIdArray->tab[i].id = id;
         studentsIdArray->nb++;
 
     }
@@ -186,8 +186,8 @@ void generateClassId(ClassIdArray *classIdArray) {
     //initialize classIdArray.nb with 0 (outside) before running this function
 
     int classID = 0, classNumber = 0, level = 0;
-    int seed = classIdArray->tab[classIdArray->nb];
-    if (classIdArray->nb != 0) seed += classIdArray->tab[classIdArray->nb - 1];
+    int seed = classIdArray->tab[classIdArray->nb].id;
+    if (classIdArray->nb != 0) seed += classIdArray->tab[classIdArray->nb - 1].id;
 
     //generate a "unique" class number
     bool found = true;
@@ -203,7 +203,7 @@ void generateClassId(ClassIdArray *classIdArray) {
         level = generateTheLevel(seed);
         temp = classNumber + 100 * level;
         checkClassID(classIdArray, temp, &found);
-        seed = classIdArray->tab[classIdArray->nb];
+        seed = classIdArray->tab[classIdArray->nb].id;
     }
     classID = temp;
 
@@ -218,9 +218,9 @@ void searchClassId(ClassIdArray *roomIdArray, int id, int *i, bool *found) {
         int sup = roomIdArray->nb - 1;
         while ((inf <= sup) && (!(*found))) {
             *i = (inf + sup) / 2;
-            if (id > roomIdArray->tab[*i]) { // to check only the room number and ignore the last one
+            if (id > roomIdArray->tab[*i].id) { // to check only the room number and ignore the last one
                 inf = *i + 1;
-            } else if (id < roomIdArray->tab[*i]) {
+            } else if (id < roomIdArray->tab[*i].id) {
                 sup = *i - 1;
             } else {
                 (*found) = true;
@@ -234,17 +234,17 @@ void searchClassId(ClassIdArray *roomIdArray, int id, int *i, bool *found) {
     }
 }
 
-void checkRoomNumber(ClassIdArray *roomIdArray, int roomNumber, bool *found) {
+void checkRoomNumber(ClassIdArray *ClassIdArray, int roomNumber, bool *found) {
     //normal binary search in the studentsIdArray
 
     *found = false;
-    if (roomIdArray->nb > 0) {
+    if (ClassIdArray->nb > 0) {
         //the search will be sequentiel since the classes that are ordered by the school level and then the
         //roomNumber
-        for (int j = 0; j < roomIdArray->nb; ++j) {
-            if (roomIdArray->tab[j] % 100 == roomNumber) {
+        for (int j = 0; j < ClassIdArray->nb; ++j) {
+            if (ClassIdArray->tab[j].id % 100 == roomNumber) {
                 *found = true;
-//                printf("FOUND!\troomIdArray: %d\troomNumber: %d\n", roomIdArray->tab[j], roomNumber);
+//                printf("FOUND!\tClassIdArray: %d\troomNumber: %d\n", ClassIdArray->tab[j], roomNumber);
             }
         }
     }
@@ -256,7 +256,7 @@ void checkClassID(ClassIdArray *classIdArray, int classID, bool *found) {
         //the search will be sequential since the classes that are ordered by the school level and then the
         //classID
         for (int j = 0; j < classIdArray->nb; ++j) {
-            if (classIdArray->tab[j] == classID) {
+            if (classIdArray->tab[j].id == classID) {
                 *found = true;
 //                printf("FOUND!\tclassIdArray: %d\tclassID: %d\n", classIdArray->tab[j], classID);
             }
@@ -267,19 +267,19 @@ void checkClassID(ClassIdArray *classIdArray, int classID, bool *found) {
 void insertClassId(ClassIdArray *roomIdArray, int id) {
     //insertion with delays to keep the order in the studentsIdArray
     if (roomIdArray->nb == 0) {
-        roomIdArray->tab[0] = id;
+        roomIdArray->tab[0].id = id;
         roomIdArray->nb++;
     } else {
         int i = 0;
         bool found = false;
         searchClassId(roomIdArray, id, &i, &found);
 
-        if (id < roomIdArray->tab[i]) {
+        if (id < roomIdArray->tab[i].id) {
             for (int k = roomIdArray->nb; k >= i; --k) {
-                roomIdArray->tab[k] = roomIdArray->tab[k - 1];
+                roomIdArray->tab[k].id = roomIdArray->tab[k - 1].id;
             }
         }
-        roomIdArray->tab[i] = id;
+        roomIdArray->tab[i].id = id;
         roomIdArray->nb++;
     }
 
@@ -288,15 +288,15 @@ void insertClassId(ClassIdArray *roomIdArray, int id) {
 void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i) {
     //insertion with delays to keep the order in the studentsIdArray
     if (roomIdArray->nb <= 0) {
-        roomIdArray->tab[0] = id;
+        roomIdArray->tab[0].id = id;
         roomIdArray->nb++;
     } else {
-        if (id < roomIdArray->tab[i]) {
+        if (id < roomIdArray->tab[i].id) {
             for (int k = roomIdArray->nb; k > i; --k) {
-                roomIdArray->tab[k] = roomIdArray->tab[k - 1];
+                roomIdArray->tab[k].id = roomIdArray->tab[k - 1].id;
             }
         }
-        roomIdArray->tab[i] = id;
+        roomIdArray->tab[i].id = id;
         roomIdArray->nb++;
 
     }
@@ -339,7 +339,7 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int *i, int *j) {
     for (int k = 0; k < FIRST_LOAD_OF_STUDENTS; ++k) {
         generateStudentId(&studentsIdArray);
     }
-    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
+    for (int k = 0; k < FIRST_LOAD_OF_STUDENTS; ++k) {
         generateStudentName(&studentsNamesArray);
     }
 
@@ -348,8 +348,10 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int *i, int *j) {
             //get student information
 //            firstNamePosition = generate4positionInt(k * STUDENT_PER_CLASS + l) % FIRST_NAME_FILE_SIZE;
 //            lastNamePosition = generate4positionInt(k * STUDENT_PER_CLASS + l) % FIRST_NAME_FILE_SIZE;
-            student.id = studentsIdArray.tab[k * STUDENT_PER_CLASS + l];
-            student.class = classIdArray.tab[k];
+            student.id = studentsIdArray.tab[k * STUDENT_PER_CLASS + l].id;
+            strcpy(student.fullName, studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].fullName);
+            student.gender = studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].gender;
+            student.class = classIdArray.tab[k].id;
             printf("student class: %d\n", student.class);
 //            getFirstName(student.firstName, firstNamePosition); //integrate the random number inside the function
 //            getlastNameAndGender(student.lastName, &student.gender,
@@ -362,6 +364,16 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int *i, int *j) {
 //                   student.firstName, student.lastName, student.gender);
 
             student.isDeleted = '0';
+            if (*j >= BUFFER_SIZE) {
+                (*i)++;
+                (*j) = 1;
+            }
+            studentsIdArray.tab[k * STUDENT_PER_CLASS + l].i = *i;
+            studentsIdArray.tab[k * STUDENT_PER_CLASS + l].j = *j;
+
+            classIdArray.tab[k].i = *i;
+            classIdArray.tab[k].j = *j;
+
             writeStudent(fichier, &student, buffer, i, j);
 
         }
@@ -389,23 +401,23 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
          8- Last name
          9- Gender
     */
-    int firstNameSize = (int) strlen(student->firstName);
-    int lastNameSize = (int) strlen(student->lastName);
+
+
+    //Write LastName size
+    char lastNameSizeString[LASTNAME_LENGTH_SIZE + 1]; //+1 for the '\0' character
+    sprintf(lastNameSizeString, "%d%d", student->lastNameSize / 10,
+            student->lastNameSize % 10); //lastNameSize can be a number of one digit
+    ecrireChaine(fichier, buffer, lastNameSizeString, LASTNAME_LENGTH_SIZE, i, j);
 
 
     //Write First Name size
     char firstNameSizeString[FIRSTNAME_LENGTH_SIZE + 1]; //+1 for the '\0' character
-    sprintf(firstNameSizeString, "%d%d", firstNameSize / 10,
-            firstNameSize % 10); //firstNameSize can be a number of one digit
+    sprintf(firstNameSizeString, "%d%d", student->firstNameSize / 10,
+            student->firstNameSize % 10); //firstNameSize can be a number of one digit
     ecrireChaine(fichier, buffer, firstNameSizeString, FIRSTNAME_LENGTH_SIZE, i, j);
 
-    //Write LastName size
-    char lastNameSizeString[LASTNAME_LENGTH_SIZE + 1]; //+1 for the '\0' character
-    sprintf(lastNameSizeString, "%d%d", lastNameSize / 10,
-            lastNameSize % 10); //lastNameSize can be a number of one digit
-    ecrireChaine(fichier, buffer, lastNameSizeString, LASTNAME_LENGTH_SIZE, i, j);
-
     //Write ClassID
+    //TO CHANGE ASAP
     char classIDString[CLASS_ID_SIZE + 1];//don't forget the 'p'
     sprintf(classIDString, "%d%d%d", (student->class / 100) % 10, (student->class / 10) % 10, student->class % 10); //
     ecrireChaine(fichier, buffer, classIDString, CLASS_ID_SIZE, i, j);
@@ -440,9 +452,8 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
 
 
 
-    //Write First and Last names
-    ecrireChaine(fichier, buffer, student->firstName, firstNameSize, i, j);
-    ecrireChaine(fichier, buffer, student->lastName, lastNameSize, i, j);
+    //Write Full names
+    ecrireChaine(fichier, buffer, student->fullName, student->lastNameSize + student->firstNameSize, i, j);
 
     //Write gender
     ecrireChaine(fichier, buffer, &student->gender, GENDER_SIZE, i, j);
@@ -465,31 +476,29 @@ void generateStudentName(StudentsNamesArray *studentsNamesArray) {
     int firstNameSize;
     int lastNameSize;
     if (studentsNamesArray->nb <= 0) {
-        getFirstName(firstName, 0); //integrate the random number inside the function
-        getlastNameAndGender(lastName, &gender,
+        getLastName(lastName, 0); //integrate the random number inside the function
+        getFirstNameAndGender(firstName, &gender,
                              0);
         //we first have to put the first caractere before concatinating
         firstNameSize = (int) strlen(firstName);
         lastNameSize = (int) strlen(lastName);
-        strcpy(fullName, firstName);
-        strcat(fullName, lastName);
-        strcat(fullName, &gender);
-        insertStudentNameWithoutSearching(studentsNamesArray, fullName, firstNameSize, lastNameSize, i);
+        strcpy(fullName, lastName);
+        strcat(fullName, firstName);
+        insertStudentNameWithoutSearching(studentsNamesArray, fullName, gender,firstNameSize, lastNameSize, i);
         return;
     }
     while (found) {
         randomSeed++;
-        getFirstName(firstName, randomSeed); //integrate the random number inside the function
-        getlastNameAndGender(lastName, &gender,
+        getLastName(lastName, randomSeed); //integrate the random number inside the function
+        getFirstNameAndGender(firstName, &gender,
                              randomSeed);
         firstNameSize = (int) strlen(firstName);
         lastNameSize = (int) strlen(lastName);
-        strcpy(fullName, firstName);
-        strcat(fullName, lastName);
-        strcat(fullName, &gender);
+        strcpy(fullName, lastName);
+        strcat(fullName, firstName);
         searchStudentName(studentsNamesArray, fullName, &i, &found);
     }
-    insertStudentNameWithoutSearching(studentsNamesArray, fullName, firstNameSize, lastNameSize, i);
+    insertStudentNameWithoutSearching(studentsNamesArray, fullName, gender, firstNameSize, lastNameSize, i);
 }
 
 void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, int *i, bool *found) {
@@ -499,6 +508,7 @@ void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, i
     // collating sequence. The return value has the same relationship to 0 as str1 has to str2.
     // If two strings are equal up to the point at which one terminates
     // (that is, contains a null character), the longer string is considered greater.
+    char currentName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + GENDER_SIZE];
     *found = false;
     if (studentsNamesArray->nb > 0) {
         int numberOfCharsToCompare;
@@ -506,17 +516,18 @@ void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, i
         int sup = studentsNamesArray->nb - 1;
         while ((inf <= sup) && (!(*found))) {
             *i = (inf + sup) / 2;
+            strcpy(currentName, studentsNamesArray->tab[*i].fullName);
             numberOfCharsToCompare = (int) strlen(fullName);
-            if (numberOfCharsToCompare > strlen(studentsNamesArray->tab[*i]))
-                numberOfCharsToCompare = (int) strlen(studentsNamesArray->tab[*i]);
-            if (strncmp(fullName, studentsNamesArray->tab[*i], numberOfCharsToCompare) > 0) {
+            if (numberOfCharsToCompare > strlen(currentName))
+                numberOfCharsToCompare = (int) strlen(currentName);
+            if (strncmp(fullName, currentName, numberOfCharsToCompare) > 0) {
                 inf = *i + 1;
-            } else if (strncmp(fullName, studentsNamesArray->tab[*i], numberOfCharsToCompare) < 0) {
+            } else if (strncmp(fullName, currentName, numberOfCharsToCompare) < 0) {
                 sup = *i - 1;
             } else { //two levels of comparing to ensure the correctness of the functions.
-                if (strcmp(fullName, studentsNamesArray->tab[*i]) > 0) {
+                if (strcmp(fullName, currentName) > 0) {
                     inf = *i + 1;
-                } else if (strcmp(fullName, studentsNamesArray->tab[*i]) < 0) {
+                } else if (strcmp(fullName, currentName) < 0) {
                     sup = *i - 1;
                 } else {
                     (*found) = true;
@@ -531,43 +542,53 @@ void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, i
     }
 }
 
-void insertStudentName(StudentsNamesArray *studentsNamesArray, char *fullName) {
+void insertStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, char gender,int firstNameSize,
+                       int lastNameSize) {
     //insertion with delays to keep the order in the studentsNamesArray
     if (studentsNamesArray->nb <= 0) {
-        strcpy(studentsNamesArray->tab[0], fullName);
+        strcpy(studentsNamesArray->tab[0].fullName, fullName);
+        studentsNamesArray->tab[0].gender = gender;
         studentsNamesArray->nb++;
     } else {
         int i = 0;
         bool found = false;
         searchStudentName(studentsNamesArray, fullName, &i, &found);
         if (!found) {
-            if (strcmp(fullName, studentsNamesArray->tab[i]) < 0) { // !!! we have to recheck this
-                for (int k = studentsNamesArray->nb; k >= i; --k) {
-                    strcpy(studentsNamesArray->tab[k], studentsNamesArray->tab[k - 1]);
-                    //add the size to the structure
+            if (strcmp(fullName, studentsNamesArray->tab[i].fullName) < 0) { // !!! we have to recheck this
+                for (int k = studentsNamesArray->nb; k > i; --k) {
+                    studentsNamesArray->tab[k] = studentsNamesArray->tab[k - 1];
+                    //strcpy(studentsNamesArray->tab[k].fullName, studentsNamesArray->tab[k - 1].fullName);
                 }
             }
-            strcpy(studentsNamesArray->tab[0], fullName);
+            strcpy(studentsNamesArray->tab[i].fullName, fullName);
+            studentsNamesArray->tab[i].gender = gender;
+            studentsNamesArray->tab[i].firstNameSize = firstNameSize;
+            studentsNamesArray->tab[i].lastNameSize = lastNameSize;
             studentsNamesArray->nb++;
         }
     }
 
 }
 
-void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, char *fullName, int firstNameSize,
+void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, char *fullName, char gender, int firstNameSize,
                                        int lastNameSize, int i) {
     //insertion with delays to keep the order in the studentsIdArray
     if (studentsNamesArray->nb <= 0) {
-        strcpy(studentsNamesArray->tab[0], fullName);
+        strcpy(studentsNamesArray->tab[0].fullName, fullName);
+        studentsNamesArray->tab[0].gender = gender;
         studentsNamesArray->nb++;
         //ad the size of the name adn the size of the last name !!!
     } else {
-        if (strcmp(fullName, studentsNamesArray->tab[i]) < 0) {
+        if (strcmp(fullName, studentsNamesArray->tab[i].fullName) < 0) {
             for (int k = studentsNamesArray->nb; k > i; --k) {
-                strcpy(studentsNamesArray->tab[k], studentsNamesArray->tab[k - 1]);
+                studentsNamesArray->tab[k] = studentsNamesArray->tab[k - 1];
+                //strcpy(studentsNamesArray->tab[k].fullName, studentsNamesArray->tab[k - 1].fullName);
             }
         }
-        strcpy(studentsNamesArray->tab[i], fullName);
+        strcpy(studentsNamesArray->tab[i].fullName, fullName);
+        studentsNamesArray->tab[i].gender = gender;
+        studentsNamesArray->tab[i].firstNameSize = firstNameSize;
+        studentsNamesArray->tab[i].lastNameSize = lastNameSize;
         studentsNamesArray->nb++;
 
     }

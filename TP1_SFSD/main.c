@@ -95,8 +95,8 @@ int main() {
     for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
         generateStudentName(&studentsNamesArray);
     }
-    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
-        printf("%s\n", studentsNamesArray.tab[k]);
+    for (int k = 0; k < 30; ++k) {
+        printf("%s %c %d %d\n", studentsNamesArray.tab[k].fullName, studentsNamesArray.tab[k].gender, studentsNamesArray.tab[k].lastNameSize, studentsNamesArray.tab[k].firstNameSize);
     }
 
     return 0;

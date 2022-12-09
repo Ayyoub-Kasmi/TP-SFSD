@@ -16,8 +16,8 @@
 #define STUDENT_PER_CLASS 4
 #define FIRST_LOAD_OF_STUDENTS 120
 #define FIRST_LOAD_OF_CLASSES 30
-#define FIRST_NAMES_FILE_PATH "firstNames.txt" //this is the alternative for the moment
-#define LAST_NAMES_AND_GENDER_FILE_PATH "lastNamesAndGender.txt"
+#define LAST_NAMES_FILE_PATH "LastNames.txt" //this is the alternative for the moment
+#define FIRST_NAMES_AND_GENDER_FILE_PATH "FirstNamesAndGenders.txt"
 #define FIRST_NAME_FILE_SIZE 614
 #define MAX_FIRST_NAME_SIZE 30
 #define MAX_LAST_NAME_SIZE 30
@@ -27,38 +27,50 @@
 #define DECIMAL_WHOLE_PART_LENGTH 2
 
 typedef struct {
-    int tab[FIRST_LOAD_OF_STUDENTS];
+    int id;//the id
+    int i;//number of the bloc
+    int j; //position in the bloc
+} StudentsIdIndexElement;
+
+typedef struct {
+    int id;//the id
+    int i;//number of the bloc
+    int j; //position in the bloc
+} ClassIdIndexElement;
+
+typedef struct {
+    StudentsIdIndexElement tab[FIRST_LOAD_OF_STUDENTS];
     int nb; //number of elements within the array
 } StudentsIdArray;
 
 typedef struct {
-    int tab[FIRST_LOAD_OF_CLASSES];
+    ClassIdIndexElement tab[FIRST_LOAD_OF_CLASSES];
     int nb; //number of elements within the array
 } ClassIdArray;
 
 typedef struct {
-    char tab[FIRST_LOAD_OF_CLASSES][MAX_LAST_NAME_SIZE + MAX_FIRST_NAME_SIZE + GENDER_SIZE];
-    //a 2D array to sort the names alphabetically before inserting them
+    char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + GENDER_SIZE];
+    int firstNameSize;
+    int lastNameSize;
+    char gender
+} NameProperties;
+
+typedef struct {
+    NameProperties tab[FIRST_LOAD_OF_CLASSES];
+    //an array to sort the names alphabetically before inserting them
     int nb; //number of elements within the lines
 } StudentsNamesArray;
 
 typedef struct {
     int id;
     int class;
-    char firstName[MAX_FIRST_NAME_SIZE];
-    char lastName[MAX_LAST_NAME_SIZE];
+    char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + GENDER_SIZE];
+    int firstNameSize;
+    int lastNameSize;
     char gender;
     char isDeleted;
     float marks[MAX_NUMBER_OF_SUBJECTS];
 } Student;
-
-typedef struct {
-    char firstName[MAX_FIRST_NAME_SIZE];
-    char lastName[MAX_LAST_NAME_SIZE];
-    char gender;
-    int firstNameSize;
-    int lastNameSize;
-} NameProperties;
 
 //Global variables:
 extern const int numberOfSubjectsPerLevel[6];
@@ -69,8 +81,9 @@ extern Buffer buffer;
 // a-
 int generateStudentID(int seed);
 // c-
-void getFirstName(char *firstName, int number);
-void getlastNameAndGender(char *lastName, char *gender, int number);
+void getLastName(char *lastName, int number);
+
+void getFirstNameAndGender(char *firstName, char *gender, int number);
 // d-
 void getMarks(float *tableOfMarks, int level);
 
@@ -90,7 +103,7 @@ int generateTheLevel(int seed);
 
 void generateClassId(ClassIdArray *classIdArray);
 
-void checkRoomNumber(ClassIdArray *roomIdArray, int roomNumber, bool *found);
+void checkRoomNumber(ClassIdArray *ClassIdArray, int roomNumber, bool *found);
 
 void checkClassID(ClassIdArray *classIdArray, int classID, bool *found);
 
@@ -108,8 +121,9 @@ void generateStudentName(StudentsNamesArray *studentsNamesArray);
 
 void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, int* i, bool *found);
 
-void insertStudentName(StudentsNamesArray *studentsNamesArray, char* fullName);
+void insertStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, char gender,int firstNameSize,
+                       int lastNameSize);
 
-void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, char *fullName, int firstNameSize,
+void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, char *fullName, char gender, int firstNameSize,
                                        int lastNameSize, int i);
 #endif //TP1_SFSD_DATAMANIPULATION_H
