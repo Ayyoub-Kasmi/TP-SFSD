@@ -303,6 +303,24 @@ void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i) {
     }
 }
 
+int stringToInt(char* string, int length){
+    int digit, result = 0;
+    for (int i = 0; i < length; ++i) {
+        digit = (int)string[i] - 48; // the character '0' is equivalent to the integer 48
+        result = result*10 + digit;
+    }
+    return result;
+}
+
+void intToString(char *string, int number, int length) {
+    int digit;
+    for (int i = length-1; i >= 0; i--) {
+        digit = number % 10;
+        string[i] = digit + '0';
+        number/=10;
+    }
+}
+
 /*************************************** Main functions ***********************************************/
 
 //initialize file:
@@ -360,9 +378,9 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int *i, int *j) {
             student.id = studentsIdArray.tab[k * STUDENT_PER_CLASS + l];
             student.class = classIdArray.tab[k];
             printf("student class: %d\n", student.class);
-//            getFirstName(student.firstName, firstNamePosition); //integrate the random number inside the function
-//            getlastNameAndGender(student.lastName, &student.gender,
-//                                 lastNamePosition);
+            getFirstName(student.firstName, firstNamePosition); //integrate the random number inside the function
+            getlastNameAndGender(student.lastName, &student.gender,
+                                 lastNamePosition);
 // change gender from array[1] to char
 
             level = (student.class / 100) % 10; //refactor it using variables
@@ -377,6 +395,13 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int *i, int *j) {
                 //we moved to a new level ==> save the positions
                 classesIndex[level].i=*i;
                 classesIndex[level].j=*j;
+            }
+//            if(k==28 && l==1) printf("student id: %d\n", student.id);
+            if(k==28 && l==1) {
+                tempStudentID = student.id;
+                printf("student id: %d\n", tempStudentID);
+                tempStudentClass = student.class;
+                printf("student class: %d\n", tempStudentClass);
             }
             writeStudent(fichier, &student, buffer, i, j);
 

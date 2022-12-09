@@ -27,6 +27,7 @@
 #define MAX_LAST_NAME_SIZE 30
 #define MAX_NUMBER_OF_SUBJECTS 7
 #define CURRENT_YEAR 2022
+#define MARK_LENGTH 4
 #define MARK_WHOLE_PART_LENGTH 2
 #define DECIMAL_WHOLE_PART_LENGTH 2
 
@@ -74,10 +75,14 @@ typedef struct {
 extern const int numberOfSubjectsPerLevel[6];
 extern Buffer buffer;
 extern position classesIndex[NUMBER_OF_LEVELS];
+extern int tempStudentID;
+extern int tempStudentClass;
 
 //functions of part 1
 // a-
 int generateStudentID(int seed);
+int stringToInt(char* string, int length);
+void intToString(char *string, int number, int length);
 // c-
 void getFirstName(char *firstName, int number);
 void getlastNameAndGender(char *lastName, char *gender, int number);

@@ -99,31 +99,6 @@ void ecrireChaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, in
 void lirechaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
     for (int k = 0; k < taille; ++k) {
         if (*i == getEntete(fichier, 1)) {
-            if (*j < getEntete(fichier, 2)) {
-                chaine[k] = buffer->tab[*j];
-                (*j)++;
-            } else return;
-        } else {
-            if (*j < BUFFER_SIZE) {
-                (*i)++;
-                lireBloc(fichier, *i, buffer);
-                chaine[k] = buffer->tab[0];
-                (*j) = 0;
-            } else {
-                (*i)++; //since we know that a student's data won't overflow the buffer size
-                lireBloc(fichier, *i, buffer);
-                chaine[k] = buffer->tab[0];
-                (*j) = 0;
-            }
-            (*j)++;
-        }
-    }
-
-}
-
-void lirechaine2(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
-    for (int k = 0; k < taille; ++k) {
-        if (*i == getEntete(fichier, 1)) {
             //if the current bloc is the last block
 
             if (*j < getEntete(fichier, 2)) {
