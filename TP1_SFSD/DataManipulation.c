@@ -36,7 +36,7 @@ void getFirstName(char *firstName, int number) {
         //the current solution is to read the nth name is to use a for loop until we reach the desired string
         fscanf(firstNameFile, "%[^,],", firstName);
     }
-
+    fclose(firstNameFile); //to avoid a problem that is caused due to opening the file multiple times while it's still open
 }
 
 void getlastNameAndGender(char *lastName, char *gender, int number) {
@@ -56,6 +56,7 @@ void getlastNameAndGender(char *lastName, char *gender, int number) {
     for (int counter = 0; counter < lastNamePosition; ++counter) {
         fscanf(lastNameAndGenderFile, "%[^,],%[^;];", lastName, gender);
     }
+    fclose(lastNameAndGenderFile); //to avoid a problem that is caused due to opening the file multiple times while it's still open
 }
 
 void getMarks(float *tableOfMarks, int level) {
@@ -319,7 +320,15 @@ void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i) {
 */
 
 void createSchoolYear(Fichier *fichier, Buffer *buffer, int *i, int *j) {
+    //add the "fopen" statements here and remove them from the other functions, so to open the files only once, and close them
+        //in the end of this function
     int year = CURRENT_YEAR;
+    int level;
+
+    //initialize the index array
+    for(level = 0; level<NUMBER_OF_LEVELS; level++){
+        classesIndex[level].i=INT_MAX;
+    }
     *i = 0;
     *j = 0;
     Student student;
@@ -356,12 +365,19 @@ void createSchoolYear(Fichier *fichier, Buffer *buffer, int *i, int *j) {
 //                                 lastNamePosition);
 // change gender from array[1] to char
 
-            int level = (student.class / 100) % 10; //refactor it using variables
+            level = (student.class / 100) % 10; //refactor it using variables
             getMarks(student.marks, level);
 //            printf("id: %d, class: %d, firstname: %s, lastname: %s, gender: %c \n", student.id, student.class,
 //                   student.firstName, student.lastName, student.gender);
 
             student.isDeleted = '0';
+
+            //setting the position of the level inside the file in the index array before writing to the file:
+            if(*i < classesIndex[level].i){
+                //we moved to a new level ==> save the positions
+                classesIndex[level].i=*i;
+                classesIndex[level].j=*j;
+            }
             writeStudent(fichier, &student, buffer, i, j);
 
         }
@@ -394,16 +410,16 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
 
 
     //Write First Name size
-    char firstNameSizeString[FIRSTNAME_LENGTH_SIZE + 1]; //+1 for the '\0' character
+    char firstNameSizeString[FIRSTNAME_LENGTH + 1]; //+1 for the '\0' character
     sprintf(firstNameSizeString, "%d%d", firstNameSize / 10,
             firstNameSize % 10); //firstNameSize can be a number of one digit
-    ecrireChaine(fichier, buffer, firstNameSizeString, FIRSTNAME_LENGTH_SIZE, i, j);
+    ecrireChaine(fichier, buffer, firstNameSizeString, FIRSTNAME_LENGTH, i, j);
 
     //Write LastName size
-    char lastNameSizeString[LASTNAME_LENGTH_SIZE + 1]; //+1 for the '\0' character
+    char lastNameSizeString[LASTNAME_LENGTH + 1]; //+1 for the '\0' character
     sprintf(lastNameSizeString, "%d%d", lastNameSize / 10,
             lastNameSize % 10); //lastNameSize can be a number of one digit
-    ecrireChaine(fichier, buffer, lastNameSizeString, LASTNAME_LENGTH_SIZE, i, j);
+    ecrireChaine(fichier, buffer, lastNameSizeString, LASTNAME_LENGTH, i, j);
 
     //Write ClassID
     char classIDString[CLASS_ID_SIZE + 1];//don't forget the 'p'
@@ -424,8 +440,8 @@ void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, in
     int markWholePart;
     int markDecimalPart;
     int intMark;
-    char markWholePartString[WHOLE_PART_SIZE + 1];
-    char markDecimalPartString[DECIMAL_PART_SIZE + 1];
+    char markWholePartString[MARK_WHOLE_PART_LENGTH + 1];
+    char markDecimalPartString[DECIMAL_WHOLE_PART_LENGTH + 1];
     for (int k = 0; k < numberOfSubjectsPerLevel[level]; ++k) {
         intMark = student->marks[k] * 100;
         markWholePart = intMark / 100;
@@ -473,7 +489,8 @@ void generateStudentName(StudentsNamesArray *studentsNamesArray) {
         lastNameSize = (int) strlen(lastName);
         strcpy(fullName, firstName);
         strcat(fullName, lastName);
-        strcat(fullName, &gender);
+        fullName[firstNameSize+lastNameSize] = gender;
+        fullName[firstNameSize+lastNameSize+1] = '\0';
         insertStudentNameWithoutSearching(studentsNamesArray, fullName, firstNameSize, lastNameSize, i);
         return;
     }
@@ -486,7 +503,8 @@ void generateStudentName(StudentsNamesArray *studentsNamesArray) {
         lastNameSize = (int) strlen(lastName);
         strcpy(fullName, firstName);
         strcat(fullName, lastName);
-        strcat(fullName, &gender);
+        fullName[firstNameSize+lastNameSize] = gender;
+        fullName[firstNameSize+lastNameSize+1] = '\0';
         searchStudentName(studentsNamesArray, fullName, &i, &found);
     }
     insertStudentNameWithoutSearching(studentsNamesArray, fullName, firstNameSize, lastNameSize, i);
@@ -573,3 +591,5 @@ void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, c
     }
 
 }
+
+

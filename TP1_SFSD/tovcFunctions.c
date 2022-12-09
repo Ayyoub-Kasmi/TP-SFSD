@@ -110,7 +110,7 @@ void lirechaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int 
                 chaine[k] = buffer->tab[0];
                 (*j) = 0;
             } else {
-                (*i)++;
+                (*i)++; //since we know that a student's data won't overflow the buffer size
                 lireBloc(fichier, *i, buffer);
                 chaine[k] = buffer->tab[0];
                 (*j) = 0;
@@ -144,6 +144,10 @@ void lirechaine2(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int
             }
             (*j)++;
         }
+    }
+    if(*j == BUFFER_SIZE){
+        (*i)++;
+        *j = 0;
     }
 }
 

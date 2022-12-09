@@ -3,21 +3,25 @@
 
 #include <stdbool.h>
 #include "tovcFunctions.h"
+
 //definition of system constants
-#define BUFFER_SIZE 250
+#define FIRST_NAMES_FILE_PATH "firstNames.txt" //this is the alternative for the moment
+#define LAST_NAMES_AND_GENDER_FILE_PATH "lastNamesAndGender.txt"
+#define CURRENT_YEAR_FILE_PATH  "2022_STUDENTS"
 #define STUDENT_ID_SIZE 4
 #define CLASS_ID_SIZE 3
 #define CLASS_NUMBER_SIZE 2
 #define SCHOOL_LEVEL_SIZE 1
+#define IS_DELETED_SIZE 1
+#define SCHOOL_LEVEL_SIZE 1
+#define LASTNAME_LENGTH 2  // MAY CHANGE
+#define FIRSTNAME_LENGTH 2
 #define GENDER_SIZE 1
 #define EFF_SIZE 1
-#define LASTNAME_LENGTH_SIZE 2  // MAY CHANGE
-#define FIRSTNAME_LENGTH_SIZE 2
 #define STUDENT_PER_CLASS 4
+#define NUMBER_OF_LEVELS 6
 #define FIRST_LOAD_OF_STUDENTS 120
 #define FIRST_LOAD_OF_CLASSES 30
-#define FIRST_NAMES_FILE_PATH "firstNames.txt" //this is the alternative for the moment
-#define LAST_NAMES_AND_GENDER_FILE_PATH "lastNamesAndGender.txt"
 #define FIRST_NAME_FILE_SIZE 614
 #define MAX_FIRST_NAME_SIZE 30
 #define MAX_LAST_NAME_SIZE 30
@@ -25,6 +29,12 @@
 #define CURRENT_YEAR 2022
 #define MARK_WHOLE_PART_LENGTH 2
 #define DECIMAL_WHOLE_PART_LENGTH 2
+
+
+typedef struct {
+    int i;
+    int j;
+} position;
 
 typedef struct {
     int tab[FIRST_LOAD_OF_STUDENTS];
@@ -63,7 +73,7 @@ typedef struct {
 //Global variables:
 extern const int numberOfSubjectsPerLevel[6];
 extern Buffer buffer;
-
+extern position classesIndex[NUMBER_OF_LEVELS];
 
 //functions of part 1
 // a-
@@ -112,4 +122,5 @@ void insertStudentName(StudentsNamesArray *studentsNamesArray, char* fullName);
 
 void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, char *fullName, int firstNameSize,
                                        int lastNameSize, int i);
+
 #endif //TP1_SFSD_DATAMANIPULATION_H
