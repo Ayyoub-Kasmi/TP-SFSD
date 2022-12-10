@@ -31,7 +31,7 @@ int main() {
 //    int i = 0;
 //    int j = 0;
 //    char testString[BUFFER_SIZE];
-//    Fichier* fichier = ouvrirFichier("2022_STUDENTS", 'N');
+//    FichierTof* fichier = ouvrirFichier("2022_STUDENTS", 'N');
 //
 //    //Custom student for test
 //    Student student;

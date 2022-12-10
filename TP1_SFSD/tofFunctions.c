@@ -1,0 +1,165 @@
+//
+// Created by AOUFAR FARES on 23/10/2022.
+//
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "tofFunctions.h"
+#include <stdbool.h>
+
+void setEntete(Fichier *fichier, int pos, int value) {
+    if (pos == 1) {
+        fichier->entete.LastBloc = value;
+    } else if (pos == 2) {
+        fichier->entete.NumbrOfRecords = value;
+    }
+}
+
+int getEntete(Fichier *fichier, int pos) {
+    if (pos == 1) {
+        return fichier->entete.LastBloc;
+    } else if (pos == 2) {
+        return fichier->entete.NumbrOfRecords;
+    } else return NULL;
+}
+
+void setFile(Fichier *fichier, FILE *f) {
+    fichier->file = f;
+}
+
+FILE *getFile(Fichier *fichier) {
+    return fichier->file;
+}
+
+Fichier* ouvrirFichier( char *name, char mode) {
+    Fichier * fichier = malloc(sizeof (fichier));
+    if (mode == 'N') { //Nouveau fichier
+        fichier->file = fopen(name, "wb+");
+        setEntete(fichier, 1, 0);
+        setEntete(fichier, 2, 0);
+        rewind(getFile(fichier));
+        fwrite(&fichier->entete, sizeof(Entete), 1, getFile(fichier));
+    } else {//ancien fichier
+        fichier->file = fopen(name, "rb+");
+        if (getFile(fichier) != NULL) {
+            fread(&fichier->entete, sizeof(Entete), 1, getFile(fichier));
+        } else {
+            printf("Erreur, fichier inexistant");
+        }
+    }
+    return fichier;
+}
+
+void fermerFichier(Fichier *fichier) {
+    rewind(getFile(fichier));
+    fwrite(&fichier->entete, sizeof(Entete), 1, getFile(fichier));
+    fclose(getFile(fichier));
+    free(fichier);
+}
+
+void lireBloc(Fichier* fichier, int i, Buffer* buffer){
+    fseek(getFile(fichier), sizeof(Entete) + sizeof(Buffer)*i, 0);
+    fread(buffer, sizeof(Buffer), 1, getFile(fichier));
+}
+
+void ecrireBloc(Fichier* fichier, int i, Buffer* buffer){
+    fseek(getFile(fichier), sizeof(Entete) + sizeof(Buffer)*i, 0);
+    fwrite(buffer, sizeof(Buffer), 1, getFile(fichier));
+    //setEntete(fichier, 2, getEntete(fichier,2) + 1); on les fait individuellement dans chaque fonction
+}
+
+void chargementInitiale(Fichier *fichier, int n, Buffer* buffer) {
+    int i = 0, j = 0;
+    Record record;
+    //Buffer buffer;
+    for (int k = 0; k < n; ++k) {
+        printf("La cle: ");
+        scanf("%d", &record.key);
+        printf("L\'information: ");
+        scanf("%d", &record.data);
+        printf("\n");
+        if (j < MAX) {
+            buffer->tab[j] = record;
+            j++;
+        } else {
+            buffer->maxIndex = j - 1;
+            //fwrite(&buffer, sizeof(Buffer), 1, getFile(fichier));
+            ecrireBloc(fichier, i, buffer);
+            i++;
+            buffer->tab[0] = record;
+            j = 1;
+        }
+    }
+    buffer->maxIndex = j - 1;
+    //fwrite(&buffer, sizeof(Buffer), 1, getFile(fichier));
+    ecrireBloc(fichier, i, buffer);
+    setEntete(fichier, 1, i);
+    setEntete(fichier, 2, n);
+}
+
+void printFile(Fichier* fichier) {
+    Buffer buffer;
+    buffer.maxIndex = 0;
+
+    for(int i = 0; i <= getEntete(fichier,1); ++i) {
+        lireBloc(fichier, i, &buffer);
+        for (int j = 0; j <= buffer.maxIndex; j++) {
+            printf("\nData: %d, Key: %d \n", buffer.tab[j].data, buffer.tab[j].key);
+        }
+    }
+}
+
+bool recherche(Fichier* fichier, int k, int* i, int* j, Buffer* buffer){
+    *i = 0;
+    *j = 0;
+    bool trouv = false;
+    while((*i <= getEntete(fichier, 1)) && (!trouv)){
+        lireBloc(fichier, *i, buffer);
+        while(*j <= buffer->maxIndex){
+            if(buffer->tab[*j].key == k){
+                trouv = true;
+                break;
+            }else (*j)++;
+        }
+        if(!trouv) (*i)++;
+    }
+    if(trouv){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+void insertion(Fichier* fichier, Record record, Buffer* buffer){
+
+    lireBloc(fichier, getEntete(fichier,1), buffer);
+    if(buffer->maxIndex < MAX -1){
+        buffer->tab[buffer->maxIndex] = record;
+        buffer->maxIndex++;
+    } else {
+        buffer->tab[0] = record;
+        buffer->maxIndex = 0;
+        setEntete(fichier, 1, getEntete(fichier, 1));
+    }
+    ecrireBloc(fichier , getEntete(fichier, 1), buffer);
+    setEntete(fichier, 2, getEntete(fichier, 2) + 1);
+
+}
+
+void supression(Fichier* fichier, int k, Buffer* buffer){
+    int i, j;
+    Record record;
+
+    if(recherche(fichier, k, &i, &j, buffer)){
+        lireBloc(fichier, i ,buffer);
+        record = buffer->tab[buffer->maxIndex];
+        buffer->maxIndex --;
+        if(buffer->maxIndex < 0) setEntete(fichier, 1, getEntete(fichier,1) - 1);
+        ecrireBloc(fichier, i, buffer);
+        lireBloc(fichier, i ,buffer);
+        buffer->tab[j] = record;
+        ecrireBloc(fichier, i, buffer);
+        setEntete(fichier, 2, getEntete(fichier, 2) - 1);
+    }
+
+}

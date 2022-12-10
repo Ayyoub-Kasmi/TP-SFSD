@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <time.h>
 
-void setEntete(Fichier *fichier, int pos, int value) {
+void setEntete(FichierTof *fichier, int pos, int value) {
     if (pos == 1) {
         fichier->entete.numberOfBlocs = value;
     } else if (pos == 2) {
@@ -20,7 +20,7 @@ void setEntete(Fichier *fichier, int pos, int value) {
     }
 }
 
-int getEntete(Fichier *fichier, int pos) {
+int getEntete(FichierTof *fichier, int pos) {
     if (pos == 1) {
         return fichier->entete.numberOfBlocs;
     } else if (pos == 2) {
@@ -32,16 +32,16 @@ int getEntete(Fichier *fichier, int pos) {
     } else return -1; // <====== NULL is incompatible with int type
 }
 
-void setFile(Fichier *fichier, FILE *f) {
+void setFile(FichierTof *fichier, FILE *f) {
     fichier->file = f;
 }
 
-FILE *getFile(Fichier *fichier) {
+FILE *getFile(FichierTof *fichier) {
     return fichier->file;
 }
 
-Fichier *ouvrirFichier(char *name, char mode) {
-    Fichier *fichier = malloc(sizeof(fichier));
+FichierTof *ouvrirFichier(char *name, char mode) {
+    FichierTof *fichier = malloc(sizeof(fichier));
     if (mode == 'N') { //Nouveau fichier
         fichier->file = fopen(name, "wb+");
         setEntete(fichier, 1, 0);
@@ -49,11 +49,11 @@ Fichier *ouvrirFichier(char *name, char mode) {
         setEntete(fichier, 3, 0);
         setEntete(fichier, 4, 0);
         rewind(getFile(fichier));
-        fwrite(&fichier->entete, sizeof(Entete), 1, getFile(fichier));
+        fwrite(&fichier->entete, sizeof(EnteteTof), 1, getFile(fichier));
     } else {//ancien fichier
         fichier->file = fopen(name, "rb+");
         if (getFile(fichier) != NULL) {
-            fread(&fichier->entete, sizeof(Entete), 1, getFile(fichier));
+            fread(&fichier->entete, sizeof(EnteteTof), 1, getFile(fichier));
         } else {
             printf("Erreur, fichier inexistant");
         }
@@ -61,25 +61,25 @@ Fichier *ouvrirFichier(char *name, char mode) {
     return fichier;
 }
 
-void fermerFichier(Fichier *fichier) {
+void fermerFichier(FichierTof *fichier) {
     rewind(getFile(fichier));
-    fwrite(&fichier->entete, sizeof(Entete), 1, getFile(fichier));
+    fwrite(&fichier->entete, sizeof(EnteteTof), 1, getFile(fichier));
     fclose(getFile(fichier));
     free(fichier);
 }
 
-void lireBloc(Fichier *fichier, int i, Buffer *buffer) {
-    fseek(getFile(fichier), sizeof(Entete) + sizeof(Buffer) * i, 0);
+void lireBloc(FichierTof *fichier, int i, Buffer *buffer) {
+    fseek(getFile(fichier), sizeof(EnteteTof) + sizeof(Buffer) * i, 0);
     fread(buffer, sizeof(Buffer), 1, getFile(fichier));
 }
 
-void ecrireBloc(Fichier *fichier, int i, Buffer *buffer) {
-    fseek(getFile(fichier), sizeof(Entete) + sizeof(Buffer) * i, 0);
+void ecrireBloc(FichierTof *fichier, int i, Buffer *buffer) {
+    fseek(getFile(fichier), sizeof(EnteteTof) + sizeof(Buffer) * i, 0);
     fwrite(buffer, sizeof(Buffer), 1, getFile(fichier));
     //setEntete(fichier, 2, getEntete(fichier,2) + 1); on les fait individuellement dans chaque fonction
 }
 
-void ecrireChaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
+void ecrireChaine(FichierTof *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
 
     for (int k = 0; k < taille; ++k) {
         if (*j < BUFFER_SIZE) {
@@ -96,7 +96,7 @@ void ecrireChaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, in
     setEntete(fichier, 3, getEntete(fichier, 3) + taille); //move this to "Ecrire Enregistrement
 }
 
-void lirechaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
+void lirechaine(FichierTof *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
     for (int k = 0; k < taille; ++k) {
         if (*i == getEntete(fichier, 1)) {
             if (*j < getEntete(fichier, 2)) {
@@ -121,7 +121,7 @@ void lirechaine(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int 
 
 }
 
-void lirechaine2(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
+void lirechaine2(FichierTof *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
     for (int k = 0; k < taille; ++k) {
         if (*i == getEntete(fichier, 1)) {
             //if the current bloc is the last block
@@ -149,7 +149,7 @@ void lirechaine2(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int
 
 
 
-//void chargementInitiale(Fichier *fichier, int n, Buffer* buffer) {
+//void chargementInitiale(FichierTof *fichier, int n, Buffer* buffer) {
 //    int i = 0, j = 0;
 //    Record record;
 //    //Buffer buffer;
@@ -178,7 +178,7 @@ void lirechaine2(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int
 //    setEntete(fichier, 2, n);
 //}
 //
-//void printFile(Fichier* fichier) {
+//void printFile(FichierTof* fichier) {
 //    Buffer buffer;
 //    buffer.positionLibre = 0;
 //
@@ -190,7 +190,7 @@ void lirechaine2(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int
 //    }
 //}
 //
-//bool recherche(Fichier* fichier, int k, int* i, int* j, Buffer* buffer){
+//bool recherche(FichierTof* fichier, int k, int* i, int* j, Buffer* buffer){
 //    *i = 0;
 //    *j = 0;
 //    bool trouv = false;
@@ -211,7 +211,7 @@ void lirechaine2(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int
 //    }
 //}
 //
-//void insertion(Fichier* fichier, Record record, Buffer* buffer){
+//void insertion(FichierTof* fichier, Record record, Buffer* buffer){
 //
 //    lireBloc(fichier, getEntete(fichier,1), buffer);
 //    if(buffer->positionLibre < MAX_LOF - 1){
@@ -227,7 +227,7 @@ void lirechaine2(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int
 //
 //}
 //
-//void supression(Fichier* fichier, int k, Buffer* buffer){
+//void supression(FichierTof* fichier, int k, Buffer* buffer){
 //    int i, j;
 //    Record record;
 //

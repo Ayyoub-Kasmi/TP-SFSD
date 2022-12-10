@@ -28,13 +28,13 @@ struct Entete{
     int NumberOfCharsInserted;
     int numberOfCharsDeleted;
 };
-typedef struct Entete Entete;
+typedef struct EnteteTof EnteteTof;
 
 struct Fichier{
     FILE* file;
-    Entete entete;
+    EnteteTof entete;
 };
-typedef struct Fichier Fichier;
+typedef struct FichierTof FichierTof;
 
 struct Record{
     int key;
@@ -50,35 +50,35 @@ typedef struct Buffer Buffer;
 
 
 
-void setEntete(Fichier *fichier, int pos, int value);
+void setEntete(FichierTof *fichier, int pos, int value);
 
-int getEntete(Fichier *fichier, int pos);
+int getEntete(FichierTof *fichier, int pos);
 
-void setFile(Fichier *fichier, FILE *f);
+void setFile(FichierTof *fichier, FILE *f);
 
-FILE *getFile(Fichier *fichier);
+FILE *getFile(FichierTof *fichier);
 
-Fichier * ouvrirFichier( char *name, char mode);
+FichierTof * ouvrirFichier(char *name, char mode);
 
-void fermerFichier(Fichier *fichier);
+void fermerFichier(FichierTof *fichier);
 
-void lireBloc(Fichier* fichier, int i, Buffer* buffer);
+void lireBloc(FichierTof* fichier, int i, Buffer* buffer);
 
-void ecrireBloc(Fichier* fichier, int i, Buffer* buffer);
+void ecrireBloc(FichierTof* fichier, int i, Buffer* buffer);
 
-void printFile(Fichier* fichier);
+void printFile(FichierTof* fichier);
 
-void chargementInitiale(Fichier *fichier, int n, Buffer* buffer);
+void chargementInitiale(FichierTof *fichier, int n, Buffer* buffer);
 
-bool recherche(Fichier* fichier, int k, int* i, int* j, Buffer* buffer);
+bool recherche(FichierTof* fichier, int k, int* i, int* j, Buffer* buffer);
 
-void insertion(Fichier* fichier, Record record, Buffer* buffer);
+void insertion(FichierTof* fichier, Record record, Buffer* buffer);
 
-void supression(Fichier* fichier, int k, Buffer* buffer);
+void supression(FichierTof* fichier, int k, Buffer* buffer);
 
-void ecrireChaine(Fichier* fichier, Buffer* buffer,char* chaine, int taille, int* i, int* j);
+void ecrireChaine(FichierTof* fichier, Buffer* buffer, char* chaine, int taille, int* i, int* j);
 
-void lirechaine(Fichier* fichier, Buffer* buffer, char* chaine, int taille, int* i, int* j);
-void lirechaine2(Fichier *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j);
+void lirechaine(FichierTof* fichier, Buffer* buffer, char* chaine, int taille, int* i, int* j);
+void lirechaine2(FichierTof *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j);
 
 #endif //TP1_SFSD_TOVCFUNCTIONS_H

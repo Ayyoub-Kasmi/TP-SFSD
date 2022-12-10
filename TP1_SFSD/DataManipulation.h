@@ -113,9 +113,9 @@ void insertClassId(ClassIdArray *roomIdArray, int id);
 
 void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i);
 
-void createSchoolYear(Fichier *fichier, Buffer *buffer, int* i, int* j);
+void createSchoolYear(FichierTof *fichier, Buffer *buffer, int* i, int* j);
 
-void writeStudent(Fichier *fichier, Student *student, Buffer *buffer, int *i, int *j);
+void writeStudent(FichierTof *fichier, Student *student, Buffer *buffer, int *i, int *j);
 
 void generateStudentName(StudentsNamesArray *studentsNamesArray);
 
