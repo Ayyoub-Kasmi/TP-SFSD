@@ -23,7 +23,7 @@ char *gender;
 float tableOfMarks[MAX_NUMBER_OF_SUBJECTS];
 
 //File buffer:
-Buffer buffer;
+BufferTof buffer;
 
 int main() {
 
@@ -31,7 +31,7 @@ int main() {
 //    int i = 0;
 //    int j = 0;
 //    char testString[BUFFER_SIZE];
-//    FichierTof* fichier = ouvrirFichier("2022_STUDENTS", 'N');
+//    FichierTof* fichier = ouvrirFichierTof("2022_STUDENTS", 'N');
 //
 //    //Custom student for test
 //    Student student;
@@ -69,12 +69,12 @@ int main() {
 //    j = 0;
 //    i = 0;
 ////    lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j); //
-//    lireBloc(fichier, i, &buffer);
+//    lireBlocTof(fichier, i, &buffer);
 //    buffer.positionLibre = 99;
 //    lirechaine2(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
 //    //after the end of each string there is '\0' so we have to eliminate it
 //    printf("%s", testString);
-//    fermerFichier(fichier);
+//    fermerFichierTof(fichier);
 
 
     int  result;

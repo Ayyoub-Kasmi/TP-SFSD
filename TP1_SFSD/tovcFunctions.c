@@ -40,7 +40,7 @@ FILE *getFile(FichierTof *fichier) {
     return fichier->file;
 }
 
-FichierTof *ouvrirFichier(char *name, char mode) {
+FichierTof *ouvrirFichierTof(char *name, char mode) {
     FichierTof *fichier = malloc(sizeof(fichier));
     if (mode == 'N') { //Nouveau fichier
         fichier->file = fopen(name, "wb+");
@@ -68,18 +68,18 @@ void fermerFichier(FichierTof *fichier) {
     free(fichier);
 }
 
-void lireBloc(FichierTof *fichier, int i, Buffer *buffer) {
-    fseek(getFile(fichier), sizeof(EnteteTof) + sizeof(Buffer) * i, 0);
-    fread(buffer, sizeof(Buffer), 1, getFile(fichier));
+void lireBloc(FichierTof *fichier, int i, BufferTof *buffer) {
+    fseek(getFile(fichier), sizeof(EnteteTof) + sizeof(BufferTof) * i, 0);
+    fread(buffer, sizeof(BufferTof), 1, getFile(fichier));
 }
 
-void ecrireBloc(FichierTof *fichier, int i, Buffer *buffer) {
-    fseek(getFile(fichier), sizeof(EnteteTof) + sizeof(Buffer) * i, 0);
-    fwrite(buffer, sizeof(Buffer), 1, getFile(fichier));
-    //setEntete(fichier, 2, getEntete(fichier,2) + 1); on les fait individuellement dans chaque fonction
+void ecrireBloc(FichierTof *fichier, int i, BufferTof *buffer) {
+    fseek(getFile(fichier), sizeof(EnteteTof) + sizeof(BufferTof) * i, 0);
+    fwrite(buffer, sizeof(BufferTof), 1, getFile(fichier));
+    //setEnteteTof(fichier, 2, getEnteteTof(fichier,2) + 1); on les fait individuellement dans chaque fonction
 }
 
-void ecrireChaine(FichierTof *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
+void ecrireChaine(FichierTof *fichier, BufferTof *buffer, char *chaine, int taille, int *i, int *j) {
 
     for (int k = 0; k < taille; ++k) {
         if (*j < BUFFER_SIZE) {
@@ -96,7 +96,7 @@ void ecrireChaine(FichierTof *fichier, Buffer *buffer, char *chaine, int taille,
     setEntete(fichier, 3, getEntete(fichier, 3) + taille); //move this to "Ecrire Enregistrement
 }
 
-void lirechaine(FichierTof *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
+void lirechaine(FichierTof *fichier, BufferTof *buffer, char *chaine, int taille, int *i, int *j) {
     for (int k = 0; k < taille; ++k) {
         if (*i == getEntete(fichier, 1)) {
             if (*j < getEntete(fichier, 2)) {
@@ -121,7 +121,7 @@ void lirechaine(FichierTof *fichier, Buffer *buffer, char *chaine, int taille, i
 
 }
 
-void lirechaine2(FichierTof *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j) {
+void lirechaine2(FichierTof *fichier, BufferTof *buffer, char *chaine, int taille, int *i, int *j) {
     for (int k = 0; k < taille; ++k) {
         if (*i == getEntete(fichier, 1)) {
             //if the current bloc is the last block
@@ -149,10 +149,10 @@ void lirechaine2(FichierTof *fichier, Buffer *buffer, char *chaine, int taille, 
 
 
 
-//void chargementInitiale(FichierTof *fichier, int n, Buffer* buffer) {
+//void chargementInitialeTof(FichierTof *fichier, int n, BufferTof* buffer) {
 //    int i = 0, j = 0;
-//    Record record;
-//    //Buffer buffer;
+//    StudentIndexRecord record;
+//    //BufferTof buffer;
 //    for (int k = 0; k < n; ++k) {
 //        printf("La cle: ");
 //        scanf("%d", &record.key);
@@ -164,38 +164,38 @@ void lirechaine2(FichierTof *fichier, Buffer *buffer, char *chaine, int taille, 
 //            j++;
 //        } else {
 //            buffer->positionLibre = j - 1;
-//            //fwrite(&buffer, sizeof(Buffer), 1, getFile(fichier));
-//            ecrireBloc(fichier, i, buffer);
+//            //fwrite(&buffer, sizeof(BufferTof), 1, getFileTof(fichier));
+//            ecrireBlocTof(fichier, i, buffer);
 //            i++;
 //            buffer->tab[0] = record;
 //            j = 1;
 //        }
 //    }
 //    buffer->positionLibre = j - 1;
-//    //fwrite(&buffer, sizeof(Buffer), 1, getFile(fichier));
-//    ecrireBloc(fichier, i, buffer);
-//    setEntete(fichier, 1, i);
-//    setEntete(fichier, 2, n);
+//    //fwrite(&buffer, sizeof(BufferTof), 1, getFileTof(fichier));
+//    ecrireBlocTof(fichier, i, buffer);
+//    setEnteteTof(fichier, 1, i);
+//    setEnteteTof(fichier, 2, n);
 //}
 //
-//void printFile(FichierTof* fichier) {
-//    Buffer buffer;
+//void printFileTof(FichierTof* fichier) {
+//    BufferTof buffer;
 //    buffer.positionLibre = 0;
 //
-//    for(int i = 0; i <= getEntete(fichier,1); ++i) {
-//        lireBloc(fichier, i, &buffer);
+//    for(int i = 0; i <= getEnteteTof(fichier,1); ++i) {
+//        lireBlocTof(fichier, i, &buffer);
 //        for (int j = 0; j <= buffer.positionLibre; j++) {
 //            printf("\nData: %d, Key: %d \n", buffer.tab[j].data, buffer.tab[j].key);
 //        }
 //    }
 //}
 //
-//bool recherche(FichierTof* fichier, int k, int* i, int* j, Buffer* buffer){
+//bool rechercheTof(FichierTof* fichier, int k, int* i, int* j, BufferTof* buffer){
 //    *i = 0;
 //    *j = 0;
 //    bool trouv = false;
-//    while((*i <= getEntete(fichier, 1)) && (!trouv)){
-//        lireBloc(fichier, *i, buffer);
+//    while((*i <= getEnteteTof(fichier, 1)) && (!trouv)){
+//        lireBlocTof(fichier, *i, buffer);
 //        while(*j <= buffer->positionLibre){
 //            if(buffer->tab[*j].key == k){
 //                trouv = true;
@@ -211,36 +211,36 @@ void lirechaine2(FichierTof *fichier, Buffer *buffer, char *chaine, int taille, 
 //    }
 //}
 //
-//void insertion(FichierTof* fichier, Record record, Buffer* buffer){
+//void insertionTof(FichierTof* fichier, StudentIndexRecord record, BufferTof* buffer){
 //
-//    lireBloc(fichier, getEntete(fichier,1), buffer);
+//    lireBlocTof(fichier, getEnteteTof(fichier,1), buffer);
 //    if(buffer->positionLibre < MAX_LOF - 1){
 //        buffer->tab[buffer->positionLibre] = record;
 //        buffer->positionLibre++;
 //    } else {
 //        buffer->tab[0] = record;
 //        buffer->positionLibre = 0;
-//        setEntete(fichier, 1, getEntete(fichier, 1));
+//        setEnteteTof(fichier, 1, getEnteteTof(fichier, 1));
 //    }
-//    ecrireBloc(fichier , getEntete(fichier, 1), buffer);
-//    setEntete(fichier, 2, getEntete(fichier, 2) + 1);
+//    ecrireBlocTof(fichier , getEnteteTof(fichier, 1), buffer);
+//    setEnteteTof(fichier, 2, getEnteteTof(fichier, 2) + 1);
 //
 //}
 //
-//void supression(FichierTof* fichier, int k, Buffer* buffer){
+//void supressionTof(FichierTof* fichier, int k, BufferTof* buffer){
 //    int i, j;
-//    Record record;
+//    StudentIndexRecord record;
 //
-//    if(recherche(fichier, k, &i, &j, buffer)){
-//        lireBloc(fichier, i ,buffer);
+//    if(rechercheTof(fichier, k, &i, &j, buffer)){
+//        lireBlocTof(fichier, i ,buffer);
 //        record = buffer->tab[buffer->positionLibre];
 //        buffer->positionLibre --;
-//        if(buffer->positionLibre < 0) setEntete(fichier, 1, getEntete(fichier, 1) - 1);
-//        ecrireBloc(fichier, i, buffer);
-//        lireBloc(fichier, i ,buffer);
+//        if(buffer->positionLibre < 0) setEnteteTof(fichier, 1, getEnteteTof(fichier, 1) - 1);
+//        ecrireBlocTof(fichier, i, buffer);
+//        lireBlocTof(fichier, i ,buffer);
 //        buffer->tab[j] = record;
-//        ecrireBloc(fichier, i, buffer);
-//        setEntete(fichier, 2, getEntete(fichier, 2) - 1);
+//        ecrireBlocTof(fichier, i, buffer);
+//        setEnteteTof(fichier, 2, getEnteteTof(fichier, 2) - 1);
 //    }
 //
 //}

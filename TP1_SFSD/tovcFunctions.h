@@ -40,13 +40,13 @@ struct Record{
     int key;
     int data;
 };
-typedef struct Record Record;
+typedef struct StudentIndexRecord StudentIndexRecord;
 
 struct Buffer{
     char tab[BUFFER_SIZE];
     int positionLibre;
 };
-typedef struct Buffer Buffer;
+typedef struct BufferTof BufferTof;
 
 
 
@@ -58,27 +58,27 @@ void setFile(FichierTof *fichier, FILE *f);
 
 FILE *getFile(FichierTof *fichier);
 
-FichierTof * ouvrirFichier(char *name, char mode);
+FichierTof * ouvrirFichierTof(char *name, char mode);
 
 void fermerFichier(FichierTof *fichier);
 
-void lireBloc(FichierTof* fichier, int i, Buffer* buffer);
+void lireBloc(FichierTof* fichier, int i, BufferTof* buffer);
 
-void ecrireBloc(FichierTof* fichier, int i, Buffer* buffer);
+void ecrireBloc(FichierTof* fichier, int i, BufferTof* buffer);
 
 void printFile(FichierTof* fichier);
 
-void chargementInitiale(FichierTof *fichier, int n, Buffer* buffer);
+void chargementInitiale(FichierTof *fichier, int n, BufferTof* buffer);
 
-bool recherche(FichierTof* fichier, int k, int* i, int* j, Buffer* buffer);
+bool recherche(FichierTof* fichier, int k, int* i, int* j, BufferTof* buffer);
 
-void insertion(FichierTof* fichier, Record record, Buffer* buffer);
+void insertion(FichierTof* fichier, StudentIndexRecord record, BufferTof* buffer);
 
-void supression(FichierTof* fichier, int k, Buffer* buffer);
+void supression(FichierTof* fichier, int k, BufferTof* buffer);
 
-void ecrireChaine(FichierTof* fichier, Buffer* buffer, char* chaine, int taille, int* i, int* j);
+void ecrireChaine(FichierTof* fichier, BufferTof* buffer, char* chaine, int taille, int* i, int* j);
 
-void lirechaine(FichierTof* fichier, Buffer* buffer, char* chaine, int taille, int* i, int* j);
-void lirechaine2(FichierTof *fichier, Buffer *buffer, char *chaine, int taille, int *i, int *j);
+void lirechaine(FichierTof* fichier, BufferTof* buffer, char* chaine, int taille, int* i, int* j);
+void lirechaine2(FichierTof *fichier, BufferTof *buffer, char *chaine, int taille, int *i, int *j);
 
 #endif //TP1_SFSD_TOVCFUNCTIONS_H

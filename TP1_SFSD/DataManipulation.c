@@ -120,7 +120,7 @@ void searchStudentId(StudentsIdArray *studentsIdArray, int id, int *i, bool *fou
 }
 
 void insertStudentId(StudentsIdArray *studentsIdArray, int id) {
-    //insertion with delays to keep the order in the studentsIdArray
+    //insertionTof with delays to keep the order in the studentsIdArray
     if (studentsIdArray->nb <= 0) {
         studentsIdArray->tab[0].id = id;
         studentsIdArray->nb++;
@@ -142,7 +142,7 @@ void insertStudentId(StudentsIdArray *studentsIdArray, int id) {
 }
 
 void insertStudentIdWithoutSearching(StudentsIdArray *studentsIdArray, int id, int i) {
-    //insertion with delays to keep the order in the studentsIdArray
+    //insertionTof with delays to keep the order in the studentsIdArray
     if (studentsIdArray->nb <= 0) {
         studentsIdArray->tab[0].id = id;
         studentsIdArray->nb++;
@@ -265,7 +265,7 @@ void checkClassID(ClassIdArray *classIdArray, int classID, bool *found) {
 }
 
 void insertClassId(ClassIdArray *roomIdArray, int id) {
-    //insertion with delays to keep the order in the studentsIdArray
+    //insertionTof with delays to keep the order in the studentsIdArray
     if (roomIdArray->nb == 0) {
         roomIdArray->tab[0].id = id;
         roomIdArray->nb++;
@@ -286,7 +286,7 @@ void insertClassId(ClassIdArray *roomIdArray, int id) {
 }
 
 void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i) {
-    //insertion with delays to keep the order in the studentsIdArray
+    //insertionTof with delays to keep the order in the studentsIdArray
     if (roomIdArray->nb <= 0) {
         roomIdArray->tab[0].id = id;
         roomIdArray->nb++;
@@ -318,7 +318,7 @@ void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i) {
  }
 */
 
-void createSchoolYear(FichierTof *fichier, Buffer *buffer, int *i, int *j) {
+void createSchoolYear(FichierTof *fichier, BufferTof *buffer, int *i, int *j) {
     int year = CURRENT_YEAR;
     *i = 0;
     *j = 0;
@@ -387,7 +387,7 @@ void createSchoolYear(FichierTof *fichier, Buffer *buffer, int *i, int *j) {
 
 }
 
-void writeStudent(FichierTof *fichier, Student *student, Buffer *buffer, int *i, int *j) {
+void writeStudent(FichierTof *fichier, Student *student, BufferTof *buffer, int *i, int *j) {
     /*
          Structure of data inside the file (or buffer):
 
@@ -544,7 +544,7 @@ void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, i
 
 void insertStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, char gender,int firstNameSize,
                        int lastNameSize) {
-    //insertion with delays to keep the order in the studentsNamesArray
+    //insertionTof with delays to keep the order in the studentsNamesArray
     if (studentsNamesArray->nb <= 0) {
         strcpy(studentsNamesArray->tab[0].fullName, fullName);
         studentsNamesArray->tab[0].gender = gender;
@@ -572,7 +572,7 @@ void insertStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, c
 
 void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, char *fullName, char gender, int firstNameSize,
                                        int lastNameSize, int i) {
-    //insertion with delays to keep the order in the studentsIdArray
+    //insertionTof with delays to keep the order in the studentsIdArray
     if (studentsNamesArray->nb <= 0) {
         strcpy(studentsNamesArray->tab[0].fullName, fullName);
         studentsNamesArray->tab[0].gender = gender;
