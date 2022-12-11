@@ -86,42 +86,18 @@ void ecrireChaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int ta
             buffer->tab[*j] = chaine[k];
             (*j)++;
         } else {
-            buffer->positionLibre = (*j);
             ecrireBloc(fichier, *i, buffer);
             (*i)++;
             buffer->tab[0] = chaine[k];
             (*j) = 1;
         }
     }
+
+    setEntete(fichier, 2, *j); //to check
     setEntete(fichier, 3, getEntete(fichier, 3) + taille); //move this to "Ecrire Enregistrement
 }
 
 void lirechaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int taille, int *i, int *j) {
-    for (int k = 0; k < taille; ++k) {
-        if (*i == getEntete(fichier, 1)) {
-            if (*j < getEntete(fichier, 2)) {
-                chaine[k] = buffer->tab[*j];
-                (*j)++;
-            } else return;
-        } else {
-            if (*j < BUFFER_SIZE) {
-                (*i)++;
-                lireBloc(fichier, *i, buffer);
-                chaine[k] = buffer->tab[0];
-                (*j) = 0;
-            } else {
-                (*i)++;
-                lireBloc(fichier, *i, buffer);
-                chaine[k] = buffer->tab[0];
-                (*j) = 0;
-            }
-            (*j)++;
-        }
-    }
-
-}
-
-void lirechaine2(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int taille, int *i, int *j) {
     for (int k = 0; k < taille; ++k) {
         if (*i == getEntete(fichier, 1)) {
             //if the current bloc is the last block
@@ -144,6 +120,10 @@ void lirechaine2(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int tai
             }
             (*j)++;
         }
+    }
+    if(*j == BUFFER_SIZE){
+        (*i)++;
+        *j = 0;
     }
 }
 

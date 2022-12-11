@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "DataManipulation.h"
 #include <string.h>
+
+//custom libraries:
+#include "DataManipulation.h"
+#include "student-library.h"
 
 #define SIZE 10
 
@@ -10,6 +13,7 @@
 StudentsIdArray studentsIdArray;
 ClassIdArray roomIdArray;
 StudentsNamesArray studentsNamesArray;
+position classesIndex[NUMBER_OF_LEVELS]; //positions i and j in the school file for each level
 
 const int numberOfSubjectsPerLevel[6] =  {4, 5, 5, 7, 7, 7}; //just an example, not real data
 //we can also declare the names of subjects as a matrix of Levels-Subjects, if we need the names
@@ -25,6 +29,11 @@ float tableOfMarks[MAX_NUMBER_OF_SUBJECTS];
 //File buffer:
 BufferTovc buffer;
 
+int tempStudentID;
+int tempStudentClass;
+
+void print_result( int, char *, char *, int );
+
 int main() {
 
 //    buffer.positionLibre = 0;
@@ -32,56 +41,68 @@ int main() {
 //    int j = 0;
 //    char testString[BUFFER_SIZE];
 //    FichierTovc* fichier = ouvrirFichierTof("2022_STUDENTS", 'N');
-//
-//    //Custom student for test
-//    Student student;
-//    student.id = 3333;
-//    student.class = 222;
-//    strcpy(student.firstName ,"Houari");
-//    printf("firstname: %s\n", student.firstName);
-//    strcpy(student.lastName, "Mohammed");
-//    student.gender = 'M';
-//    student.isDeleted = '0';
-//    student.marks[0] = 10.00;
-//    student.marks[1] = 7.5;
-//    student.marks[2] = 9.25;
-//    student.marks[3] = 5.5;
-//    student.marks[4] = 8.0;
-//    writeStudent(fichier, &student,  &buffer, &i,&j);
-//
-//    student.id = 9999;
-//    student.class = 444; //level is 4, number of subjects is 7
-//    strcpy(student.firstName ,"Sediki");
-//    printf("firstname: %s\n", student.firstName);
-//    strcpy(student.lastName, "Raouf");
-//    student.gender = 'M';
-//    student.isDeleted = '0';
-//    student.marks[0] = 11.11;
-//    student.marks[1] = 22.22;
-//    student.marks[2] = 33.33;
-//    student.marks[3] = 44.44;
-//    student.marks[4] = 55.55;
-//    student.marks[5] = 66.66;
-//    student.marks[6] = 77.77;
-//    writeStudent(fichier, &student,  &buffer, &i,&j);
-//
-////    createSchoolYear(fichier, &buffer, &i, &j);
+    char s[10];
+    s[0] = '1';
+    s[1] = '2';
+    s[2] = '3';
+    int x = stringToInt(s, 3);
+    intToString(s, x, 3);
+    int i = 0;
+    int j = 0;
+    char testString[BUFFER_SIZE];
+    FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'N');
+
+    createSchoolYear(fichier, &buffer, &i, &j);
+
+//    Custom student for test
+    Student student;
+    student.id = 1111;
+    student.class = 460;
+    strcpy(student.fullName ,"Houari Mohammed");
+    student.gender = 'M';
+    student.isDeleted = '0';
+    student.marks[0] = 10.00;
+    student.marks[1] = 7.5;
+    student.marks[2] = 9.25;
+    student.marks[3] = 5.5;
+    student.marks[4] = 8.0;
+
+//    int class, id;
+//    printf("Enter an class for test");
+//    scanf("%d", &class);
+//    printf("Enter an id for test");
+//    scanf("%d", &id);
+
+    student.id = tempStudentID;
+    student.class = tempStudentClass;
+    bool found;
+    searchStudent(fichier, student, &i, &j, &found);
+
+
 //    j = 0;
 //    i = 0;
-////    lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j); //
-//    lireBlocTof(fichier, i, &buffer);
-//    buffer.positionLibre = 99;
-//    lirechaine2(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
-//    //after the end of each string there is '\0' so we have to eliminate it
+//    lireBloc(fichier, i, &buffer);
+//    lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
 //    printf("%s", testString);
-//    fermerFichierTof(fichier);
+//
+//    printf("\n\n");
+//    lireBloc(fichier, i, &buffer);
+//    lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
+//    printf("%s", testString);
+//    fermerFichier(fichier);
 
-
+//    studentsNamesArray.nb = 0;
+//
+//    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
+//        generateStudentName(&studentsNamesArray);
+//    }
+//    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
+//        printf("%s\n", studentsNamesArray.tab[k]);
+//    }
     int  result;
     char buffer1[SIZE] = "a";
     char buffer2[SIZE] = "bau6ri6eri6ri7rir7s";
     int index = 1;
-    void print_result( int, char *, char *, int );
 
     result = strcmp( buffer1, buffer2 );
     printf( "  strcmp: compares each character\n");
@@ -98,9 +119,53 @@ int main() {
     for (int k = 0; k < 30; ++k) {
         printf("%s %c %d %d\n", studentsNamesArray.tab[k].fullName, studentsNamesArray.tab[k].gender, studentsNamesArray.tab[k].lastNameSize, studentsNamesArray.tab[k].firstNameSize);
     }
-
     return 0;
 }
+
+//    //Custom student for test
+//    Student student;
+//    student.id = 1111;
+//    student.class = 111;
+//    strcpy(student.firstName ,"Houari");
+//    printf("firstname: %s\n", student.firstName);
+//    strcpy(student.lastName, "Mohammed");
+//    student.gender = 'M';
+//    student.isDeleted = '0';
+//    student.marks[0] = 10.00;
+//    student.marks[1] = 7.5;
+//    student.marks[2] = 9.25;
+//    student.marks[3] = 5.5;
+//    student.marks[4] = 8.0;
+//    writeStudent(fichier, &student,  &buffer, &i,&j);
+//
+//    student.id = 2222;
+//    student.class = 222; //level is 4, number of subjects is 7
+//    strcpy(student.firstName ,"Sediki");
+//    printf("firstname: %s\n", student.firstName);
+//    strcpy(student.lastName, "Raouf");
+//    student.gender = 'M';
+//    student.isDeleted = '0';
+//    student.marks[0] = 11.11;
+//    student.marks[1] = 22.22;
+//    student.marks[2] = 33.33;
+//    student.marks[3] = 44.44;
+//    student.marks[4] = 55.55;
+//    student.marks[5] = 66.66;
+//    student.marks[6] = 77.77;
+//    writeStudent(fichier, &student,  &buffer, &i,&j);
+//
+
+////    createSchoolYear(fichier, &buffer, &i, &j);
+//    j = 0;
+//    i = 0;
+////    lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j); //
+//    lireBlocTof(fichier, i, &buffer);
+//    buffer.positionLibre = 99;
+//    lirechaine2(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
+//    //after the end of each string there is '\0' so we have to eliminate it
+//    printf("%s", testString);
+//    fermerFichierTof(fichier);
+
 
 void print_result( int res, char * p_buffer1, char * p_buffer2, int index )
 {
@@ -112,6 +177,37 @@ void print_result( int res, char * p_buffer1, char * p_buffer2, int index )
     else
         printf( "\"%s\" is greater than \"%s\"\n", p_buffer1, p_buffer2 );
 }
+//    //Custom student for test
+//    student.id = 3333;
+//    student.class = 333;
+//    strcpy(student.firstName ,"Houari");
+//    printf("firstname: %s\n", student.firstName);
+//    strcpy(student.lastName, "Mohammed");
+//    student.gender = 'M';
+//    student.isDeleted = '0';
+//    student.marks[0] = 10.00;
+//    student.marks[1] = 7.5;
+//    student.marks[2] = 9.25;
+//    student.marks[3] = 5.5;
+//    student.marks[4] = 8.0;
+//    writeStudent(fichier, &student,  &buffer, &i,&j);
+//
+//    student.id = 4444;
+//    student.class = 444; //level is 4, number of subjects is 7
+//    strcpy(student.firstName ,"Sediki");
+//    printf("firstname: %s\n", student.firstName);
+//    strcpy(student.lastName, "Raouf");
+//    student.gender = 'M';
+//    student.isDeleted = '0';
+//    student.marks[0] = 11.11;
+//    student.marks[1] = 22.22;
+//    student.marks[2] = 33.33;
+//    student.marks[3] = 44.44;
+//    student.marks[4] = 55.55;
+//    student.marks[5] = 66.66;
+//    student.marks[6] = 77.77;
+//    writeStudent(fichier, &student,  &buffer, &i,&j);
+
 //    ClassIdArray classIdArray;
 //    classIdArray.nb = 0;
 //    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {

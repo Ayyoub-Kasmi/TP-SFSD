@@ -1,7 +1,3 @@
-//
-// Created by AOUFAR FARES on 24/11/2022.
-//
-
 #ifndef TP1_SFSD_TOVCFUNCTIONS_H
 #define TP1_SFSD_TOVCFUNCTIONS_H
 
@@ -22,6 +18,7 @@
 #define FIRST_LOAD_OF_CLASSES 30
 #define WHOLE_PART_SIZE 2
 #define DECIMAL_PART_SIZE 2
+
 typedef struct{
     int numberOfBlocs;
     int lastPositionInTheLastBloc;
@@ -41,7 +38,6 @@ typedef struct {
 
 typedef struct {
     char tab[BUFFER_SIZE];
-    int positionLibre;
 }BufferTovc;
 
 void setEntete(FichierTovc *fichier, int pos, int value);
@@ -52,7 +48,7 @@ void setFile(FichierTovc *fichier, FILE *f);
 
 FILE *getFile(FichierTovc *fichier);
 
-FichierTovc * ouvrirFichierTof(char *name, char mode);
+FichierTovc * ouvrirFichierTovc(char *name, char mode);
 
 void fermerFichier(FichierTovc *fichier);
 
@@ -66,13 +62,14 @@ void chargementInitiale(FichierTovc *fichier, int n, BufferTovc* buffer);
 
 bool recherche(FichierTovc* fichier, int k, int* i, int* j, BufferTovc* buffer);
 
+void ecrireChaine(FichierTovc* fichier, BufferTovc* buffer,char* chaine, int taille, int* i, int* j);
+
+void lirechaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int taille, int *i, int *j);
+
+void printFile(FichierTovc* fichier);
+
 void insertion(FichierTovc* fichier, StudentIndexRecord record, BufferTovc* buffer);
 
 void supression(FichierTovc* fichier, int k, BufferTovc* buffer);
-
-void ecrireChaine(FichierTovc* fichier, BufferTovc* buffer, char* chaine, int taille, int* i, int* j);
-
-void lirechaine(FichierTovc* fichier, BufferTovc* buffer, char* chaine, int taille, int* i, int* j);
-void lirechaine2(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int taille, int *i, int *j);
 
 #endif //TP1_SFSD_TOVCFUNCTIONS_H

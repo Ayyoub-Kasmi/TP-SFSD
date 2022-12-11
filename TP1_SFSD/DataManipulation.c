@@ -36,7 +36,7 @@ void getLastName(char *lastName, int number) {
         //the current solution is to read the nth name is to use a for loop until we reach the desired string
         fscanf(lastNameFile, "%[^,],", lastName);
     }
-
+    fclose(lastNameFile); //to avoid a problem that is caused due to opening the file multiple times while it's still open
 }
 
 void getFirstNameAndGender(char *firstName, char *gender, int number) {
@@ -56,6 +56,7 @@ void getFirstNameAndGender(char *firstName, char *gender, int number) {
     for (int counter = 0; counter < FirstNamePosition; ++counter) {
         fscanf(FirstNameAndGenderFile, "%[^,],%[^;];", firstName, gender);
     }
+    fclose(FirstNameAndGenderFile); //to avoid a problem that is caused due to opening the file multiple times while it's still open
 }
 
 void getMarks(float *tableOfMarks, int level) {
@@ -302,6 +303,24 @@ void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i) {
     }
 }
 
+int stringToInt(char* string, int length){
+    int digit, result = 0;
+    for (int i = 0; i < length; ++i) {
+        digit = (int)string[i] - 48; // the character '0' is equivalent to the integer 48
+        result = result*10 + digit;
+    }
+    return result;
+}
+
+void intToString(char *string, int number, int length) {
+    int digit;
+    for (int i = length-1; i >= 0; i--) {
+        digit = number % 10;
+        string[i] = digit + '0';
+        number/=10;
+    }
+}
+
 /*************************************** Main functions ***********************************************/
 
 //initialize file:
@@ -319,7 +338,15 @@ void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i) {
 */
 
 void createSchoolYear(FichierTovc *fichier, BufferTovc *buffer, int *i, int *j) {
+    //add the "fopen" statements here and remove them from the other functions, so to open the files only once, and close them
+        //in the end of this function
     int year = CURRENT_YEAR;
+    int level;
+
+    //initialize the index array
+    for(level = 0; level<NUMBER_OF_LEVELS; level++){
+        classesIndex[level].i=INT_MAX;
+    }
     *i = 0;
     *j = 0;
     Student student;
@@ -353,27 +380,30 @@ void createSchoolYear(FichierTovc *fichier, BufferTovc *buffer, int *i, int *j) 
             student.gender = studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].gender;
             student.class = classIdArray.tab[k].id;
             printf("student class: %d\n", student.class);
-//            getFirstName(student.firstName, firstNamePosition); //integrate the random number inside the function
-//            getlastNameAndGender(student.lastName, &student.gender,
-//                                 lastNamePosition);
+            getLastName(student.firstName, firstNamePosition); //integrate the random number inside the function
+            getlastNameAndGender(student.lastName, &student.gender,
+                                 lastNamePosition);
 // change gender from array[1] to char
 
-            int level = (student.class / 100) % 10; //refactor it using variables
+            level = (student.class / 100) % 10; //refactor it using variables
             getMarks(student.marks, level);
 //            printf("id: %d, class: %d, firstname: %s, lastname: %s, gender: %c \n", student.id, student.class,
 //                   student.firstName, student.lastName, student.gender);
 
             student.isDeleted = '0';
-            if (*j >= BUFFER_SIZE) {
-                (*i)++;
-                (*j) = 1;
-            }
+
             studentsIdArray.tab[k * STUDENT_PER_CLASS + l].i = *i;
             studentsIdArray.tab[k * STUDENT_PER_CLASS + l].j = *j;
 
             classIdArray.tab[k].i = *i;
             classIdArray.tab[k].j = *j;
 
+//            if(k==28 && l==1) {
+//                tempStudentID = student.id;
+//                printf("student id: %d\n", tempStudentID);
+//                tempStudentClass = student.class;
+//                printf("student class: %d\n", tempStudentClass);
+//            }
             writeStudent(fichier, &student, buffer, i, j);
 
         }
@@ -404,17 +434,17 @@ void writeStudent(FichierTovc *fichier, Student *student, BufferTovc *buffer, in
 
 
     //Write LastName size
-    char lastNameSizeString[LASTNAME_LENGTH_SIZE + 1]; //+1 for the '\0' character
+    char lastNameSizeString[LASTNAME_LENGTH + 1]; //+1 for the '\0' character
     sprintf(lastNameSizeString, "%d%d", student->lastNameSize / 10,
             student->lastNameSize % 10); //lastNameSize can be a number of one digit
-    ecrireChaine(fichier, buffer, lastNameSizeString, LASTNAME_LENGTH_SIZE, i, j);
+    ecrireChaine(fichier, buffer, lastNameSizeString, LASTNAME_LENGTH, i, j);
 
 
     //Write First Name size
-    char firstNameSizeString[FIRSTNAME_LENGTH_SIZE + 1]; //+1 for the '\0' character
+    char firstNameSizeString[FIRSTNAME_LENGTH + 1]; //+1 for the '\0' character
     sprintf(firstNameSizeString, "%d%d", student->firstNameSize / 10,
             student->firstNameSize % 10); //firstNameSize can be a number of one digit
-    ecrireChaine(fichier, buffer, firstNameSizeString, FIRSTNAME_LENGTH_SIZE, i, j);
+    ecrireChaine(fichier, buffer, firstNameSizeString, FIRSTNAME_LENGTH, i, j);
 
     //Write ClassID
     //TO CHANGE ASAP
@@ -436,8 +466,8 @@ void writeStudent(FichierTovc *fichier, Student *student, BufferTovc *buffer, in
     int markWholePart;
     int markDecimalPart;
     int intMark;
-    char markWholePartString[WHOLE_PART_SIZE + 1];
-    char markDecimalPartString[DECIMAL_PART_SIZE + 1];
+    char markWholePartString[MARK_WHOLE_PART_LENGTH + 1];
+    char markDecimalPartString[DECIMAL_WHOLE_PART_LENGTH + 1];
     for (int k = 0; k < numberOfSubjectsPerLevel[level]; ++k) {
         intMark = student->marks[k] * 100;
         markWholePart = intMark / 100;
@@ -459,7 +489,7 @@ void writeStudent(FichierTovc *fichier, Student *student, BufferTovc *buffer, in
     ecrireChaine(fichier, buffer, &student->gender, GENDER_SIZE, i, j);
 
     setEntete(fichier, 1, *i);
-    if (*j >= buffer->positionLibre) buffer->positionLibre = *j;
+//    if (*j >= buffer->positionLibre) buffer->positionLibre = *j; ==> j will be auto set inside ecrire chaine
     setEntete(fichier, 2, *j);
     ecrireBloc(fichier, *i, buffer);
 }
@@ -594,3 +624,5 @@ void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, c
     }
 
 }
+
+
