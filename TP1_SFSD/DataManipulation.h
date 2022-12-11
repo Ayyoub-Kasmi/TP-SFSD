@@ -74,7 +74,7 @@ typedef struct {
 
 //Global variables:
 extern const int numberOfSubjectsPerLevel[6];
-extern BufferTof buffer;
+extern BufferTovc buffer;
 
 
 //functions of part 1
@@ -113,9 +113,9 @@ void insertClassId(ClassIdArray *roomIdArray, int id);
 
 void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i);
 
-void createSchoolYear(FichierTof *fichier, BufferTof *buffer, int* i, int* j);
+void createSchoolYear(FichierTovc *fichier, BufferTovc *buffer, int* i, int* j);
 
-void writeStudent(FichierTof *fichier, Student *student, BufferTof *buffer, int *i, int *j);
+void writeStudent(FichierTovc *fichier, Student *student, BufferTovc *buffer, int *i, int *j);
 
 void generateStudentName(StudentsNamesArray *studentsNamesArray);
 

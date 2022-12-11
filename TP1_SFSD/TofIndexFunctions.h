@@ -40,7 +40,7 @@ void setFileTof(FichierTof *fichier, FILE *f);
 
 FILE *getFileTof(FichierTof *fichier);
 
-FichierTof * ouvrirFichierTof(char *name, char mode);
+FichierTof *ouvrirFichierTof(char *name, char mode);
 
 void fermerFichierTof(FichierTof *fichier);
 
@@ -52,7 +52,7 @@ void printFileTof(FichierTof* fichier);
 
 void chargementInitialeTof(FichierTof *fichier, int n, BufferTof* buffer);
 
-void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffer, bool* found);
+void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffer, bool *found, bool *isDeleted);
 
 void insertionTof(FichierTof* fichier, StudentIndexRecord record, BufferTof* buffer);
 

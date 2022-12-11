@@ -23,7 +23,7 @@ char *gender;
 float tableOfMarks[MAX_NUMBER_OF_SUBJECTS];
 
 //File buffer:
-BufferTof buffer;
+BufferTovc buffer;
 
 int main() {
 
@@ -31,7 +31,7 @@ int main() {
 //    int i = 0;
 //    int j = 0;
 //    char testString[BUFFER_SIZE];
-//    FichierTof* fichier = ouvrirFichierTof("2022_STUDENTS", 'N');
+//    FichierTovc* fichier = ouvrirFichierTof("2022_STUDENTS", 'N');
 //
 //    //Custom student for test
 //    Student student;

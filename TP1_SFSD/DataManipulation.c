@@ -318,7 +318,7 @@ void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i) {
  }
 */
 
-void createSchoolYear(FichierTof *fichier, BufferTof *buffer, int *i, int *j) {
+void createSchoolYear(FichierTovc *fichier, BufferTovc *buffer, int *i, int *j) {
     int year = CURRENT_YEAR;
     *i = 0;
     *j = 0;
@@ -387,7 +387,7 @@ void createSchoolYear(FichierTof *fichier, BufferTof *buffer, int *i, int *j) {
 
 }
 
-void writeStudent(FichierTof *fichier, Student *student, BufferTof *buffer, int *i, int *j) {
+void writeStudent(FichierTovc *fichier, Student *student, BufferTovc *buffer, int *i, int *j) {
     /*
          Structure of data inside the file (or buffer):
 

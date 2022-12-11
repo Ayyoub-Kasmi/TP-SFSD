@@ -3,7 +3,6 @@
 //
 
 #include "TofIndexFunctions.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -114,7 +113,7 @@ void printFileTof(FichierTof *fichier) {
     }
 }
 
-void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffer, bool *found) {
+void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffer, bool *found, bool *isDeleted) {
     //don't forget to check if it's not erased !!!
     *i = 0;
     *j = 0;
@@ -124,19 +123,20 @@ void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffe
     int inf = 0;
     bool stop = false;
     *found = false;
+    *isDeleted = false;
     while ((bi <= bs) && (!*(found)) && (!stop)) {
         *i = (bi + bs) / 2;
         lireBlocTof(fichier, *i, buffer);
         if ((key >= buffer->tab[0].key) && (key <= buffer->tab[buffer->nb].key)) {
             inf = 0;
             sup = buffer->nb - 1;
-            while ((inf <= sup) && (!*(found)) && (!stop)) {
+            while ((inf <= sup) && (!*(found))) {
                 *j = (inf + sup) / 2;
-                if (key < buffer->tab[*j].key) sup = j - 1;
-                else if (key > buffer->tab[*j].key) inf = j + 1;
+                if (key < buffer->tab[*j].key) sup = (*j) - 1;
+                else if (key > buffer->tab[*j].key) inf = (*j) + 1;
                 else {
-                    if (!buffer->tab[*j].isDeleted) stop = true;
-                    else *found = true;
+                    *found = true;
+                    if (buffer->tab[*j].isDeleted) *isDeleted = true;
                 }
             }
             if (inf > sup) {
@@ -144,7 +144,7 @@ void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffe
                 stop = true;
             }
         } else if ((key < buffer->tab[0].key)) bs = (*i) - 1;
-          else if (key > buffer->tab[buffer->nb].key) bi = (*i) + 1;
+        else if (key > buffer->tab[buffer->nb].key) bi = (*i) + 1;
     }
     if (bi > bs){
         *i = bi;
@@ -173,7 +173,7 @@ void supressionTof(FichierTof *fichier, int k, BufferTof *buffer) {
     int i, j;
     StudentIndexRecord record;
     bool found = false;
-    rechercheTof(fichier, k, &i, &j, buffer, &found);
+    rechercheTof(fichier, k, &i, &j, buffer, &found, NULL);
     if (found) {
         lireBlocTof(fichier, i, buffer);
         record = buffer->tab[buffer->nb];

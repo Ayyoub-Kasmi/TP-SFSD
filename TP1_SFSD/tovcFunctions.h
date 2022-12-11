@@ -22,63 +22,57 @@
 #define FIRST_LOAD_OF_CLASSES 30
 #define WHOLE_PART_SIZE 2
 #define DECIMAL_PART_SIZE 2
-struct Entete{
+typedef struct{
     int numberOfBlocs;
     int lastPositionInTheLastBloc;
     int NumberOfCharsInserted;
     int numberOfCharsDeleted;
-};
-typedef struct EnteteTof EnteteTof;
+}EnteteTovc;
 
-struct Fichier{
+typedef struct {
     FILE* file;
-    EnteteTof entete;
-};
-typedef struct FichierTof FichierTof;
+    EnteteTovc entete;
+}FichierTovc;
 
-struct Record{
+typedef struct {
     int key;
     int data;
-};
-typedef struct StudentIndexRecord StudentIndexRecord;
+}StudentIndexRecord;
 
-struct Buffer{
+typedef struct {
     char tab[BUFFER_SIZE];
     int positionLibre;
-};
-typedef struct BufferTof BufferTof;
+}BufferTovc;
 
+void setEntete(FichierTovc *fichier, int pos, int value);
 
+int getEntete(FichierTovc *fichier, int pos);
 
-void setEntete(FichierTof *fichier, int pos, int value);
+void setFile(FichierTovc *fichier, FILE *f);
 
-int getEntete(FichierTof *fichier, int pos);
+FILE *getFile(FichierTovc *fichier);
 
-void setFile(FichierTof *fichier, FILE *f);
+FichierTovc * ouvrirFichierTof(char *name, char mode);
 
-FILE *getFile(FichierTof *fichier);
+void fermerFichier(FichierTovc *fichier);
 
-FichierTof * ouvrirFichierTof(char *name, char mode);
+void lireBloc(FichierTovc* fichier, int i, BufferTovc* buffer);
 
-void fermerFichier(FichierTof *fichier);
+void ecrireBloc(FichierTovc* fichier, int i, BufferTovc* buffer);
 
-void lireBloc(FichierTof* fichier, int i, BufferTof* buffer);
+void printFile(FichierTovc* fichier);
 
-void ecrireBloc(FichierTof* fichier, int i, BufferTof* buffer);
+void chargementInitiale(FichierTovc *fichier, int n, BufferTovc* buffer);
 
-void printFile(FichierTof* fichier);
+bool recherche(FichierTovc* fichier, int k, int* i, int* j, BufferTovc* buffer);
 
-void chargementInitiale(FichierTof *fichier, int n, BufferTof* buffer);
+void insertion(FichierTovc* fichier, StudentIndexRecord record, BufferTovc* buffer);
 
-bool recherche(FichierTof* fichier, int k, int* i, int* j, BufferTof* buffer);
+void supression(FichierTovc* fichier, int k, BufferTovc* buffer);
 
-void insertion(FichierTof* fichier, StudentIndexRecord record, BufferTof* buffer);
+void ecrireChaine(FichierTovc* fichier, BufferTovc* buffer, char* chaine, int taille, int* i, int* j);
 
-void supression(FichierTof* fichier, int k, BufferTof* buffer);
-
-void ecrireChaine(FichierTof* fichier, BufferTof* buffer, char* chaine, int taille, int* i, int* j);
-
-void lirechaine(FichierTof* fichier, BufferTof* buffer, char* chaine, int taille, int* i, int* j);
-void lirechaine2(FichierTof *fichier, BufferTof *buffer, char *chaine, int taille, int *i, int *j);
+void lirechaine(FichierTovc* fichier, BufferTovc* buffer, char* chaine, int taille, int* i, int* j);
+void lirechaine2(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int taille, int *i, int *j);
 
 #endif //TP1_SFSD_TOVCFUNCTIONS_H
