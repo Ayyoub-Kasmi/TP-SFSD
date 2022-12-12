@@ -519,7 +519,7 @@ void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
     int markDecimalPart;
     int intMark;
     char markWholePartString[MARK_WHOLE_PART_LENGTH + 1];
-    char markDecimalPartString[DECIMAL_WHOLE_PART_LENGTH + 1];
+    char markDecimalPartString[MARK_DECIMAL_PART_LENGTH + 1];
     for (int k = 0; k < numberOfSubjectsPerLevel[level]; ++k) {
         intMark = student->marks[k] * 100;
         markWholePart = intMark / 100;
@@ -529,7 +529,7 @@ void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
         sprintf(markDecimalPartString, "%d%d", (markDecimalPart / 10) % 10, markDecimalPart % 10);
 
         ecrireChaine(fichier, &bufferTovc, markWholePartString, MARK_WHOLE_PART_LENGTH, i, j);
-        ecrireChaine(fichier, &bufferTovc, markDecimalPartString, DECIMAL_WHOLE_PART_LENGTH, i, j);
+        ecrireChaine(fichier, &bufferTovc, markDecimalPartString, MARK_DECIMAL_PART_LENGTH, i, j);
     }
 
 

@@ -28,7 +28,7 @@
 #define CURRENT_YEAR 2022
 #define MARK_LENGTH 4
 #define MARK_WHOLE_PART_LENGTH 2
-#define DECIMAL_WHOLE_PART_LENGTH 2
+#define MARK_DECIMAL_PART_LENGTH 2
 
 
 typedef struct {
