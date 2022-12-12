@@ -21,44 +21,28 @@ int generateStudentID(int seed) {
     return randomID;
 }
 
-void getLastName(char *lastName, int number) {
-    //open the first names file
-    FILE *lastNameFile;
-    lastNameFile = fopen(LAST_NAMES_FILE_PATH, "r");
-    if (lastNameFile == NULL) {
-        printf("First name file not found!\n");
-        exit(1);
-    }
-    //"number" was kept to ensure the randomness of the firstNameposition value
-    int lastNamePosition = generate4positionInt(number) % FIRST_NAME_FILE_SIZE;
+void getLastName(FILE* lastNamesFile,char *lastName, int seed) {
+
+    int lastNamePosition = generate4positionInt(seed) % FIRST_NAME_FILE_SIZE;
 
     //read the first name from the file
     for (int counter = 0; counter < lastNamePosition; ++counter) {
 
         //the current solution is to read the nth name is to use a for loop until we reach the desired string
-        fscanf(lastNameFile, "%[^,],", lastName);
+        fscanf(lastNamesFile, "%[^,],", lastName);
     }
-    fclose(lastNameFile); //to avoid a problem that is caused due to opening the file multiple times while it's still open
+
 }
 
-void getFirstNameAndGender(char *firstName, char *gender, int number) {
-    FILE *FirstNameAndGenderFile;
-    FirstNameAndGenderFile = fopen(FIRST_NAMES_AND_GENDER_FILE_PATH, "r");
-    if (FirstNameAndGenderFile == NULL) {
-        printf("first names & genders file not found!\n");
-        exit(1);
-    }
-    //"number" was kept to ensure the randomness of the lastNamePosition value
+void getFirstNameAndGender(FILE *FirstNamesAndGendersFile, char *firstName, char *gender, int seed) {
 
-
-    //Max number of names is currently 614
-    int FirstNamePosition = generate4positionInt(number) % FIRST_NAME_FILE_SIZE;
+    //Max seed of names is currently 614
+    int FirstNamePosition = generate4positionInt(seed) % FIRST_NAME_FILE_SIZE;
 
     //read the first name from the file
     for (int counter = 0; counter < FirstNamePosition; ++counter) {
-        fscanf(FirstNameAndGenderFile, "%[^,],%[^;];", firstName, gender);
+        fscanf(FirstNamesAndGendersFile, "%[^,],%[^;];", firstName, gender);
     }
-    fclose(FirstNameAndGenderFile); //to avoid a problem that is caused due to opening the file multiple times while it's still open
 }
 
 void getMarks(float *tableOfMarks, int level) {
@@ -339,9 +323,23 @@ void intToString(char *string, int number, int length) {
  }
 */
 
-void createSchoolYear(FichierTovc *fichier, BufferTovc *buffer, int *i, int *j) {
-    //add the "fopen" statements here and remove them from the other functions, so to open the files only once, and close them
-        //in the end of this function
+void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
+    //open first names file
+    FILE *firstNamesAndGendersFile;
+    firstNamesAndGendersFile = fopen(FIRST_NAMES_AND_GENDER_FILE_PATH, "r");
+    if (firstNamesAndGendersFile == NULL) {
+        printf("first names & genders file not found!\n");
+        exit(1);
+    }
+
+    //open the last names file
+    FILE *lastNamesFile;
+    lastNamesFile = fopen(LAST_NAMES_FILE_PATH, "r");
+    if (lastNamesFile == NULL) {
+        printf("First names file not found!\n");
+        exit(1);
+    }
+
     int year = CURRENT_YEAR;
     int level;
 
@@ -359,8 +357,6 @@ void createSchoolYear(FichierTovc *fichier, BufferTovc *buffer, int *i, int *j) 
     studentsIdArray.nb = 0;
     StudentsNamesArray studentsNamesArray;
     studentsNamesArray.nb = 0;
-    int firstNamePosition = generate4positionInt(13) % FIRST_NAME_FILE_SIZE; //upgarde this part with constante
-    int lastNamePosition = generate4positionInt(15) % FIRST_NAME_FILE_SIZE;
 
     for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
         generateClassId(&classIdArray);
@@ -369,23 +365,17 @@ void createSchoolYear(FichierTovc *fichier, BufferTovc *buffer, int *i, int *j) 
         generateStudentId(&studentsIdArray);
     }
     for (int k = 0; k < FIRST_LOAD_OF_STUDENTS; ++k) {
-        generateStudentName(&studentsNamesArray);
+        generateStudentName(lastNamesFile, firstNamesAndGendersFile, &studentsNamesArray);
     }
 
     for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
         for (int l = 0; l < STUDENT_PER_CLASS; ++l) {
             //get student information
-//            firstNamePosition = generate4positionInt(k * STUDENT_PER_CLASS + l) % FIRST_NAME_FILE_SIZE;
-//            lastNamePosition = generate4positionInt(k * STUDENT_PER_CLASS + l) % FIRST_NAME_FILE_SIZE;
             student.id = studentsIdArray.tab[k * STUDENT_PER_CLASS + l].id;
             strcpy(student.fullName, studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].fullName);
             student.gender = studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].gender;
             student.class = classIdArray.tab[k].id;
             printf("student class: %d\n", student.class);
-            getLastName(student.firstName, firstNamePosition); //integrate the random number inside the function
-            getlastNameAndGender(student.lastName, &student.gender,
-                                 lastNamePosition);
-// change gender from array[1] to char
 
             level = (student.class / 100) % 10; //refactor it using variables
             getMarks(student.marks, level);
@@ -406,7 +396,7 @@ void createSchoolYear(FichierTovc *fichier, BufferTovc *buffer, int *i, int *j) 
 //                tempStudentClass = student.class;
 //                printf("student class: %d\n", tempStudentClass);
 //            }
-            writeStudent(fichier, &student, buffer, i, j);
+            writeStudent(fichier, &student, i, j);
 
         }
     }
@@ -468,7 +458,11 @@ void createSchoolYear(FichierTovc *fichier, BufferTovc *buffer, int *i, int *j) 
 
 
 
+    //close first names file
+    fclose(firstNamesAndGendersFile);
 
+    //close last names file
+    fclose(lastNamesFile);
 }
 
 void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
@@ -552,7 +546,7 @@ void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
     ecrireBloc(fichier, *i, &bufferTovc);
 }
 
-void generateStudentName(StudentsNamesArray *studentsNamesArray) {
+void generateStudentName(FILE* lastNamesFile, FILE* firstNamesAndGendersFile,StudentsNamesArray *studentsNamesArray) {
     int i = 0;
     int id = 0;
     bool found = true;
@@ -564,9 +558,9 @@ void generateStudentName(StudentsNamesArray *studentsNamesArray) {
     int firstNameSize;
     int lastNameSize;
     if (studentsNamesArray->nb <= 0) {
-        getLastName(lastName, 0); //integrate the random number inside the function
-        getFirstNameAndGender(firstName, &gender,
-                             0);
+        getLastName(lastNamesFile, lastName, 0); //integrate the random number inside the function
+        getFirstNameAndGender(firstNamesAndGendersFile, firstName, &gender,
+                              0);
         //we first have to put the first caractere before concatinating
         firstNameSize = (int) strlen(firstName);
         lastNameSize = (int) strlen(lastName);
@@ -577,9 +571,9 @@ void generateStudentName(StudentsNamesArray *studentsNamesArray) {
     }
     while (found) {
         randomSeed++;
-        getLastName(lastName, randomSeed); //integrate the random number inside the function
-        getFirstNameAndGender(firstName, &gender,
-                             randomSeed);
+        getLastName(lastNamesFile, lastName, randomSeed); //integrate the random number inside the function
+        getFirstNameAndGender(firstNamesAndGendersFile, firstName, &gender,
+                              randomSeed);
         firstNameSize = (int) strlen(firstName);
         lastNameSize = (int) strlen(lastName);
         strcpy(fullName, lastName);

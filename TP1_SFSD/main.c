@@ -5,6 +5,7 @@
 //custom libraries:
 #include "DataManipulation.h"
 #include "student-library.h"
+#include "TofIndexFunctions.h"
 
 #define SIZE 10
 
@@ -27,7 +28,8 @@ char *gender;
 float tableOfMarks[MAX_NUMBER_OF_SUBJECTS];
 
 //File buffer:
-BufferTovc buffer;
+BufferTovc bufferTovc;
+BufferTof bufferTof;
 
 int tempStudentID;
 int tempStudentClass;

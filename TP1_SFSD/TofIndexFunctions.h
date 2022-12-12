@@ -33,6 +33,8 @@ typedef struct {
     int nb; //number of records per buffer or bloc
 }BufferTof;
 
+extern BufferTof bufferTof;
+
 void setEnteteTof(FichierTof *fichier, int pos, int value);
 
 int getEnteteTof(FichierTof *fichier, int pos);

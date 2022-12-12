@@ -84,7 +84,7 @@ typedef struct {
 
 //Global variables:
 extern const int numberOfSubjectsPerLevel[6];
-extern BufferTovc buffer;
+extern BufferTovc bufferTovc;
 extern position classesIndex[NUMBER_OF_LEVELS];
 extern int tempStudentID;
 extern int tempStudentClass;
@@ -95,9 +95,9 @@ int generateStudentID(int seed);
 int stringToInt(char* string, int length);
 void intToString(char *string, int number, int length);
 // c-
-void getLastName(char *lastName, int number);
+void getLastName(FILE* lastNamesFile, char *lastName, int seed);
 
-void getFirstNameAndGender(char *firstName, char *gender, int number);
+void getFirstNameAndGender(FILE *FirstNamesAndGendersFile, char *firstName, char *gender, int seed);
 // d-
 void getMarks(float *tableOfMarks, int level);
 
@@ -127,11 +127,11 @@ void insertClassId(ClassIdArray *roomIdArray, int id);
 
 void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i);
 
-void createSchoolYear(FichierTovc *fichier, BufferTovc *buffer, int* i, int* j);
+void createSchoolYear(FichierTovc *fichier, int *i, int *j);
 
 void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j);
 
-void generateStudentName(StudentsNamesArray *studentsNamesArray);
+void generateStudentName(FILE* lastNamesFile, FILE* firstNamesAndGendersFile, StudentsNamesArray *studentsNamesArray);
 
 void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, int* i, bool *found);
 

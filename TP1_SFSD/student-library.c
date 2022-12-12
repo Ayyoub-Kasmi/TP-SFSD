@@ -108,6 +108,7 @@ void searchStudent(FichierTovc* fichier, Student student, int* i, int* j, bool* 
                             2- if advancing make sure to take the right offset (only gender size)
                     }
                  */
+/*
             }
         } else if (class > student.class){
             //passed the potential student's class ==> stop
