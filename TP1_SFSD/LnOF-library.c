@@ -108,7 +108,7 @@ void printHeaderInfo(LnOF* file){
     printf("Number of the root block: %d\n", file->header.root);
     printf("Number of the tail block: %d\n", file->header.tail);
     printf("Number of the last free index (for the last block): %d\n", file->header.firstFreeIndex);
-    printf("Number of deleted data elements: %d\n", file->header.numberOfDeletedData);
+    printf("Number of deleted i elements: %d\n", file->header.numberOfDeletedData);
 }
 
 
@@ -135,7 +135,7 @@ void initialFileCreation(LnOF* file){
 
     //inserting elements into the file
     for(int k=0; k<n; k++){
-        //get data from user
+        //get i from user
         printf("Enter a number: ");
         scanf("%d", &data);
 
@@ -144,7 +144,7 @@ void initialFileCreation(LnOF* file){
         buffer.nb++;
 
         // if the buffer is full
-        if(buffer.nb == BUFFER_SIZE){
+        if(buffer.nb == TOVC_BUFFER_SIZE){
             buffer.next = currentBlockNumber + 1; //for an initial file creation, blocks will be in sequence
             fwrite(&buffer, sizeof(BUFF), 1, file->pointer);
             currentBlockNumber++;
@@ -233,7 +233,7 @@ void insertElement(LnOF* file, int value){
     }
 
     //update the header information
-    setHeader(file, 4, (firstFreeIndex+1) % BUFFER_SIZE);
+    setHeader(file, 4, (firstFreeIndex+1) % TOVC_BUFFER_SIZE);
     setHeader(file, 6, getHeaderInformation(file, 6)+1);
 }
 

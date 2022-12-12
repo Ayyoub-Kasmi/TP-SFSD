@@ -82,7 +82,7 @@ void ecrireBloc(FichierTovc *fichier, int i, BufferTovc *buffer) {
 void ecrireChaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int taille, int *i, int *j) {
 
     for (int k = 0; k < taille; ++k) {
-        if (*j < BUFFER_SIZE) {
+        if (*j < TOVC_BUFFER_SIZE) {
             buffer->tab[*j] = chaine[k];
             (*j)++;
         } else {
@@ -109,7 +109,7 @@ void lirechaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int tail
             } else return;
 
         } else {
-            if (*j < BUFFER_SIZE) {
+            if (*j < TOVC_BUFFER_SIZE) {
                 //if the current character is not the last character in the buffer
                 chaine[k] = buffer->tab[*j];
             } else {
@@ -121,7 +121,7 @@ void lirechaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int tail
             (*j)++;
         }
     }
-    if(*j == BUFFER_SIZE){
+    if(*j == TOVC_BUFFER_SIZE){
         (*i)++;
         *j = 0;
     }
@@ -131,13 +131,13 @@ void lirechaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int tail
 
 //void chargementInitialeTof(FichierTovc *fichier, int n, BufferTovc* buffer) {
 //    int i = 0, j = 0;
-//    StudentIndexRecord record;
+//    IndexRecord record;
 //    //BufferTovc buffer;
 //    for (int k = 0; k < n; ++k) {
 //        printf("La cle: ");
-//        scanf("%d", &record.key);
+//        scanf("%d", &record.id);
 //        printf("L\'information: ");
-//        scanf("%d", &record.data);
+//        scanf("%d", &record.i);
 //        printf("\n");
 //        if (j < MAX_LOF) {
 //            buffer->tab[j] = record;
@@ -165,7 +165,7 @@ void lirechaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int tail
 //    for(int i = 0; i <= getEnteteTof(fichier,1); ++i) {
 //        lireBlocTof(fichier, i, &buffer);
 //        for (int j = 0; j <= buffer.positionLibre; j++) {
-//            printf("\nData: %d, Key: %d \n", buffer.tab[j].data, buffer.tab[j].key);
+//            printf("\nData: %d, Key: %d \n", buffer.tab[j].i, buffer.tab[j].id);
 //        }
 //    }
 //}
@@ -177,7 +177,7 @@ void lirechaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int tail
 //    while((*i <= getEnteteTof(fichier, 1)) && (!trouv)){
 //        lireBlocTof(fichier, *i, buffer);
 //        while(*j <= buffer->positionLibre){
-//            if(buffer->tab[*j].key == k){
+//            if(buffer->tab[*j].id == k){
 //                trouv = true;
 //                break;
 //            }else (*j)++;
@@ -191,7 +191,7 @@ void lirechaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int tail
 //    }
 //}
 //
-//void insertionTof(FichierTovc* fichier, StudentIndexRecord record, BufferTovc* buffer){
+//void insertionTof(FichierTovc* fichier, IndexRecord record, BufferTovc* buffer){
 //
 //    lireBlocTof(fichier, getEnteteTof(fichier,1), buffer);
 //    if(buffer->positionLibre < MAX_LOF - 1){
@@ -209,7 +209,7 @@ void lirechaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int tail
 //
 //void supressionTof(FichierTovc* fichier, int k, BufferTovc* buffer){
 //    int i, j;
-//    StudentIndexRecord record;
+//    IndexRecord record;
 //
 //    if(rechercheTof(fichier, k, &i, &j, buffer)){
 //        lireBlocTof(fichier, i ,buffer);

@@ -15,7 +15,7 @@ ClassIdArray roomIdArray;
 StudentsNamesArray studentsNamesArray;
 position classesIndex[NUMBER_OF_LEVELS]; //positions i and j in the school file for each level
 
-const int numberOfSubjectsPerLevel[6] =  {4, 5, 5, 7, 7, 7}; //just an example, not real data
+const int numberOfSubjectsPerLevel[6] =  {4, 5, 5, 7, 7, 7}; //just an example, not real i
 //we can also declare the names of subjects as a matrix of Levels-Subjects, if we need the names
 
 //Strings buffers
@@ -39,7 +39,7 @@ int main() {
 //    buffer.positionLibre = 0;
 //    int i = 0;
 //    int j = 0;
-//    char testString[BUFFER_SIZE];
+//    char testString[TOVC_BUFFER_SIZE];
 //    FichierTovc* fichier = ouvrirFichierTof("2022_STUDENTS", 'N');
     char s[10];
     s[0] = '1';
@@ -49,10 +49,10 @@ int main() {
     intToString(s, x, 3);
     int i = 0;
     int j = 0;
-    char testString[BUFFER_SIZE];
+    char testString[TOVC_BUFFER_SIZE];
     FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'N');
 
-    createSchoolYear(fichier, &buffer, &i, &j);
+    createSchoolYear(fichier, &i, &j);
 
 //    Custom student for test
     Student student;

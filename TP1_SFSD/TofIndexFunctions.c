@@ -74,15 +74,15 @@ void ecrireBlocTof(FichierTof *fichier, int i, BufferTof *buffer) {
 
 void chargementInitialeTof(FichierTof *fichier, int n, BufferTof *buffer) {
     int i = 0, j = 0;
-    StudentIndexRecord record;
+    IndexRecord record;
     //BufferTof buffer;
     for (int k = 0; k < n; ++k) {
         printf("La cle: ");
-        scanf("%d", &record.key);
+        scanf("%d", &record.id);
         printf("L\'information: ");
-        scanf("%d", &record.data);
+        scanf("%d", &record.i);
         printf("\n");
-        if (j < MAX) {
+        if (j < TOF_BUFFER_SIZE) {
             buffer->tab[j] = record;
             j++;
         } else {
@@ -108,7 +108,7 @@ void printFileTof(FichierTof *fichier) {
     for (int i = 0; i <= getEnteteTof(fichier, 1); ++i) {
         lireBlocTof(fichier, i, &buffer);
         for (int j = 0; j <= buffer.nb; j++) {
-            printf("\nData: %d, Key: %d \n", buffer.tab[j].data, buffer.tab[j].key);
+            printf("\nData: %d, Key: %d \n", buffer.tab[j].i, buffer.tab[j].id);
         }
     }
 }
@@ -127,13 +127,13 @@ void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffe
     while ((bi <= bs) && (!*(found)) && (!stop)) {
         *i = (bi + bs) / 2;
         lireBlocTof(fichier, *i, buffer);
-        if ((key >= buffer->tab[0].key) && (key <= buffer->tab[buffer->nb].key)) {
+        if ((key >= buffer->tab[0].id) && (key <= buffer->tab[buffer->nb].id)) {
             inf = 0;
             sup = buffer->nb - 1;
             while ((inf <= sup) && (!*(found))) {
                 *j = (inf + sup) / 2;
-                if (key < buffer->tab[*j].key) sup = (*j) - 1;
-                else if (key > buffer->tab[*j].key) inf = (*j) + 1;
+                if (key < buffer->tab[*j].id) sup = (*j) - 1;
+                else if (key > buffer->tab[*j].id) inf = (*j) + 1;
                 else {
                     *found = true;
                     if (buffer->tab[*j].isDeleted) *isDeleted = true;
@@ -143,8 +143,8 @@ void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffe
                 *j = inf;
                 stop = true;
             }
-        } else if ((key < buffer->tab[0].key)) bs = (*i) - 1;
-        else if (key > buffer->tab[buffer->nb].key) bi = (*i) + 1;
+        } else if ((key < buffer->tab[0].id)) bs = (*i) - 1;
+        else if (key > buffer->tab[buffer->nb].id) bi = (*i) + 1;
     }
     if (bi > bs){
         *i = bi;
@@ -153,10 +153,10 @@ void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffe
 
 }
 
-void insertionTof(FichierTof *fichier, StudentIndexRecord record, BufferTof *buffer) {
+void insertionTof(FichierTof *fichier, IndexRecord record, BufferTof *buffer) {
 
     lireBlocTof(fichier, getEnteteTof(fichier, 1), buffer);
-    if (buffer->nb < MAX - 1) {
+    if (buffer->nb < TOF_BUFFER_SIZE - 1) {
         buffer->tab[buffer->nb] = record;
         buffer->nb++;
     } else {
@@ -171,7 +171,7 @@ void insertionTof(FichierTof *fichier, StudentIndexRecord record, BufferTof *buf
 
 void supressionTof(FichierTof *fichier, int k, BufferTof *buffer) {
     int i, j;
-    StudentIndexRecord record;
+    IndexRecord record;
     bool found = false;
     rechercheTof(fichier, k, &i, &j, buffer, &found, NULL);
     if (found) {

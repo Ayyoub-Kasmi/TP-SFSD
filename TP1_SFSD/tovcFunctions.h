@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BUFFER_SIZE 250
+#define TOVC_BUFFER_SIZE 250
 #define STUDENT_ID_SIZE 4
 #define CLASS_ID_SIZE 3
 #define IS_DELETED_SIZE 1
@@ -31,13 +31,9 @@ typedef struct {
     EnteteTovc entete;
 }FichierTovc;
 
-typedef struct {
-    int key;
-    int data;
-}StudentIndexRecord;
 
 typedef struct {
-    char tab[BUFFER_SIZE];
+    char tab[TOVC_BUFFER_SIZE];
 }BufferTovc;
 
 void setEntete(FichierTovc *fichier, int pos, int value);
@@ -68,8 +64,6 @@ void lirechaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int tail
 
 void printFile(FichierTovc* fichier);
 
-void insertion(FichierTovc* fichier, StudentIndexRecord record, BufferTovc* buffer);
 
-void supression(FichierTovc* fichier, int k, BufferTovc* buffer);
 
 #endif //TP1_SFSD_TOVCFUNCTIONS_H

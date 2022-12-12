@@ -8,6 +8,7 @@
 #define CURRENT_YEAR_FILE_PATH  "2022_STUDENTS"
 #define STUDENT_ID_SIZE 4
 #define CLASS_ID_SIZE 3
+#define ROOM_SIZE 2
 #define CLASS_NUMBER_SIZE 2
 #define SCHOOL_LEVEL_SIZE 1
 #define IS_DELETED_SIZE 1
@@ -128,7 +129,7 @@ void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i);
 
 void createSchoolYear(FichierTovc *fichier, BufferTovc *buffer, int* i, int* j);
 
-void writeStudent(FichierTovc *fichier, Student *student, BufferTovc *buffer, int *i, int *j);
+void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j);
 
 void generateStudentName(StudentsNamesArray *studentsNamesArray);
 

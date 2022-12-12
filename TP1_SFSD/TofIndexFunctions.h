@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define MAX 15
+#define TOF_BUFFER_SIZE 35
 
 typedef struct {
     int LastBloc;
@@ -22,13 +22,14 @@ typedef struct {
 }FichierTof;
 
 typedef struct {
-    int key;
-    int data;
+    int id;
+    int i;
+    int j;
     bool isDeleted;
-}StudentIndexRecord;
+}IndexRecord;
 
 typedef struct {
-    StudentIndexRecord tab[MAX];
+    IndexRecord tab[TOF_BUFFER_SIZE];
     int nb; //number of records per buffer or bloc
 }BufferTof;
 
@@ -54,7 +55,7 @@ void chargementInitialeTof(FichierTof *fichier, int n, BufferTof* buffer);
 
 void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffer, bool *found, bool *isDeleted);
 
-void insertionTof(FichierTof* fichier, StudentIndexRecord record, BufferTof* buffer);
+void insertionTof(FichierTof* fichier, IndexRecord record, BufferTof* buffer);
 
 void supressionTof(FichierTof* fichier, int k, BufferTof* buffer);
 

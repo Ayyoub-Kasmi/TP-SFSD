@@ -1,15 +1,15 @@
 #ifndef UNTITLED_FILES_LIBRARY_H
 #define UNTITLED_FILES_LIBRARY_H
 
-#define BUFFER_SIZE 4 //This is the maximum size of a block
+#define TOVC_BUFFER_SIZE 4 //This is the maximum size of a block
 
 //typedef struct {
-//    int data;
+//    int i;
 //}TDATA;
 
 typedef struct {
-//    TDATA tab[BUFFER_SIZE];
-    int tab[BUFFER_SIZE];
+//    TDATA tab[TOVC_BUFFER_SIZE];
+    int tab[TOVC_BUFFER_SIZE];
     int nb; //number of elements within the block
     int next; //pointer to the next block in the file
 } BUFF;
@@ -19,7 +19,7 @@ typedef struct {
     int root; //the first block of the file
     int tail; //the last block of the file
     int firstFreeIndex; //the first free index in the tail block
-    int numberOfDeletedData; //number of data deleted
+    int numberOfDeletedData; //number of i deleted
     int numberOfTotalElements; //total number of the elements of the whole file
 } HEADER;
 
