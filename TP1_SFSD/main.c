@@ -38,11 +38,6 @@ void print_result( int, char *, char *, int );
 
 int main() {
 
-//    buffer.positionLibre = 0;
-//    int i = 0;
-//    int j = 0;
-//    char testString[TOVC_BUFFER_SIZE];
-//    FichierTovc* fichier = ouvrirFichierTof("2022_STUDENTS", 'N');
     char s[10];
     s[0] = '1';
     s[1] = '2';
@@ -52,9 +47,9 @@ int main() {
     int i = 0;
     int j = 0;
     char testString[TOVC_BUFFER_SIZE];
-    FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'N');
-
-    createSchoolYear(fichier, &i, &j);
+    FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
+    updateStudentInfo(fichier, 2, 3, 2039);
+//    createSchoolYear(fichier, &i, &j);
 
 //    Custom student for test
     Student student;
@@ -101,26 +96,26 @@ int main() {
 //    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
 //        printf("%s\n", studentsNamesArray.tab[k]);
 //    }
-    int  result;
-    char buffer1[SIZE] = "a";
-    char buffer2[SIZE] = "bau6ri6eri6ri7rir7s";
-    int index = 1;
-
-    result = strcmp( buffer1, buffer2 );
-    printf( "  strcmp: compares each character\n");
-    print_result( result, buffer1, buffer2, index );
-
-    result = strncmp( buffer2, buffer1, index);
-    printf( "\nstrncmp: compares only the first %i characters\n", index);
-    print_result( result, buffer2, buffer1, index );
-
-    studentsNamesArray.nb = 0;
-    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
-        generateStudentName(&studentsNamesArray);
-    }
-    for (int k = 0; k < 30; ++k) {
-        printf("%s %c %d %d\n", studentsNamesArray.tab[k].fullName, studentsNamesArray.tab[k].gender, studentsNamesArray.tab[k].lastNameSize, studentsNamesArray.tab[k].firstNameSize);
-    }
+//    int  result;
+//    char buffer1[SIZE] = "a";
+//    char buffer2[SIZE] = "bau6ri6er";
+//    int index = 1;
+//
+//    result = strcmp( buffer1, buffer2 );
+//    printf( "  strcmp: compares each character\n");
+//    print_result( result, buffer1, buffer2, index );
+//
+//    result = strncmp( buffer2, buffer1, index);
+//    printf( "\nstrncmp: compares only the first %i characters\n", index);
+//    print_result( result, buffer2, buffer1, index );
+//
+//    studentsNamesArray.nb = 0;
+//    for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
+//        generateStudentName(&studentsNamesArray);
+//    }
+//    for (int k = 0; k < 30; ++k) {
+//        printf("%s %c %d %d\n", studentsNamesArray.tab[k].fullName, studentsNamesArray.tab[k].gender, studentsNamesArray.tab[k].lastNameSize, studentsNamesArray.tab[k].firstNameSize);
+//    }
     return 0;
 }
 

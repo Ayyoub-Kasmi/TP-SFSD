@@ -3,7 +3,7 @@
 #include "student-library.h"
 
 /*************************************** Auxiliary functions ***********************************************/
-void skip(FichierTovc *fichier, int steps, int *i, int *j) {
+void skip(FichierTovc *fichier, int steps, int *i, int *j){
     (*j) += steps;
     if (*j >= TOVC_BUFFER_SIZE) {
         (*i)++;
@@ -13,7 +13,7 @@ void skip(FichierTovc *fichier, int steps, int *i, int *j) {
 }
 
 /*************************************** Main functions ***********************************************/
-/*
+
 void searchStudent(FichierTovc* fichier, Student student, int* i, int* j, bool* found){
 //    typedef struct {
 //        int id;
@@ -108,7 +108,7 @@ void searchStudent(FichierTovc* fichier, Student student, int* i, int* j, bool* 
                             2- if advancing make sure to take the right offset (only gender size)
                     }
                  */
-/*
+
             }
         } else if (class > student.class){
             //passed the potential student's class ==> stop
@@ -135,23 +135,30 @@ void searchStudent(FichierTovc* fichier, Student student, int* i, int* j, bool* 
         }
     }
 }
-*/
-void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *found) {
+
+
+//void updateStudentInfo(FichierTovc* fichier, int numberOfArguments, ...) {
+//    //this "..." syntax is used so to receive an argument of dynamic type (field number & value)
+//
+
+//    // initialize argument list
+//    va_list list;
+//    va_start(list, numberOfArguments);
+//    int fieldNumber = va_arg(list, int);
+//    //now I got the filed number...
+//    /*
+//        1- switch-case according to field number
+//        2-
+//     */
+//}
+
+//don't implement one function for the updates, implement different ones:
     /*
-        1- Access the ID index
-        2- Search for the ID of the student:
-            - if !found:
-            - if found:
-    */
-}
-
-void updateStudentInfo(FichierTovc fichier, int numberOfArguments, ...) {
-    //this "..." syntax is used so to receive an argument of dynamic type (field number & value)
-
-    // initialize argument list
-    va_list list;
-    va_start(list, numberOfArguments);
-}
+        1- transfer student (update class ID) ==> this one requires circular shifting
+        2- update marks
+        3- update IDs
+        4- update names (first or last name) ==> this one requires shifting
+     */
 
 void insertStudent(FichierTovc *fichier, Student student) {
     int i = 0;
@@ -165,8 +172,10 @@ void insertStudent(FichierTovc *fichier, Student student) {
                 STUDENT_ID_SIZE + CLASS_ID_SIZE + IS_DELETED_SIZE + LASTNAME_LENGTH + FIRSTNAME_LENGTH + GENDER_SIZE +
                 MAX_NUMBER_OF_SUBJECTS *
                 (MARK_WHOLE_PART_LENGTH + MARK_DECIMAL_PART_LENGTH) + student.firstNameSize + student.lastNameSize];
+
         sprintf(container1, "%d%d", student.lastNameSize / 10,
                 student.lastNameSize % 10); //lastNameSize can be a number of one digit
+
         //Write First Name size
         strcpy(stringBuffer, container1);
         char firstNameSizeString[FIRSTNAME_LENGTH + 1]; //+1 for the '\0' character

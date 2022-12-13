@@ -372,24 +372,28 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
         for (int l = 0; l < STUDENT_PER_CLASS; ++l) {
             //get student information
             student.id = studentsIdArray.tab[k * STUDENT_PER_CLASS + l].id;
+            student.class = classIdArray.tab[k].id;
             strcpy(student.fullName, studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].fullName);
             student.gender = studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].gender;
-            student.class = classIdArray.tab[k].id;
             printf("student class: %d\n", student.class);
 
             level = (student.class / 100) % 10; //refactor it using variables
             getMarks(student.marks, level);
-//            printf("id: %d, class: %d, firstname: %s, lastname: %s, gender: %c \n", student.id, student.class,
-//                   student.firstName, student.lastName, student.gender);
 
             student.isDeleted = '0';
 
-            studentsIdArray.tab[k * STUDENT_PER_CLASS + l].i = *i;
-            studentsIdArray.tab[k * STUDENT_PER_CLASS + l].j = *j;
+//            studentsIdArray.tab[k * STUDENT_PER_CLASS + l].i = *i;
+//            studentsIdArray.tab[k * STUDENT_PER_CLASS + l].j = *j;
+//
+//            classIdArray.tab[k].i = *i;
+//            classIdArray.tab[k].j = *j;
 
-            classIdArray.tab[k].i = *i;
-            classIdArray.tab[k].j = *j;
-
+            //setting the position of the level inside the file in the index array before writing to the file:
+            if(*i < classesIndex[level].i){
+                //we moved to a new level ==> save the positions
+                classesIndex[level].i=*i;
+                classesIndex[level].j=*j;
+            }
 //            if(k==28 && l==1) {
 //                tempStudentID = student.id;
 //                printf("student id: %d\n", tempStudentID);
@@ -407,7 +411,7 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     setEntete(fichier, 4, 0); //number of chars deleted
 
     FichierTof* classIndex = ouvrirFichierTof("classIndex", 'N');
-
+/*
     int i1 = 0, j1 = 0;
     IndexRecord record;
     //BufferTof bufferTovc;
@@ -433,7 +437,8 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     setEnteteTof(classIndex, 2, FIRST_LOAD_OF_CLASSES);
 
     FichierTof* studentIndex = ouvrirFichierTof("studentIndex", 'N');
-
+/*
+/* No Student ID Index
     //BufferTof bufferTovc;
     for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
         record.id = studentsIdArray.tab[k].id;
@@ -455,7 +460,7 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     ecrireBlocTof(studentIndex, *i, &bufferTof);
     setEnteteTof(studentIndex, 1, i1);
     setEnteteTof(studentIndex, 2, FIRST_LOAD_OF_STUDENTS);
-
+*/
 
 
     //close first names file
@@ -467,7 +472,7 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
 
 void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
     /*
-         Structure of i inside the file (or buffer):
+         Structure of records inside the file (or buffer):
 
          1- Size of the first name
          2- Size of the last name

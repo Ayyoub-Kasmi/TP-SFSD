@@ -62,7 +62,7 @@ typedef struct {
     char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + GENDER_SIZE];
     int firstNameSize;
     int lastNameSize;
-    char gender
+    char gender;
 } NameProperties;
 
 typedef struct {
