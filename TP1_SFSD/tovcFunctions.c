@@ -68,27 +68,27 @@ void fermerFichier(FichierTovc *fichier) {
     free(fichier);
 }
 
-void lireBloc(FichierTovc *fichier, int i, BufferTovc *buffer) {
+void lireBloc(FichierTovc *fichier, int i, BufferTovc buffer) {
     fseek(getFile(fichier), sizeof(EnteteTovc) + sizeof(BufferTovc) * i, 0);
-    fread(buffer, sizeof(BufferTovc), 1, getFile(fichier));
+    fread(&buffer, sizeof(BufferTovc), 1, getFile(fichier));
 }
 
-void ecrireBloc(FichierTovc *fichier, int i, BufferTovc *buffer) {
+void ecrireBloc(FichierTovc *fichier, int i, BufferTovc buffer) {
     fseek(getFile(fichier), sizeof(EnteteTovc) + sizeof(BufferTovc) * i, 0);
-    fwrite(buffer, sizeof(BufferTovc), 1, getFile(fichier));
+    fwrite(&buffer, sizeof(BufferTovc), 1, getFile(fichier));
     //setEnteteTof(fichier, 2, getEnteteTof(fichier,2) + 1); on les fait individuellement dans chaque fonction
 }
 
-void ecrireChaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int taille, int *i, int *j) {
+void ecrireChaine(FichierTovc *fichier, BufferTovc buffer, char *chaine, int taille, int *i, int *j) {
 
     for (int k = 0; k < taille; ++k) {
         if (*j < TOVC_BUFFER_SIZE) {
-            buffer->tab[*j] = chaine[k];
+            buffer.tab[*j] = chaine[k];
             (*j)++;
         } else {
             ecrireBloc(fichier, *i, buffer);
             (*i)++;
-            buffer->tab[0] = chaine[k];
+            buffer.tab[0] = chaine[k];
             (*j) = 1;
         }
     }
@@ -97,26 +97,26 @@ void ecrireChaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int ta
     setEntete(fichier, 3, getEntete(fichier, 3) + taille); //move this to "Ecrire Enregistrement
 }
 
-void lirechaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int taille, int *i, int *j) {
+void lirechaine(FichierTovc *fichier, BufferTovc buffer, char *chaine, int taille, int *i, int *j) {
     for (int k = 0; k < taille; ++k) {
         if (*i == getEntete(fichier, 1)) {
             //if the current bloc is the last block
 
             if (*j < getEntete(fichier, 2)) {
                 //if j is before the free position
-                chaine[k] = buffer->tab[*j];
+                chaine[k] = buffer.tab[*j];
                 (*j)++;
             } else return;
 
         } else {
             if (*j < TOVC_BUFFER_SIZE) {
                 //if the current character is not the last character in the buffer
-                chaine[k] = buffer->tab[*j];
+                chaine[k] = buffer.tab[*j];
             } else {
                 //if the limit of the buffer is exceeded, so move to the next block
                 (*i)++;
                 lireBloc(fichier, *i, buffer);
-                chaine[k] = buffer->tab[0];
+                chaine[k] = buffer.tab[0];
             }
             (*j)++;
         }

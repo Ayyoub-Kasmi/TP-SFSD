@@ -48,9 +48,9 @@ FichierTovc * ouvrirFichierTovc(char *name, char mode);
 
 void fermerFichier(FichierTovc *fichier);
 
-void lireBloc(FichierTovc* fichier, int i, BufferTovc* buffer);
+void lireBloc(FichierTovc* fichier, int i, BufferTovc buffer);
 
-void ecrireBloc(FichierTovc* fichier, int i, BufferTovc* buffer);
+void ecrireBloc(FichierTovc* fichier, int i, BufferTovc buffer);
 
 void printFile(FichierTovc* fichier);
 
@@ -58,9 +58,9 @@ void chargementInitiale(FichierTovc *fichier, int n, BufferTovc* buffer);
 
 bool recherche(FichierTovc* fichier, int k, int* i, int* j, BufferTovc* buffer);
 
-void ecrireChaine(FichierTovc* fichier, BufferTovc* buffer,char* chaine, int taille, int* i, int* j);
+void ecrireChaine(FichierTovc* fichier, BufferTovc buffer, char* chaine, int taille, int* i, int* j);
 
-void lirechaine(FichierTovc *fichier, BufferTovc *buffer, char *chaine, int taille, int *i, int *j);
+void lirechaine(FichierTovc *fichier, BufferTovc buffer, char *chaine, int taille, int *i, int *j);
 
 void printFile(FichierTovc* fichier);
 
