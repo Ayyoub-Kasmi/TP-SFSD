@@ -1,6 +1,7 @@
 #include <limits.h>
 #include <string.h>
 #include "student-library.h"
+#include "TofIndexFunctions.h"
 
 /*************************************** Auxiliary functions ***********************************************/
 void skip(FichierTovc *fichier, int steps, int *i, int *j) {
@@ -12,7 +13,17 @@ void skip(FichierTovc *fichier, int steps, int *i, int *j) {
     }
 }
 
-void searchClassIndex();
+void searchClassIndex(int *i, int *j, int id) {
+    int tempI = 0;
+    int tempJ = 0;
+    bool found = false;
+    bool isDeleted = false;
+    FichierTof *indexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
+    rechercheTof(indexFile, id, &tempI, &tempJ, &bufferTof, &found, &isDeleted);
+    lireBlocTof(indexFile, tempI, &bufferTof);
+    *i = bufferTof.tab[tempI].i;
+    *j = bufferTof.tab[tempJ].j;
+}
 
 /*************************************** Main functions ***********************************************/
 
@@ -32,7 +43,8 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
     char lastNameSize[LASTNAME_LENGTH + 1];
     char classID[CLASS_ID_SIZE + 1];
     char ID[STUDENT_ID_SIZE + 1];
-    char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE +1];
+    char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + 1];
+    char roomString[ROOM_SIZE + 1];
 
     //declaration of necessary variables
 //    int studentLevel =
@@ -42,9 +54,9 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
 
     //Getting the starting positions of the studentLevel
     int classPosition; //here we need to search for the class in the index and get classPosition
-    searchClassIndex();
-    *i = classesIndex[classPosition].i;
-    *j = classesIndex[classPosition].j;
+    searchClassIndex(i, j, student.class);
+//    *i = classesIndex[classPosition].i;
+//    *j = classesIndex[classPosition].j;
     lireBloc(fichier, *i, &bufferTovc);
 
     if (*i == INT_MAX) {
@@ -60,7 +72,7 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
     int tempI;
     int tempJ;
 
-    while (!(*found)) {      //return statements are used to quit the loop if "stop" conditions are met
+    while (!(*found)) {      //return statements are used to quit the loop if "stop" conditions are met to save variables
 
         //saving the starting positions of the read student before reading advancing and reading its information
         tempI = *i;
@@ -69,9 +81,16 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
         //read the lengths of first name and last name so to skip directly if it's not the right student
         lirechaine(fichier, &bufferTovc, firstNameSize, FIRSTNAME_LENGTH, i, j);
         lirechaine(fichier, &bufferTovc, lastNameSize, LASTNAME_LENGTH, i, j);
-        lirechaine(fichier, &bufferTovc, classID, CLASS_ID_SIZE, i, j);
+        lirechaine(fichier, &bufferTovc, roomString, ROOM_SIZE, i, j);
+        if (bufferTovc.tab[*j] == 'p') {
+            classID[0] = '0';
+        } else {
+            classID[0] = bufferTovc.tab[*j];
+        }
+        strcat(classID, roomString);
 
-        class = stringToInt(classID, CLASS_ID_SIZE);
+        class = stringToInt(classID, CLASS_ID_SIZE); // didn't track the 'p' for prescoalaire
+        int studentLevel = (class / 100) % 10;
 
         if (student.class == class) {
             //class found ===> compare IDs until finding the student or stopping
@@ -92,26 +111,28 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
                 offset = IS_DELETED_SIZE +
                          MARK_LENGTH * numberOfSubjectsPerLevel[studentLevel]; //skip to the field of "firstName"
                 skip(fichier, offset, i, j);
-
-                lirechaine(fichier, &bufferTovc, firstName, stringToInt(firstNameSize, FIRSTNAME_LENGTH), i, j);
+                //considering that strcmp comparaison is relatively true even when using full name concatinated
+                //I think that we can use the full name directly
+                lirechaine(fichier, &bufferTovc, fullName,
+                           stringToInt(firstNameSize, FIRSTNAME_LENGTH)
+                           + stringToInt(lastNameSize, LASTNAME_LENGTH), i,
+                           j);
                 //compare first names
-                /*
-                    if(firstnames1 = firstname2){
-                        lirechaine(lastname2)
-                        if(lastname1= lastname2){
-                            priority to the smallest ID
-                        }
-                        else {
-                            decide whether to advance based on the result:
-                                1- if not advancing make sure to assign tempI and tempJ to i and j
-                                2- if advancing make sure to take the right offset (last name size + gender size)
-                        }
+
+                    if(strcmp(fullName, student.fullName) > 0){
+
+                        *i = tempI;
+                        *j = tempJ;
+                        return; //Because we're sure that he doesn't exist
+
                     } else{
-                        decide whether to advance based on the result
-                            1- if not advancing make sure to assign tempI and tempJ to i and j
-                            2- if advancing make sure to take the right offset (only gender size)
+                        offset = GENDER_SIZE;
+                        skip(fichier, offset, i, j);
+                        //decide whether to advance based on the result
+                            //1- if not advancing make sure to assign tempI and tempJ to i and j
+                            //2- if advancing make sure to take the right offset (only gender size)
                     }
-                 */
+
 
             }
         } else if (class > student.class) {
@@ -119,6 +140,7 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
             printf("stopped... current 'class' value is %d\n", class);
             *i = tempI;
             *j = tempJ;
+            //WE HAVE TO INSERT HIM IN THE LAST POSITION OF THAT CLASS
             return; //to be reviewed
         } else {
             //either next student or end of file
@@ -141,7 +163,7 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
 }
 
 
-void updateStudentInfo(FichierTovc* fichier, int numberOfArguments, ...) {
+void updateStudentInfo(FichierTovc *fichier, int numberOfArguments, ...) {
     //this "..." syntax is used so to receive an argument of dynamic type (field number & value)
 
 
@@ -214,7 +236,7 @@ void insertStudent(FichierTovc *fichier, Student student) {
         char markWholePartString[MARK_WHOLE_PART_LENGTH + 1];
         char markDecimalPartString[MARK_DECIMAL_PART_LENGTH + 1];
         for (int k = 0; k < numberOfSubjectsPerLevel[level]; ++k) {
-            intMark = student.marks[k] * 100;
+            intMark = (int) student.marks[k] * 100;
             markWholePart = intMark / 100;
             markDecimalPart = intMark % 100;
 
@@ -237,19 +259,30 @@ void insertStudent(FichierTovc *fichier, Student student) {
         int k = 0;
         int m = -1;
         char c;
-
-
-        while ((!endOfFile) && (k != m+1)){
+        int bufferPos = TOVC_BUFFER_SIZE;
+        if (i == getEntete(fichier, 1)) bufferPos = getEntete(fichier, 2);
+        //TO BE TESTED IMMEDIATELY !!!
+        while ((!endOfFile) && (k != m + 1)) {
             if (k >= strlen(stringBuffer)) k = 0;
-            if (j >= TOVC_BUFFER_SIZE){
+            if (j >= TOVC_BUFFER_SIZE) {
                 j = 0;
                 i++;
+                if (i == getEntete(fichier, 1)) bufferPos = getEntete(fichier, 2);
                 ecrireBloc(fichier, i, &bufferTovc);
-            } else {
-                c = bufferTovc.tab[j];
-
-
             }
+            if (j < bufferPos){
+                c = bufferTovc.tab[j];
+                bufferTovc.tab[j] = stringBuffer[k];
+                k++;
+                m++;
+                if (m >= strlen(stringBuffer)) m = 0;
+                stringBuffer[m] = c;
+            } else {
+                endOfFile = true;
+                bufferTovc.tab[j] = stringBuffer[k];
+                k++;
+            }
+            j++;
         }
 
 
@@ -257,5 +290,6 @@ void insertStudent(FichierTovc *fichier, Student student) {
 //    if (*j >= buffer->positionLibre) buffer->positionLibre = *j; ==> j will be auto set inside ecrire chaine
         setEntete(fichier, 2, j);
         ecrireBloc(fichier, i, &bufferTovc);
+        setEntete(fichier, 3, getEntete(fichier, 3) + (int)strlen(stringBuffer));
     }
 }
