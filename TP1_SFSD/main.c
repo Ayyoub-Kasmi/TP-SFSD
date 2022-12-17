@@ -14,7 +14,7 @@
 StudentsIdArray studentsIdArray;
 ClassIdArray roomIdArray;
 StudentsNamesArray studentsNamesArray;
-position classesIndex[NUMBER_OF_LEVELS]; //positions i and j in the school file for each level
+position classesIndex[FIRST_LOAD_OF_CLASSES]; //positions i and j in the school file for each level
 
 const int numberOfSubjectsPerLevel[6] =  {4, 5, 5, 7, 7, 7}; //just an example, not real i
 //we can also declare the names of subjects as a matrix of Levels-Subjects, if we need the names

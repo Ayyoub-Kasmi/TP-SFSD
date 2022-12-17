@@ -12,6 +12,8 @@ void skip(FichierTovc *fichier, int steps, int *i, int *j) {
     }
 }
 
+void searchClassIndex();
+
 /*************************************** Main functions ***********************************************/
 
 void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *found) {
@@ -30,18 +32,19 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
     char lastNameSize[LASTNAME_LENGTH + 1];
     char classID[CLASS_ID_SIZE + 1];
     char ID[STUDENT_ID_SIZE + 1];
-    char firstName[MAX_FIRST_NAME_SIZE];
-    char lastName[MAX_LAST_NAME_SIZE];
+    char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE +1];
 
     //declaration of necessary variables
-    int studentLevel =
-            student.class / (int) (pow(10, CLASS_NUMBER_SIZE) + 1e-9); // student.class % 100 for our context;
+//    int studentLevel =
+//            student.class / (int) (pow(10, CLASS_NUMBER_SIZE) + 1e-9); // student.class % 100 for our context;
     int class, offset;
     *found = false;
 
     //Getting the starting positions of the studentLevel
-    *i = classesIndex[studentLevel].i;
-    *j = classesIndex[studentLevel].j;
+    int classPosition; //here we need to search for the class in the index and get classPosition
+    searchClassIndex();
+    *i = classesIndex[classPosition].i;
+    *j = classesIndex[classPosition].j;
     lireBloc(fichier, *i, &bufferTovc);
 
     if (*i == INT_MAX) {

@@ -353,8 +353,8 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     int level;
 
     //initialize the index array
-    for(level = 0; level<NUMBER_OF_LEVELS; level++){
-        classesIndex[level].i=INT_MAX;
+    for(int k=0; k<FIRST_LOAD_OF_CLASSES; k++){
+        classesIndex[k].i=INT_MAX;
     }
     *i = 0;
     *j = 0;
@@ -379,6 +379,12 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     }
 
     for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
+
+        //writing the class positions into the index
+        classesIndex[k].i=*i;
+        classesIndex[k].j=*j;
+
+
         for (int l = 0; l < STUDENT_PER_CLASS; ++l) {
             //get student information
             student.id = studentsIdArray.tab[k * STUDENT_PER_CLASS + l].id;
@@ -398,12 +404,7 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
 //            classIdArray.tab[k].i = *i;
 //            classIdArray.tab[k].j = *j;
 
-            //setting the position of the level inside the file in the index array before writing to the file:
-            if(*i < classesIndex[level].i){
-                //we moved to a new level ==> save the positions
-                classesIndex[level].i=*i;
-                classesIndex[level].j=*j;
-            }
+
 //            if(k==28 && l==1) {
 //                tempStudentID = student.id;
 //                printf("student id: %d\n", tempStudentID);
@@ -413,6 +414,7 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
             writeStudent(fichier, &student, i, j);
 
         }
+
     }
 
     setEntete(fichier, 1, *i); //Number of the last block
@@ -420,12 +422,8 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     setEntete(fichier, 3, TOVC_BUFFER_SIZE * (*i + 1) + (*j) + 1); //Total number of characters in the file
     setEntete(fichier, 4, 0); //number of chars deleted
 
-    printf("Prinint the table of classes indexes: \n\n");
-    for (int k = 0; k < 6; ++k) {
-        printf("index of class %d is: %d\n", k, classesIndex[k].i);
-    }
-    /*
-    FichierTof* classIndex = ouvrirFichierTof("classIndex", 'N');
+    //saving the index into a file
+    FichierTof* classIndexFile = ouvrirFichierTof("classIndexFile", 'N');
 
     int i1 = 0, j1 = 0;
     IndexRecord record;
@@ -440,17 +438,16 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
             j1++;
         } else {
             bufferTof.nb = j1 - 1;
-            ecrireBlocTof(classIndex, i1, &bufferTof);
+            ecrireBlocTof(classIndexFile, i1, &bufferTof);
             i1++;
             bufferTof.tab[0] = record;
             j1 = 1;
         }
     }
     bufferTof.nb = j1 - 1;
-    ecrireBlocTof(classIndex, *i, &bufferTof);
-    setEnteteTof(classIndex, 1, i1);
-    setEnteteTof(classIndex, 2, FIRST_LOAD_OF_CLASSES);
-*/
+    ecrireBlocTof(classIndexFile, *i, &bufferTof);
+    setEnteteTof(classIndexFile, 1, i1);
+    setEnteteTof(classIndexFile, 2, FIRST_LOAD_OF_CLASSES);
 
 
     //close first names file
@@ -458,6 +455,9 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
 
     //close last names file
     fclose(lastNamesFile);
+
+    //close the index file
+    fermerFichierTof(classIndexFile);
 }
 
 void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {

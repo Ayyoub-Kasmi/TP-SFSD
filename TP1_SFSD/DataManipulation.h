@@ -85,7 +85,7 @@ typedef struct {
 //Global variables:
 extern const int numberOfSubjectsPerLevel[6];
 extern BufferTovc bufferTovc;
-extern position classesIndex[NUMBER_OF_LEVELS];
+extern position classesIndex[FIRST_LOAD_OF_CLASSES];
 extern int tempStudentID;
 extern int tempStudentClass;
 
