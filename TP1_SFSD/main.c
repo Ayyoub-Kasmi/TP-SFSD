@@ -48,8 +48,8 @@ int main() {
     int j = 0;
     char testString[TOVC_BUFFER_SIZE];
     FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
-    updateStudentInfo(fichier, 2, 3, 2039);
-//    createSchoolYear(fichier, &i, &j);
+//    updateStudentInfo(fichier, 2, 3, 2039);
+    createSchoolYear(fichier, &i, &j);
 
 //    Custom student for test
     Student student;
@@ -73,7 +73,7 @@ int main() {
     student.id = tempStudentID;
     student.class = tempStudentClass;
     bool found;
-    searchStudent(fichier, student, &i, &j, &found);
+//    searchStudent(fichier, student, &i, &j, &found);
 
 
 //    j = 0;

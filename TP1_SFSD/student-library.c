@@ -138,20 +138,20 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
 }
 
 
-//void updateStudentInfo(FichierTovc* fichier, int numberOfArguments, ...) {
-//    //this "..." syntax is used so to receive an argument of dynamic type (field number & value)
-//
+void updateStudentInfo(FichierTovc* fichier, int numberOfArguments, ...) {
+    //this "..." syntax is used so to receive an argument of dynamic type (field number & value)
 
-//    // initialize argument list
-//    va_list list;
-//    va_start(list, numberOfArguments);
-//    int fieldNumber = va_arg(list, int);
-//    //now I got the filed number...
-//    /*
-//        1- switch-case according to field number
-//        2-
-//     */
-//}
+
+    // initialize argument list
+    va_list list;
+    va_start(list, numberOfArguments);
+    int fieldNumber = va_arg(list, int);
+    //now I got the filed number...
+    /*
+        1- switch-case according to field number
+        2-
+     */
+}
 
 //don't implement one function for the updates, implement different ones:
 /*
@@ -241,17 +241,14 @@ void insertStudent(FichierTovc *fichier, Student student) {
             if (j >= TOVC_BUFFER_SIZE){
                 j = 0;
                 i++;
-                ecrireBloc(fichier, i, bufferTovc);
+                ecrireBloc(fichier, i, &bufferTovc);
             } else {
                 c = bufferTovc.tab[j];
 
 
-                }
             }
-
-
-
         }
+
 
         setEntete(fichier, 1, i);
 //    if (*j >= buffer->positionLibre) buffer->positionLibre = *j; ==> j will be auto set inside ecrire chaine

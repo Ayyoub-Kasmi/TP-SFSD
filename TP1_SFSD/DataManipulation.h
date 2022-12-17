@@ -66,7 +66,7 @@ typedef struct {
 } NameProperties;
 
 typedef struct {
-    NameProperties tab[FIRST_LOAD_OF_CLASSES];
+    NameProperties tab[FIRST_LOAD_OF_STUDENTS];
     //an array to sort the names alphabetically before inserting them
     int nb; //number of elements within the lines
 } StudentsNamesArray;
@@ -95,9 +95,9 @@ int generateStudentID(int seed);
 int stringToInt(char* string, int length);
 void intToString(char *string, int number, int length);
 // c-
-void getLastName(FILE* lastNamesFile, char *lastName, int seed);
+void getLastName(FILE* lastNamesFile, char *lastName, int *seed);
 
-void getFirstNameAndGender(FILE *FirstNamesAndGendersFile, char *firstName, char *gender, int seed);
+void getFirstNameAndGender(FILE *firstNamesAndGendersFile, char *firstName, char *gender, int *seed);
 // d-
 void getMarks(float *tableOfMarks, int level);
 
