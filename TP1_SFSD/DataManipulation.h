@@ -75,7 +75,7 @@ typedef struct {
 typedef struct {
     int id;
     int class;
-    char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + GENDER_SIZE]; // WHY ADD GENDER_SIZE
+    char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + 1];
     int firstNameSize;
     int lastNameSize;
     char gender;

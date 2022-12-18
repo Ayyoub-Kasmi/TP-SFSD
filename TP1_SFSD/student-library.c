@@ -81,12 +81,14 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
         //read the lengths of first name and last name so to skip directly if it's not the right student
         lirechaine(fichier, &bufferTovc, firstNameSize, FIRSTNAME_LENGTH, i, j);
         lirechaine(fichier, &bufferTovc, lastNameSize, LASTNAME_LENGTH, i, j);
-        lirechaine(fichier, &bufferTovc, roomString, ROOM_SIZE, i, j);
         if (bufferTovc.tab[*j] == 'p') {
             classID[0] = '0';
         } else {
             classID[0] = bufferTovc.tab[*j];
         }
+        (*j)++;
+        lirechaine(fichier, &bufferTovc, roomString, ROOM_SIZE, i, j);
+
         strcat(classID, roomString);
 
         class = stringToInt(classID, CLASS_ID_SIZE); // didn't track the 'p' for prescoalaire
@@ -142,13 +144,6 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
             *j = tempJ;
             //WE HAVE TO INSERT HIM IN THE LAST POSITION OF THAT CLASS
             return; //to be reviewed
-        } else {
-            //either next student or end of file
-            offset = STUDENT_ID_SIZE + IS_DELETED_SIZE + MARK_LENGTH * numberOfSubjectsPerLevel[studentLevel]
-                     + stringToInt(firstNameSize, FIRSTNAME_LENGTH) +
-                     stringToInt(lastNameSize, LASTNAME_LENGTH) + GENDER_SIZE;
-
-            skip(fichier, offset, i, j);
         }
 
         if (*i == getEntete(fichier, 1)) {
