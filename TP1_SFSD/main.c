@@ -38,10 +38,21 @@ void print_result( int, char *, char *, int );
 
 int main() {
 
-    char s[3];
-    s[0] = '1';
-    s[1] = '2';
-    printf("%c", s[2]);
+    FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
+
+    Student student;
+    student.id = 1111;
+    student.class = 460;
+    strcpy(student.fullName ,"Houari Mohammed");
+    student.gender = 'M';
+    student.isDeleted = '0';
+    student.marks[0] = 10.00;
+    student.marks[1] = 7.5;
+    student.marks[2] = 9.25;
+    student.marks[3] = 5.5;
+    student.marks[4] = 8.0;
+
+    updateStudentInfo(fichier, student, 2, 5, 3.25);
 //    int x = stringToInt(s, 3);
 //    intToString(s, x, 3);
 //    int i = 0;

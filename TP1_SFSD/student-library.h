@@ -16,6 +16,6 @@ void searchClassIndex(int* i, int* j, int id);
 
 void searchStudent(FichierTovc* fichier, Student student, int* i, int* j, bool* found);
 
-void updateStudentInfo(FichierTovc* fichier, int numberOfArguments, ...);
+void updateStudentInfo(FichierTovc* fichierTovc, Student student, int numberOfArguments, ...);
 
 #endif //TP1_SFSD_STUDENT_LIBRARY_H

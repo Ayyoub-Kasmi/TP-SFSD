@@ -103,8 +103,8 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
 
             if (student.id == stringToInt(ID, STUDENT_ID_SIZE)) {
                 //student found ===> stop
-                *i = tempI; //i will receive the number of the starting position (and not the IsDeleted field) since
-                //we will need to modify other fields as well
+                *i = tempI; //i will receive the starting position (and not the IsDeleted field) since
+                            // we will need to modify other fields as well
                 *j = tempJ;
                 *found = true;
                 return;
@@ -130,9 +130,6 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
                     } else{
                         offset = GENDER_SIZE;
                         skip(fichier, offset, i, j);
-                        //decide whether to advance based on the result
-                            //1- if not advancing make sure to assign tempI and tempJ to i and j
-                            //2- if advancing make sure to take the right offset (only gender size)
                     }
 
 
@@ -158,28 +155,79 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
 }
 
 
-void updateStudentInfo(FichierTovc *fichier, int numberOfArguments, ...) {
+void updateStudentInfo(FichierTovc *fichierTovc, Student student, int numberOfArguments, ...) {
     //this "..." syntax is used so to receive an argument of dynamic type (field number & value)
 
+/*
+    1- update student ID
+    2- transfer student (update class ID) ==> this one requires circular shifting
+    3- update names (first or last name) ==> this one requires shifting
+    4- update gender
+    5- update mark
+ */
 
     // initialize argument list
     va_list list;
     va_start(list, numberOfArguments);
     int fieldNumber = va_arg(list, int);
-    //now I got the filed number...
-    /*
-        1- switch-case according to field number
-        2-
-     */
+
+    //declaring necessary variables
+    int *i, *j, offset;
+    bool found;
+
+    //search for the student first
+    searchStudent(fichierTovc, student, i, j, &found);
+    if(!found){
+        printf("student doesn't exist!\n");
+        return;
+    }
+
+    switch (fieldNumber) {
+        case 1:
+            printf("updating student id\n");
+
+            int id = va_arg(list, int);
+            offset = FIRSTNAME_LENGTH + LASTNAME_LENGTH + CLASS_ID_SIZE;
+            skip(fichierTovc, offset, i, j); //skip to ID field in the file
+
+            char ID[STUDENT_ID_SIZE+1];
+            intToString(ID, id, STUDENT_ID_SIZE); //convert id to string
+
+            ecrireChaine(fichierTovc, &bufferTovc, ID, STUDENT_ID_SIZE, i, j);
+            if( (*j) < TOVC_BUFFER_SIZE) ecrireBloc(fichierTovc, *i, &bufferTovc);
+            break;
+        case 2:
+            printf("updating student class\n");
+
+            int class = va_arg(list, int);
+            //use a function called "transfer student"
+            break;
+        case 3:
+            printf("updating student full name\n");
+
+            char* fullname = va_arg(list, char*);
+            printf("here is the fullname: %s\n", fullname);
+            printf("and here is the length of the fullname: %llu", strlen(fullname));
+            //create a special function that has shifting
+            break;
+        case 4:
+            printf("updating student gender\n");
+
+            char gender = va_arg(list, int);
+            printf("here is the gender: %c\n", gender);
+
+            break;
+        case 5:
+            printf("updating student mark\n");
+            double mark = (float) va_arg(list, double);
+            printf("here is the mark: %.2f\n", mark);
+            break;
+        default:
+            printf("invalid field number");
+    }
+    va_end(list);
 }
 
-//don't implement one function for the updates, implement different ones:
-/*
-    1- transfer student (update class ID) ==> this one requires circular shifting
-    2- update marks
-    3- update IDs
-    4- update names (first or last name) ==> this one requires shifting
- */
 
 void insertStudent(FichierTovc *fichier, Student student) {
     int i = 0;
