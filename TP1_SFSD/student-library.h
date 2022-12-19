@@ -18,4 +18,6 @@ void searchStudent(FichierTovc* fichier, Student student, int* i, int* j, bool* 
 
 void updateStudentInfo(FichierTovc* fichierTovc, Student student, int numberOfArguments, ...);
 
+void deleteStudent(FichierTovc *fichier, Student student);
+
 #endif //TP1_SFSD_STUDENT_LIBRARY_H
