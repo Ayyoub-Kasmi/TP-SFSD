@@ -2,6 +2,7 @@
 #define TP1_SFSD_STUDENT_LIBRARY_H
 
 #include "DataManipulation.h"
+#include "TofIndexFunctions.h"
 #include <math.h>
 #include <stdarg.h>
 
@@ -12,7 +13,7 @@ extern position classesIndex[FIRST_LOAD_OF_CLASSES];
 
 //functions:
 
-void searchClassIndex(int* i, int* j, int id);
+void searchClassIndex(FichierTof *indexFile, int *i, int *j, int classID, bool *found, bool *isDeleted);
 
 void searchStudent(FichierTovc* fichier, Student student, int* i, int* j, bool* found);
 

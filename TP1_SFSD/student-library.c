@@ -4,30 +4,41 @@
 #include "TofIndexFunctions.h"
 
 /*************************************** Auxiliary functions ***********************************************/
-void skip(FichierTovc *fichier, int steps, int *i, int *j) {
+void skip(FichierTovc *fichierTovc, int steps, int *i, int *j) {
     (*j) += steps;
     if (*j >= TOVC_BUFFER_SIZE) {
         (*i)++;
-        lireBloc(fichier, *i, &bufferTovc);
+        lireBloc(fichierTovc, *i, &bufferTovc);
         (*j) -= TOVC_BUFFER_SIZE;
     }
 }
 
-void searchClassIndex(int *i, int *j, int id) {
+void searchClassIndex(FichierTof *indexFile, int *i, int *j, int classID, bool *found, bool *isDeleted) {
     int tempI = 0;
     int tempJ = 0;
-    bool found = false;
-    bool isDeleted = false;
-    FichierTof *indexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
-    rechercheTof(indexFile, id, &tempI, &tempJ, &bufferTof, &found, &isDeleted);
-    lireBlocTof(indexFile, tempI, &bufferTof);
+    *found = false;
+    *isDeleted = false;
+    rechercheTof(indexFile, classID, &tempI, &tempJ, &bufferTof, found, isDeleted);
+//    lireBlocTof(indexFile, tempI, &bufferTof);
     *i = bufferTof.tab[tempI].i;
     *j = bufferTof.tab[tempJ].j;
 }
 
+void insertClassInIndex(FichierTof *indexFile, int classID, int i, int j){
+
+}
+
+void removeClassFromIndex(int classID){
+
+}
+
+void searchClassIndexDichoSup(FichierTof *indexFile, int classID, int pos, bool* found, bool *isDeleted){
+
+};
 /*************************************** Main functions ***********************************************/
 
 void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *found) {
+    FichierTof *indexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
 //    typedef struct {
 //
 //        char firstName[MAX_FIRST_NAME_SIZE];
@@ -54,11 +65,15 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
 //    int studentLevel =
 //            student.class / (int) (pow(10, CLASS_NUMBER_SIZE) + 1e-9); // student.class % 100 for our context;
     int class, offset;
+    bool *isDeleted;
     *found = false;
 
     //Getting the starting positions of the studentLevel
     int classPosition; //here we need to search for the class in the index and get classPosition
-    searchClassIndex(i, j, student.class);
+    searchClassIndex(indexFile, i, j, student.class, found, isDeleted);
+    if( !(*found) ) printf(""); //do something here: class student not found
+
+    *found = false;
 //    *i = classesIndex[classPosition].i;
 //    *j = classesIndex[classPosition].j;
     lireBloc(fichier, *i, &bufferTovc);
@@ -85,6 +100,7 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
         //read the lengths of first name and last name so to skip directly if it's not the right student
         lirechaine(fichier, &bufferTovc, firstNameSize, FIRSTNAME_LENGTH, i, j);
         lirechaine(fichier, &bufferTovc, lastNameSize, LASTNAME_LENGTH, i, j);
+
         if (bufferTovc.tab[*j] == 'p') {
             classID[0] = '0';
         } else {
@@ -103,7 +119,7 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
             printf("class found!\n");
             //read the ID
             lirechaine(fichier, &bufferTovc, ID, STUDENT_ID_SIZE, i, j);
-            printf("\n\nstudent id read: %s", ID);
+            printf("\n\ncurrent student id: %s", ID);
 
             if (student.id == stringToInt(ID, STUDENT_ID_SIZE)) {
                 //student found ===> stop
@@ -113,6 +129,7 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
                 *found = true;
                 return;
             } else {
+
                 //student not found, decide whether to advance or stop ==> compare names
                 offset = IS_DELETED_SIZE +
                          MARK_LENGTH * numberOfSubjectsPerLevel[studentLevel]; //skip to the field of "firstName"
@@ -123,6 +140,7 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
                            stringToInt(firstNameSize, FIRSTNAME_LENGTH)
                            + stringToInt(lastNameSize, LASTNAME_LENGTH), i,
                            j);
+
                 //compare first names
 
                 if (strcmp(fullName, student.fullName) > 0) {
@@ -160,11 +178,12 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
 
 
 void updateStudentInfo(FichierTovc *fichierTovc, Student student, int numberOfArguments, ...) {
+    FichierTof *indexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
     //this "..." syntax is used so to receive an argument of dynamic type (field number & value)
 
 /*
-    1- update student ID
-    2- transfer student (update class ID) ==> this one requires circular shifting
+    1- update student studentID
+    2- update class studentID
     3- update names (first or last name) ==> this one requires shifting
     4- update gender
     5- update mark
@@ -176,8 +195,12 @@ void updateStudentInfo(FichierTovc *fichierTovc, Student student, int numberOfAr
     int fieldNumber = va_arg(list, int);
 
     //declaring necessary variables
-    int *i, *j, offset;
-    bool found;
+    int *i, *j, tempI, tempJ, offset, level;
+    bool found, isDeleted;
+    char firstNameSize[FIRSTNAME_LENGTH+1];
+    char lastNameSize[LASTNAME_LENGTH+1];
+    char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + 1];
+    char studentID[STUDENT_ID_SIZE + 1];
 
     //search for the student first
     searchStudent(fichierTovc, student, i, j, &found);
@@ -192,40 +215,154 @@ void updateStudentInfo(FichierTovc *fichierTovc, Student student, int numberOfAr
 
             int id = va_arg(list, int);
             offset = FIRSTNAME_LENGTH + LASTNAME_LENGTH + CLASS_ID_SIZE;
-            skip(fichierTovc, offset, i, j); //skip to ID field in the file
+            skip(fichierTovc, offset, i, j); //skip to studentID field in the file
 
-            char ID[STUDENT_ID_SIZE + 1];
-            intToString(ID, id, STUDENT_ID_SIZE); //convert id to string
+            intToString(studentID, id, STUDENT_ID_SIZE); //convert id to string
 
-            ecrireChaine(fichierTovc, &bufferTovc, ID, STUDENT_ID_SIZE, i, j);
-            if ((*j) < TOVC_BUFFER_SIZE) ecrireBloc(fichierTovc, *i, &bufferTovc);
+            ecrireChaine(fichierTovc, &bufferTovc, studentID, STUDENT_ID_SIZE, i, j);
+//            if ((*j) < TOVC_BUFFER_SIZE) ecrireBloc(fichierTovc, *i, &bufferTovc);
+            if( (*j) != 0) ecrireBloc(fichierTovc, *i, &bufferTovc);
             break;
+
         case 2:
             printf("updating student class\n");
+            //the approach is to logically delete the older version of the student and insert a new one
 
-            int class = va_arg(list, int);
-            //use a function called "transfer student"
+            int newClass = va_arg(list, int);
+
+            if(student.class == newClass){
+                printf("Student is already in class %d\n", newClass);
+                return;
+            }
+
+            //now the student will surely move to a new class:
+
+            tempI = *i; tempJ = *j; //saving the starting positions of the student for later comparison
+
+            //saving the first name and last name sizes because we may need them in a certain case
+            lirechaine(fichierTovc, &bufferTovc, firstNameSize, FIRSTNAME_LENGTH, i, j);
+            lirechaine(fichierTovc, &bufferTovc, lastNameSize, LASTNAME_LENGTH, i, j);
+
+            //skip to "isDeleted"
+            offset = CLASS_ID_SIZE + STUDENT_ID_SIZE;
+            skip(fichierTovc, offset, i, j);
+
+            //Now j points on the "isDeleted" character:
+            bufferTovc.tab[*j] = '0';
+            ecrireBloc(fichierTovc, *i, &bufferTovc);
+
+            //checking if the student is the first one in his class:
+            searchClassIndex(indexFile, i, j, student.class, &found, &isDeleted);
+
+            if(tempI == (*i) && tempJ == (*j)){
+                //the student is the first in his class, we check if he's the last one
+
+                //skip to the end of the student record
+                level = student.class * 100;
+                offset = IS_DELETED_SIZE + MARK_LENGTH * numberOfSubjectsPerLevel[level]
+                        + stringToInt(firstNameSize, FIRSTNAME_LENGTH)
+                        + stringToInt(lastNameSize, LASTNAME_LENGTH)
+                        + GENDER_SIZE;
+                skip(fichierTovc, offset, i, j);
+
+                //now we reached the next student, checking if they belong to the same class:
+                offset = FIRSTNAME_LENGTH + LASTNAME_LENGTH;
+                skip(fichierTovc, offset, i, j);
+
+                char classID[CLASS_ID_SIZE+1];
+                lirechaine(fichierTovc, &bufferTovc, classID, CLASS_ID_SIZE, i, j);
+
+                if (student.class != stringToInt(classID, CLASS_ID_SIZE) ){
+                    //next student is from a different class ==> delete the current class
+                    removeClassFromIndex(student.class);
+                }
+            }
+
+            int pos;
+            searchClassIndexDichoSup(indexFile, newClass, pos, &found, &isDeleted);
+
+            if(found && !isDeleted){
+                if(pos != bufferTof.nb){
+                    //if pos + 1 exists
+                    bufferTof.tab[pos].i = bufferTof.tab[pos+1].i;
+                    bufferTof.tab[pos].j = bufferTof.tab[pos+1].j;
+                } else{
+                    //the current class is the last one in the index
+                    bufferTof.tab[pos].i = getEnteteTof(indexFile, 1);
+                    bufferTof.tab[pos].j = bufferTof.nb;
+                }
+            } else if(found && isDeleted){
+                bufferTof.tab[pos].isDeleted = false;
+                if(pos != bufferTof.nb){
+                    //if pos + 1 exists
+                    bufferTof.tab[pos].i = bufferTof.tab[pos+1].i;
+                    bufferTof.tab[pos].j = bufferTof.tab[pos+1].j;
+                } else{
+                    //the current class is the last one in the index
+                    bufferTof.tab[pos].i = getEnteteTof(indexFile, 1); //last block
+                    bufferTof.tab[pos].j = bufferTof.nb; //last position
+                }
+            } else if(!found){
+                //the new class will take the starting positions of the class that comes after it
+                //the search will already give the next class
+                insertClassInIndex(indexFile, newClass, classesIndex[pos].i, classesIndex[pos].j);
+            }
+
+            //now we insert the student in the students file
+            insertStudent(fichierTovc,  student);
+
             break;
+
         case 3:
             printf("updating student full name\n");
 
+            int firstNameSizeInt = va_arg(list, int);
+            int lastNameSizeInt = va_arg(list, int);
             char *fullname = va_arg(list, char*);
             printf("here is the fullname: %s\n", fullname);
             printf("and here is the length of the fullname: %llu", strlen(fullname));
-            //create a special function that has shifting
+
+            //the approach is to logically delete the current student and create a new one with the new name
+
+            //skip to "Student studentID" field
+            tempI = *i; tempJ = *j; //saving the starting positions of the current student
+            offset = FIRSTNAME_LENGTH + LASTNAME_LENGTH + CLASS_ID_SIZE; //skipping to the student studentID;
+            skip(fichierTovc, offset, i, j);
+
+            //overwrite the student studentID with "0000" (means invalid studentID)
+            strcpy(studentID, "0000");
+            studentID[STUDENT_ID_SIZE] = '\0';
+            ecrireChaine(fichierTovc, &bufferTovc, studentID, STUDENT_ID_SIZE, i, j);
+
+            //now j points to "isDeleted" ==> deleting the current student
+            bufferTovc.tab[*j] = '0';
+            ecrireBloc(fichierTovc, *i, &bufferTovc); //is it necessary?
+
+            strcpy(student.fullName, fullname);
+            student.firstNameSize = firstNameSizeInt; //get them from
+            student.lastNameSize = lastNameSizeInt;
+            insertStudent(fichierTovc, student);
+
             break;
+
         case 4:
             printf("updating student gender\n");
 
             char gender = va_arg(list, int);
-            printf("here is the gender: %c\n", gender);
+            offset = FIRSTNAME_LENGTH + LASTNAME_LENGTH + CLASS_ID_SIZE + STUDENT_ID_SIZE;
+            skip(fichierTovc, offset, i, j); //skip to "isDeleted" field in the file
 
+//            ecrireChaine(fichierTovc, &bufferTovc, studentID, gender, i, j);
+            bufferTovc.tab[*j] = gender;
+            ecrireBloc(fichierTovc, *i, &bufferTovc);
             break;
+
         case 5:
             printf("updating student mark\n");
             double mark = (float) va_arg(list, double);
             printf("here is the mark: %.2f\n", mark);
             break;
+
         default:
             printf("invalid field number");
     }
@@ -381,8 +518,6 @@ void deleteStudent(FichierTovc *fichier, Student student) {
                 + firstNameSize + GENDER_SIZE;
 
         setEntete(fichier, 3, getEntete(fichier, 3) + charsDeleted);
-
-
 
     }
 }
