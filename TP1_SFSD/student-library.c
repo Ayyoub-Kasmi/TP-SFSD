@@ -1,5 +1,6 @@
 #include <limits.h>
 #include <string.h>
+#include <tclDecls.h>
 #include "student-library.h"
 #include "TofIndexFunctions.h"
 
@@ -13,21 +14,21 @@ void skip(FichierTovc *fichier, int steps, int *i, int *j) {
     }
 }
 
-void searchClassIndex(int *i, int *j, int id) {
-    int tempI = 0;
-    int tempJ = 0;
+void searchClassIndex(FichierTof* indexFile, int *i, int *j, int id, int *indexI, int *indexJ) {
     bool found = false;
     bool isDeleted = false;
-    FichierTof *indexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
-    rechercheTof(indexFile, id, &tempI, &tempJ, &bufferTof, &found, &isDeleted);
-    lireBlocTof(indexFile, tempI, &bufferTof);
-    *i = bufferTof.tab[tempI].i;
-    *j = bufferTof.tab[tempJ].j;
+    //To change from here
+    rechercheTof(indexFile, id, indexI, indexJ, &bufferTof, &found, &isDeleted);
+    lireBlocTof(indexFile, *indexI, &bufferTof);
+    *i = bufferTof.tab[*indexI].i;
+    *j = bufferTof.tab[*indexJ].j;
 }
 
 /*************************************** Main functions ***********************************************/
 
-void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *found) {
+void
+searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int *i, int *j, int *indexI, int *indexJ,
+              bool *found) {
 //    typedef struct {
 //
 //        char firstName[MAX_FIRST_NAME_SIZE];
@@ -58,7 +59,7 @@ void searchStudent(FichierTovc *fichier, Student student, int *i, int *j, bool *
 
     //Getting the starting positions of the studentLevel
     int classPosition; //here we need to search for the class in the index and get classPosition
-    searchClassIndex(i, j, student.class);
+    searchClassIndex(indexFile, i, j, student.class, indexI, indexJ);
 //    *i = classesIndex[classPosition].i;
 //    *j = classesIndex[classPosition].j;
     lireBloc(fichier, *i, &bufferTovc);
@@ -180,7 +181,7 @@ void updateStudentInfo(FichierTovc *fichierTovc, Student student, int numberOfAr
     bool found;
 
     //search for the student first
-    searchStudent(fichierTovc, student, i, j, &found);
+    searchStudent(fichierTovc, NULL, student, i, j, NULL, 0, &found);
     if (!found) {
         printf("student doesn't exist!\n");
         return;
@@ -233,11 +234,13 @@ void updateStudentInfo(FichierTovc *fichierTovc, Student student, int numberOfAr
 }
 
 
-void insertStudent(FichierTovc *fichier, Student student) {
+void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student) {
     int i = 0;
     int j = 0;
+    int indexI = 0;
+    int indexJ = 0;
     bool found = false;
-    searchStudent(fichier, student, &i, &j, &found);
+    searchStudent(fichier, NULL, student, &i, &j, &indexI, &indexJ, &found);
     if (!found) {
         //some code to create the student string
         char container1[4];//used to do the int => string conversion
@@ -331,13 +334,20 @@ void insertStudent(FichierTovc *fichier, Student student) {
             }
             j++;
         }
+        int numberOfCharsInserted = (int) strlen(stringBuffer);
+        indexJ++;
+        if (indexJ >= TOF_BUFFER_SIZE) indexI++;
+        while (indexI <= getEnteteTof(indexFile, 1)){
+            lireBlocTof(indexFile, indexI, &bufferTof);
+
+        }
 
 
         setEntete(fichier, 1, i);
 //    if (*j >= buffer->positionLibre) buffer->positionLibre = *j; ==> j will be auto set inside ecrire chaine
         setEntete(fichier, 2, j);
         ecrireBloc(fichier, i, &bufferTovc);
-        setEntete(fichier, 3, getEntete(fichier, 3) + (int) strlen(stringBuffer));
+        setEntete(fichier, 3, getEntete(fichier, 3) + numberOfCharsInserted);
     }
 }
 
@@ -345,7 +355,7 @@ void deleteStudent(FichierTovc *fichier, Student student) {
     int i = 0;
     int j = 0;
     bool found = false;
-    searchStudent(fichier, student, &i, &j, &found);
+    searchStudent(fichier, NULL, student, &i, &j, NULL, 0, &found);
 
     if (found) {
         //we have to take the student level to calculate the length of his table of marks.
