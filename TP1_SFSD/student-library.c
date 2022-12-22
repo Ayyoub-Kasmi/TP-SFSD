@@ -1,6 +1,5 @@
 #include <limits.h>
 #include <string.h>
-#include <tclDecls.h>
 #include "student-library.h"
 #include "TofIndexFunctions.h"
 
@@ -14,11 +13,12 @@ void skip(FichierTovc *fichier, int steps, int *i, int *j) {
     }
 }
 
-void searchClassIndex(FichierTof* indexFile, int *i, int *j, int id, int *indexI, int *indexJ) {
-    bool found = false;
-    bool isDeleted = false;
+void searchClassIndex(FichierTof *indexFile, int *i, int *j, int id, int *indexI, int *indexJ, bool *found,
+                      bool *isDeleted) {
+    *found = false;
+    *isDeleted = false;
     //To change from here
-    rechercheTof(indexFile, id, indexI, indexJ, &bufferTof, &found, &isDeleted);
+    rechercheTof(indexFile, id, indexI, indexJ, &bufferTof, found, isDeleted);
     lireBlocTof(indexFile, *indexI, &bufferTof);
     *i = bufferTof.tab[*indexI].i;
     *j = bufferTof.tab[*indexJ].j;
@@ -59,7 +59,7 @@ searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int 
 
     //Getting the starting positions of the studentLevel
     int classPosition; //here we need to search for the class in the index and get classPosition
-    searchClassIndex(indexFile, i, j, student.class, indexI, indexJ);
+    searchClassIndex(indexFile, i, j, student.class, indexI, indexJ, NULL, NULL);
 //    *i = classesIndex[classPosition].i;
 //    *j = classesIndex[classPosition].j;
     lireBloc(fichier, *i, &bufferTovc);
@@ -336,9 +336,24 @@ void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student)
         }
         int numberOfCharsInserted = (int) strlen(stringBuffer);
         indexJ++;
-        if (indexJ >= TOF_BUFFER_SIZE) indexI++;
-        while (indexI <= getEnteteTof(indexFile, 1)){
+        if (indexJ >= bufferTof.nb) {
+            indexI++;
+            indexJ = 0;
+        }
+        while (indexI <= getEnteteTof(indexFile, 1)) {
             lireBlocTof(indexFile, indexI, &bufferTof);
+            if (indexJ >= bufferTof.nb) {
+                indexI++;
+                indexJ = 0;
+            } else {
+                bufferTof.tab[indexJ].j += numberOfCharsInserted;
+                while (bufferTof.tab[indexJ].j >= TOVC_BUFFER_SIZE) {
+                    bufferTof.tab[indexJ].j -= TOVC_BUFFER_SIZE;
+                    bufferTof.tab[indexJ].i++;
+                    indexJ++;
+                }
+            }
+
 
         }
 
@@ -355,7 +370,9 @@ void deleteStudent(FichierTovc *fichier, Student student) {
     int i = 0;
     int j = 0;
     bool found = false;
-    searchStudent(fichier, NULL, student, &i, &j, NULL, 0, &found);
+    int indexI = 0;
+    int indexJ = 0;
+    searchStudent(fichier, NULL, student, &i, &j, &indexI, &indexJ, &found);
 
     if (found) {
         //we have to take the student level to calculate the length of his table of marks.
@@ -379,19 +396,18 @@ void deleteStudent(FichierTovc *fichier, Student student) {
         bufferTovc.tab[j] = '1';
         ecrireBloc(fichier, i, &bufferTovc);
 
-        skip(fichier,  IS_DELETED_SIZE +
-                                    MARK_LENGTH * numberOfSubjectsPerLevel[studentLevel] + lastNameSize
-                                    + firstNameSize + GENDER_SIZE, &i, &j);
+        skip(fichier, IS_DELETED_SIZE +
+                      MARK_LENGTH * numberOfSubjectsPerLevel[studentLevel] + lastNameSize
+                      + firstNameSize + GENDER_SIZE, &i, &j);
         //Skip this record, since we deleted it.
 
         //We now have to update the number of chars deleted in the heaader
 
-        int charsDeleted =  LASTNAME_LENGTH + FIRSTNAME_LENGTH + CLASS_ID_SIZE + STUDENT_ID_SIZE
-                + IS_DELETED_SIZE + MARK_LENGTH * numberOfSubjectsPerLevel[studentLevel] + lastNameSize
-                + firstNameSize + GENDER_SIZE;
+        int charsDeleted = LASTNAME_LENGTH + FIRSTNAME_LENGTH + CLASS_ID_SIZE + STUDENT_ID_SIZE
+                           + IS_DELETED_SIZE + MARK_LENGTH * numberOfSubjectsPerLevel[studentLevel] + lastNameSize
+                           + firstNameSize + GENDER_SIZE;
 
         setEntete(fichier, 3, getEntete(fichier, 3) + charsDeleted);
-
 
 
     }

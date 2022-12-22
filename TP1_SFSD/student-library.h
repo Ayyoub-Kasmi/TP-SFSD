@@ -13,7 +13,8 @@ extern position classesIndex[FIRST_LOAD_OF_CLASSES];
 
 //functions:
 
-void searchClassIndex(FichierTof* indexFile, int *i, int *j, int id, int *indexI, int *indexJ);
+void
+searchClassIndex(FichierTof *indexFile, int *i, int *j, int id, int *indexI, int *indexJ, bool *found, bool *isDeleted);
 
 void
 searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int *i, int *j, int *indexI, int *indexJ,

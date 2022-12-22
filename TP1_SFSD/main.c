@@ -38,21 +38,23 @@ void print_result( int, char *, char *, int );
 
 int main() {
 
-    FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
+    FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'N');
+    int i = 0;
+    int j = 0;
 
-    Student student;
-    student.id = 1111;
-    student.class = 460;
-    strcpy(student.fullName ,"Houari Mohammed");
-    student.gender = 'M';
-    student.isDeleted = '0';
-    student.marks[0] = 10.00;
-    student.marks[1] = 7.5;
-    student.marks[2] = 9.25;
-    student.marks[3] = 5.5;
-    student.marks[4] = 8.0;
-
-    updateStudentInfo(fichier, student, 2, 5, 3.25);
+//    Student student;
+//    student.id = 1111;
+//    student.class = 460;
+//    strcpy(student.fullName ,"Houari Mohammed");
+//    student.gender = 'M';
+//    student.isDeleted = '0';
+//    student.marks[0] = 10.00;
+//    student.marks[1] = 7.5;
+//    student.marks[2] = 9.25;
+//    student.marks[3] = 5.5;
+//    student.marks[4] = 8.0;
+//
+//    updateStudentInfo(fichier, student, 2, 5, 3.25);
 //    int x = stringToInt(s, 3);
 //    intToString(s, x, 3);
 //    int i = 0;
@@ -60,7 +62,7 @@ int main() {
 //    char testString[TOVC_BUFFER_SIZE];
 //    FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
 ////    updateStudentInfo(fichier, 2, 3, 2039);
-//    createSchoolYear(fichier, &i, &j);
+    createSchoolYear(fichier, &i, &j);
 //
 ////    Custom student for test
 //    Student student;
