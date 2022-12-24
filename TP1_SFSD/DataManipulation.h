@@ -5,18 +5,15 @@
 #include "tovcFunctions.h"
 
 //definition of system constants
-#define CURRENT_YEAR_FILE_PATH  "2022_STUDENTS"
+#define CURRENT_YEAR_FILE_PATH  "2022_STUDENTS.bin"
 #define STUDENT_ID_SIZE 4
 #define CLASS_ID_SIZE 3
 #define ROOM_SIZE 2
-#define CLASS_NUMBER_SIZE 2
-#define SCHOOL_LEVEL_SIZE 1
 #define IS_DELETED_SIZE 1
 #define LASTNAME_LENGTH 2  // MAY CHANGE
 #define FIRSTNAME_LENGTH 2
 #define GENDER_SIZE 1
 #define STUDENT_PER_CLASS 4
-#define NUMBER_OF_LEVELS 6
 #define FIRST_LOAD_OF_STUDENTS 120
 #define FIRST_LOAD_OF_CLASSES 30
 #define LAST_NAMES_FILE_PATH "LastNames.txt" //this is the alternative for the moment
@@ -84,7 +81,7 @@ typedef struct {
 } Student;
 
 //Global variables:
-extern const int numberOfSubjectsPerLevel[6];
+extern int numberOfSubjectsPerLevel[6];
 extern BufferTovc bufferTovc;
 extern position classesIndex[FIRST_LOAD_OF_CLASSES];
 extern int tempStudentID;

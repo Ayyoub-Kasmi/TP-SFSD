@@ -3,9 +3,10 @@
 #include <string.h>
 
 //custom libraries:
+#include "settings.h"
+#include "TofIndexFunctions.h"
 #include "DataManipulation.h"
 #include "student-library.h"
-#include "TofIndexFunctions.h"
 
 #define SIZE 10
 
@@ -16,7 +17,10 @@ ClassIdArray roomIdArray;
 StudentsNamesArray studentsNamesArray;
 position classesIndex[FIRST_LOAD_OF_CLASSES]; //positions i and j in the school file for each level
 
-const int numberOfSubjectsPerLevel[6] =  {4, 5, 5, 7, 7, 7}; //just an example, not real i
+struct subjectsArray {
+
+};
+int numberOfSubjectsPerLevel[6] =  {4, 5, 5, 7, 7, 7}; //just an example, not real i
 //we can also declare the names of subjects as a matrix of Levels-Subjects, if we need the names
 
 //Strings buffers
@@ -42,18 +46,20 @@ int main() {
     int i = 0;
     int j = 0;
 
-//    Student student;
-//    student.id = 1111;
-//    student.class = 460;
-//    strcpy(student.fullName ,"Houari Mohammed");
-//    student.gender = 'M';
-//    student.isDeleted = '0';
-//    student.marks[0] = 10.00;
-//    student.marks[1] = 7.5;
-//    student.marks[2] = 9.25;
-//    student.marks[3] = 5.5;
-//    student.marks[4] = 8.0;
-//
+    Student student;
+    student.id = 1111;
+    student.class = 460;
+    strcpy(student.fullName ,"Houari Mohammed");
+    student.gender = 'M';
+    student.isDeleted = '0';
+    student.marks[0] = 10.00;
+    student.marks[1] = 7.5;
+    student.marks[2] = 9.25;
+    student.marks[3] = 5.5;
+    student.marks[4] = 8.0;
+
+//    loadSubjects();
+
 //    updateStudentInfo(fichier, student, 2, 5, 3.25);
 //    int x = stringToInt(s, 3);
 //    intToString(s, x, 3);
