@@ -1,6 +1,6 @@
 #include <limits.h>
 #include <string.h>
-#include <vadefs.h>
+#include <stdarg.h>
 #include "student-library.h"
 #include "TofIndexFunctions.h"
 
@@ -67,11 +67,11 @@ searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int 
 //            student.class / (int) (pow(10, CLASS_NUMBER_SIZE) + 1e-9); // student.class % 100 for our context;
     int class, offset;
     *found = false;
-    bool *isDeleted;
+    bool isDeleted; //make this a param
 
     //Getting the starting positions of the studentLevel
     int classPosition; //here we need to search for the class in the index and get classPosition
-    searchClassIndex(indexFile, i, j, student.class, indexI, indexJ, found, isDeleted);
+    searchClassIndex(indexFile, i, j, student.class, indexI, indexJ, found, &isDeleted);
 //    *i = classesIndex[classPosition].i;
 //    *j = classesIndex[classPosition].j;
     lireBloc(fichier, *i, &bufferTovc);

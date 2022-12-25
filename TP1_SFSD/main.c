@@ -42,13 +42,14 @@ void print_result( int, char *, char *, int );
 
 int main() {
 
-    FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'N');
+    FichierTovc *fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
+    FichierTof *indexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
     int i = 0;
     int j = 0;
 
     Student student;
-    student.id = 1111;
-    student.class = 460;
+    student.id = 79;
+    student.class = 42;
     strcpy(student.fullName ,"Houari Mohammed");
     student.gender = 'M';
     student.isDeleted = '0';
@@ -57,6 +58,10 @@ int main() {
     student.marks[2] = 9.25;
     student.marks[3] = 5.5;
     student.marks[4] = 8.0;
+
+    int tempI, tempJ;
+    bool found;
+    searchStudent(fichier, indexFile, student, &i, &j, &tempI, &tempJ, &found);
 
 //    loadSubjects();
 
@@ -68,7 +73,6 @@ int main() {
 //    char testString[TOVC_BUFFER_SIZE];
 //    FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
 ////    updateStudentInfo(fichier, 2, 3, 2039);
-    createSchoolYear(fichier, &i, &j);
 //
 ////    Custom student for test
 //    Student student;
