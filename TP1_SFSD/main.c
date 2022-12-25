@@ -7,6 +7,7 @@
 #include "TofIndexFunctions.h"
 #include "DataManipulation.h"
 #include "student-library.h"
+#include "ArchiveManipulation.h"
 
 #define SIZE 10
 
@@ -32,8 +33,10 @@ char *gender;
 float tableOfMarks[MAX_NUMBER_OF_SUBJECTS];
 
 //File buffer:
-BufferTovc bufferTovc;
-BufferTof bufferTof;
+BufferTovc bufferTovcData;
+BufferTof bufferTofClass;
+BufferTofMoyenne bufferTofMoyenne;
+BufferTovc bufferTovcArchive;
 
 int tempStudentID;
 int tempStudentClass;
@@ -58,6 +61,10 @@ int main() {
     student.marks[3] = 5.5;
     student.marks[4] = 8.0;
 
+    printf("%f", (float) 25/100);
+
+    //system("mkdir archive");
+
 //    loadSubjects();
 
 //    updateStudentInfo(fichier, student, 2, 5, 3.25);
@@ -68,7 +75,7 @@ int main() {
 //    char testString[TOVC_BUFFER_SIZE];
 //    FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
 ////    updateStudentInfo(fichier, 2, 3, 2039);
-    createSchoolYear(fichier, &i, &j);
+   // createSchoolYear(fichier, &i, &j);
 //
 ////    Custom student for test
 //    Student student;

@@ -110,10 +110,10 @@ void lirechaine(FichierTovc *fichier, BufferTovc *bufferTovc, char *chaine, int 
 
         } else {
             if (*j < TOVC_BUFFER_SIZE) {
-                //if the current character is not the last character in the bufferTovc
+                //if the current character is not the last character in the bufferTovcData
                 chaine[k] = bufferTovc->tab[*j];
             } else {
-                //if the limit of the bufferTovc is exceeded, so move to the next block
+                //if the limit of the bufferTovcData is exceeded, so move to the next block
                 (*i)++;
                 lireBloc(fichier, *i, bufferTovc);
                 chaine[k] = bufferTovc->tab[0];

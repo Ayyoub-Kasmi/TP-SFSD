@@ -20,7 +20,9 @@ void
 searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int *i, int *j, int *indexI, int *indexJ,
               bool *found);
 
-void updateStudentInfo(FichierTovc* fichierTovc, Student student, int numberOfArguments, ...);
+void skip(FichierTovc *fichier, int steps, int *i, int *j);
+
+void updateStudentInfo(FichierTovc *fichierTovc, Student student, int numberOfArguments, ...);
 
 void deleteStudent(FichierTovc *fichier, Student student);
 

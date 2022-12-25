@@ -16,6 +16,7 @@
 #define STUDENT_PER_CLASS 4
 #define FIRST_LOAD_OF_STUDENTS 120
 #define FIRST_LOAD_OF_CLASSES 30
+#define MAX_STUDENTS_PER_YEAR 300
 #define LAST_NAMES_FILE_PATH "LastNames.txt" //this is the alternative for the moment
 #define FIRST_NAMES_AND_GENDER_FILE_PATH "FirstNamesAndGenders.txt"
 #define CLASS_INDEX_FILE_PATH "classIndexFile"
@@ -47,12 +48,12 @@ typedef struct {
 } ClassIdIndexElement;
 
 typedef struct {
-    StudentsIdIndexElement tab[FIRST_LOAD_OF_STUDENTS];
+    StudentsIdIndexElement tab[MAX_STUDENTS_PER_YEAR];
     int nb; //number of elements within the array
 } StudentsIdArray;
 
 typedef struct {
-    ClassIdIndexElement tab[FIRST_LOAD_OF_CLASSES];
+    ClassIdIndexElement tab[MAX_STUDENTS_PER_YEAR];
     int nb; //number of elements within the array
 } ClassIdArray;
 
@@ -64,7 +65,7 @@ typedef struct {
 } NameProperties;
 
 typedef struct {
-    NameProperties tab[FIRST_LOAD_OF_STUDENTS];
+    NameProperties tab[MAX_STUDENTS_PER_YEAR];
     //an array to sort the names alphabetically before inserting them
     int nb; //number of elements within the lines
 } StudentsNamesArray;
@@ -82,7 +83,7 @@ typedef struct {
 
 //Global variables:
 extern int numberOfSubjectsPerLevel[6];
-extern BufferTovc bufferTovc;
+extern BufferTovc bufferTovcData;
 extern position classesIndex[FIRST_LOAD_OF_CLASSES];
 extern int tempStudentID;
 extern int tempStudentClass;
