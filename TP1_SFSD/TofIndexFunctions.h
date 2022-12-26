@@ -11,7 +11,7 @@
 #define TOF_BUFFER_SIZE 35
 
 typedef struct {
-    int LastBloc;
+    int NumberOfBlocks;
     int NumberOfRecordsInserted;
     int NumberOfRecordsDeleted;
 }EnteteTof;

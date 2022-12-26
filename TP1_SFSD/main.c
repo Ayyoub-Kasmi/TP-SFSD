@@ -41,16 +41,32 @@ int tempStudentClass;
 void print_result( int, char *, char *, int );
 
 int main() {
+    FichierTovc *fichier;
+    FichierTof *classIndexFile;
 
-    FichierTovc *fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
-    FichierTof *indexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
     int i = 0;
     int j = 0;
+    bool new=false;
+    if(new){
+        fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'N');
+        classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'N');
+        createSchoolYear(fichier, classIndexFile, &i, &j);
+        fermerFichier(fichier);
+    }else{
+        fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
+        classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
+    }
+
+    i=0; j=0;
+    classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
+    lireBlocTof(classIndexFile, 0, &bufferTof);
 
     Student student;
-    student.id = 79;
-    student.class = 42;
-    strcpy(student.fullName ,"Houari Mohammed");
+    student.id = 1;
+    student.class = 599;
+    student.lastNameSize = 4;
+    student.firstNameSize = 5;
+    strcpy(student.fullName ,"aaaaabbbb");
     student.gender = 'M';
     student.isDeleted = '0';
     student.marks[0] = 10.00;
@@ -58,12 +74,25 @@ int main() {
     student.marks[2] = 9.25;
     student.marks[3] = 5.5;
     student.marks[4] = 8.0;
+    student.marks[5] = 6.0;
+    student.marks[6] = 8.75;
 
     int tempI, tempJ;
     bool found;
-    searchStudent(fichier, indexFile, student, &i, &j, &tempI, &tempJ, &found);
+//    searchStudent(fichier, classIndexFile, student, &i, &j, &tempI, &tempJ, &found);
+    int indexI, indexJ; bool isDeleted;
+//    searchStudent(fichier, classIndexFile, student, &i, &j, &indexI, &indexJ, &found);
+    insertStudent(fichier, classIndexFile, student);
+    printf("\n\ni: %d\tj: %d\n\n", i, j);
+    i = 23; j = 196;
 
-//    loadSubjects();
+    lireBloc(fichier, i, &bufferTovc);
+    for(int k = 0; k<50; k++){
+        printf("%c", bufferTovc.tab[j]);
+        j++;
+    }
+
+    //    loadSubjects();
 
 //    updateStudentInfo(fichier, student, 2, 5, 3.25);
 //    int x = stringToInt(s, 3);
@@ -321,3 +350,15 @@ void print_result( int res, char * p_buffer1, char * p_buffer2, int index )
 //    sscanf(str1, "%d", &i1);
 //    printf("\n%d", i1);
 
+//    char str[50];
+//    lirechaine(fichier, &bufferTovc, str, 2, &i, &j);
+//    lirechaine(fichier, &bufferTovc, str, 2, &i, &j);
+//    lirechaine(fichier, &bufferTovc, str, 3, &i, &j); str[3] = '\0';
+//    printf("this is the class id: %s\n", str);
+//    lirechaine(fichier, &bufferTovc, str, 4, &i, &j); str[4] = '\0';
+//    printf("this is the student id: %s\n", str);
+//    skip(fichier, 1+4*4, &i, &j);
+//    lirechaine(fichier, &bufferTovc, str, 5, &i, &j); str[5] = '\0';
+//    printf("this is the first name: %s\n", str);
+//    lirechaine(fichier, &bufferTovc, str, 6, &i, &j); str[6] = '\0';
+//    printf("this is the last name: %s\n", str);

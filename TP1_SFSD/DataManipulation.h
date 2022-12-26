@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "tovcFunctions.h"
+#include "TofIndexFunctions.h"
 
 //definition of system constants
 #define CURRENT_YEAR_FILE_PATH  "2022_STUDENTS.bin"
@@ -125,7 +126,7 @@ void insertClassId(ClassIdArray *roomIdArray, int id);
 
 void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i);
 
-void createSchoolYear(FichierTovc *fichier, int *i, int *j);
+void createSchoolYear(FichierTovc *fichier, FichierTof *indexFile, int *i, int *j);
 
 void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j);
 

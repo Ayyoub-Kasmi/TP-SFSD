@@ -1,7 +1,3 @@
-//
-// Created by AOUFAR FARES on 23/10/2022.
-//
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "tovcFunctions.h"
@@ -41,7 +37,7 @@ FILE *getFile(FichierTovc *fichier) {
 }
 
 FichierTovc *ouvrirFichierTovc(char *name, char mode) {
-    FichierTovc *fichier = malloc(sizeof(fichier));
+    FichierTovc *fichier = malloc(sizeof(FichierTovc) );
     if (mode == 'N') { //Nouveau fichier
         fichier->file = fopen(name, "wb+");
         setEntete(fichier, 1, 0);
@@ -92,14 +88,11 @@ void ecrireChaine(FichierTovc *fichier, BufferTovc *bufferTovc, char *chaine, in
             (*j) = 1;
         }
     }
-
-    setEntete(fichier, 2, *j); //to check
-    setEntete(fichier, 3, getEntete(fichier, 3) + taille); //move this to "Ecrire Enregistrement
 }
 
 void lirechaine(FichierTovc *fichier, BufferTovc *bufferTovc, char *chaine, int taille, int *i, int *j) {
     for (int k = 0; k < taille; ++k) {
-        if (*i == getEntete(fichier, 1)) {
+        if (*i == getEntete(fichier, 1) -1) {
             //if the current bloc is the last block
 
             if (*j < getEntete(fichier, 2)) {
@@ -109,18 +102,16 @@ void lirechaine(FichierTovc *fichier, BufferTovc *bufferTovc, char *chaine, int 
             } else return;
 
         } else {
-            if (*j < TOVC_BUFFER_SIZE) {
-                //if the current character is not the last character in the bufferTovc
-                chaine[k] = bufferTovc->tab[*j];
-            } else {
-                //if the limit of the bufferTovc is exceeded, so move to the next block
+            if (*j == TOVC_BUFFER_SIZE) {
                 (*i)++;
                 lireBloc(fichier, *i, bufferTovc);
-                chaine[k] = bufferTovc->tab[0];
+                *j = 0;
             }
+            chaine[k] = bufferTovc->tab[*j];
             (*j)++;
         }
     }
+
     if(*j == TOVC_BUFFER_SIZE){
         (*i)++;
         *j = 0;

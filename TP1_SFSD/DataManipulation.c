@@ -330,7 +330,7 @@ void intToString(char *string, int number, int length) {
  }
 */
 
-void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
+void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, int *j) {
     //open first names file
     FILE *firstNamesAndGendersFile;
     firstNamesAndGendersFile = fopen(FIRST_NAMES_AND_GENDER_FILE_PATH, "r");
@@ -353,10 +353,6 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     int year = CURRENT_YEAR;
     int level;
 
-    //initialize the index array
-    for(int k=0; k<FIRST_LOAD_OF_CLASSES; k++){
-        classesIndex[k].i=INT_MAX;
-    }
     *i = 0;
     *j = 0;
     Student student;
@@ -381,8 +377,8 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
 
         //writing the class positions into the index
-        classesIndex[k].i=*i;
-        classesIndex[k].j=*j;
+        classIdArray.tab[k].i=*i;
+        classIdArray.tab[k].j=*j;
 
 
         for (int l = 0; l < STUDENT_PER_CLASS; ++l) {
@@ -405,14 +401,12 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
 
     }
 
-    setEntete(fichier, 1, *i); //Number of the last block
+    setEntete(fichier, 1, (*i)+1); // Total number of blocks
     setEntete(fichier, 2, *j); //Last position in the lastBloc
     setEntete(fichier, 3, TOVC_BUFFER_SIZE * (*i + 1) + (*j) + 1); //Total number of characters in the file
     setEntete(fichier, 4, 0); //number of chars deleted
 
-    //saving the index into a file
-    FichierTof* classIndexFile = ouvrirFichierTof("classIndexFile", 'N');
-
+    //saving the class index into the file
     int i1 = 0, j1 = 0;
     IndexRecord record;
     //BufferTof bufferTovc;
@@ -432,10 +426,11 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
             j1 = 1;
         }
     }
-    bufferTof.nb = j1 - 1;
-    ecrireBlocTof(classIndexFile, *i, &bufferTof);
-    setEnteteTof(classIndexFile, 1, i1);
+    bufferTof.nb = j1;
+    ecrireBlocTof(classIndexFile, i1, &bufferTof);
+    setEnteteTof(classIndexFile, 1, i1+1);
     setEnteteTof(classIndexFile, 2, FIRST_LOAD_OF_CLASSES);
+    setEnteteTof(classIndexFile, 3, 0);
 
 
     //close first names file
@@ -525,10 +520,6 @@ void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
 
     //Write gender
     ecrireChaine(fichier, &bufferTovc, &student->gender, GENDER_SIZE, i, j);
-
-    setEntete(fichier, 1, *i);
-//    if (*j >= buffer->positionLibre) buffer->positionLibre = *j; ==> j will be auto set inside ecrire chaine
-    setEntete(fichier, 2, *j);
     ecrireBloc(fichier, *i, &bufferTovc);
 
 //    printf("student id: %d\t student class: %d\t fullname: %s\n", student->id, student->class, student->fullName);
