@@ -272,9 +272,23 @@ void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student)
         }
         int numberOfCharsInserted = (int) strlen(stringBuffer);
         indexJ++;
-        if (indexJ >= TOF_BUFFER_SIZE) indexI++;
-        while (indexI <= getEnteteTof(indexFile, 1)){
-            lireBlocTof(indexFile, indexI, &bufferTofClass);
+        while (indexI < getEnteteTof(indexFile, 1)){
+            if (indexI == getEnteteTof(indexFile, 1) - 1){
+                if (indexJ >= bufferTofClass.nb) break;
+                // quit the loop if we reached the end of the file
+            }
+            if (indexJ >= TOF_BUFFER_SIZE){
+                indexI++;
+                lireBlocTof(indexFile, indexI, &bufferTofClass);
+                indexJ = 0;
+            }
+            bufferTofClass.tab[indexJ].j += numberOfCharsInserted;
+            while (bufferTofClass.tab[indexJ].j >= TOF_BUFFER_SIZE){
+                bufferTofClass.tab[indexJ].i++;
+                bufferTofClass.tab[indexJ].j -= TOF_BUFFER_SIZE;
+            }
+            indexJ++;
+
 
         }
 

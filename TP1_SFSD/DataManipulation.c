@@ -342,7 +342,7 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     FILE *lastNamesFile;
     lastNamesFile = fopen(LAST_NAMES_FILE_PATH, "r");
     if (lastNamesFile == NULL) {
-        printf("First names file not found!\n");
+        printf("Last names file not found!\n");
         exit(1);
     }
 
@@ -381,8 +381,8 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
 
         //writing the class positions into the index
-        classesIndex[k].i=*i;
-        classesIndex[k].j=*j;
+        classIdArray.tab[k].i=*i;
+        classIdArray.tab[k].j=*j;
 
 
         for (int l = 0; l < STUDENT_PER_CLASS; ++l) {
@@ -538,7 +538,7 @@ void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
     setEntete(fichier, 1, *i);
 //    if (*j >= buffer->positionLibre) buffer->positionLibre = *j; ==> j will be auto set inside ecrire chaine
     setEntete(fichier, 2, *j);
-    ecrireBloc(fichier, *i, &bufferTovcData);
+    ecrireBloc(fichier, *i, &bufferTovcData); //for the last bloc that hasn't been written
 }
 
 void generateStudentName(FILE* lastNamesFile, FILE* firstNamesAndGendersFile,StudentsNamesArray *studentsNamesArray) {

@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define TOF_BUFFER_SIZE 35
+#define TOF_BUFFER_SIZE 55
 
 typedef struct {
     int LastBloc;

@@ -17,6 +17,7 @@
 #define FIRST_LOAD_OF_STUDENTS 120
 #define FIRST_LOAD_OF_CLASSES 30
 #define MAX_STUDENTS_PER_YEAR 300
+#define MAX_NUMBER_OF_PREPA_STUDENTS 250
 #define LAST_NAMES_FILE_PATH "LastNames.txt" //this is the alternative for the moment
 #define FIRST_NAMES_AND_GENDER_FILE_PATH "FirstNamesAndGenders.txt"
 #define CLASS_INDEX_FILE_PATH "classIndexFile"
@@ -28,6 +29,7 @@
 #define MARK_LENGTH 4
 #define MARK_WHOLE_PART_LENGTH 2
 #define MARK_DECIMAL_PART_LENGTH 2
+#define MIN_5TH_GRADE_CLASS_ID 500
 
 
 typedef struct {
@@ -80,6 +82,12 @@ typedef struct {
     char isDeleted;
     float marks[MAX_NUMBER_OF_SUBJECTS];
 } Student;
+
+typedef struct {
+    Student tab[MAX_STUDENTS_PER_YEAR];
+    //an array to put the students who failed to pass the year
+    int nb; //number of students within the array
+} StudentsWhoFailed;
 
 //Global variables:
 extern int numberOfSubjectsPerLevel[6];

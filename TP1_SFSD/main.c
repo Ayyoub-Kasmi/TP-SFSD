@@ -60,8 +60,20 @@ int main() {
     student.marks[2] = 9.25;
     student.marks[3] = 5.5;
     student.marks[4] = 8.0;
+    char classID[CLASS_ID_SIZE + 1] = "p53";
+    char roomString[ROOM_SIZE + 1];
 
-    printf("%f", (float) 25/100);
+    strncpy(roomString, classID + SCHOOL_LEVEL_SIZE, ROOM_SIZE);
+
+    if (classID[0] == 'p'){
+        student.class = 100;
+    } else {
+        student.class = 100 * stringToInt(&classID[0], SCHOOL_LEVEL_SIZE) + 100;
+    }
+    strncpy(roomString, classID + SCHOOL_LEVEL_SIZE, ROOM_SIZE);
+    student.class += stringToInt(roomString, ROOM_SIZE);
+
+    printf("%f %s %d %c", (float) 25/100, roomString, student.class, student.isDeleted);
 
     //system("mkdir archive");
 

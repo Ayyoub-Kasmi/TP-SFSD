@@ -119,12 +119,14 @@ void printFileMoyenne(FichierTofMoyenne *fichier) {
     for (int i = 0; i <= getEnteteMoyenne(fichier, 1); ++i) {
         lireBlocMoyenne(fichier, i, &bufferTofMoyenne);
         for (int j = 0; j <= bufferTofMoyenne.nb; j++) {
-            printf("\nbloc: %d, position: %d Key: %f \n", bufferTofMoyenne.tab[j].i, bufferTofMoyenne.tab[j].j,bufferTofMoyenne.tab[j].moyenne);
+            printf("\nbloc: %d, position: %d Key: %f \n", bufferTofMoyenne.tab[j].i, bufferTofMoyenne.tab[j].j,
+                   bufferTofMoyenne.tab[j].moyenne);
         }
     }
 }
 
-void rechercheMoyenne(FichierTofMoyenne *fichier, float moyenne, int *i, int *j, BufferTofMoyenne *buffer, bool *found) {
+void
+rechercheMoyenne(FichierTofMoyenne *fichier, float moyenne, int *i, int *j, BufferTofMoyenne *buffer, bool *found) {
     //don't forget to check if it's not erased !!!
 
     //TO BE CHANGED ASAP
@@ -200,12 +202,108 @@ void supressionMoyenne(FichierTofMoyenne *fichier, float moyenne, BufferTofMoyen
 
 }
 
-void archive(FichierTovc *currentYearFile, FichierTof *classIndexFile, FichierTovc *archiveFile,
-             FichierTofMoyenne *moyennefile) {
+void
+createNewPrepaStudents(FichierTovc *nextYearFile, ClassIdArray *classIdArray, FichierTof *currentYearClassIndexFile,
+                       int *newYearI, int *newYearJ) {
+    FILE *firstNamesAndGendersFile;
+    firstNamesAndGendersFile = fopen(FIRST_NAMES_AND_GENDER_FILE_PATH, "r");
+    if (firstNamesAndGendersFile == NULL) {
+        printf("first names & genders file not found!\n");
+        exit(1);
+    }
+
+    //open the last names file
+    FILE *lastNamesFile;
+    lastNamesFile = fopen(LAST_NAMES_FILE_PATH, "r");
+    if (lastNamesFile == NULL) {
+        printf("Last names file not found!\n");
+        exit(1);
+    }
+
+    classIdArray->nb = 0;
+    StudentsIdArray studentsIdArray;
+    studentsIdArray.nb = 0;
+    StudentsNamesArray studentsNamesArray;
+    studentsNamesArray.nb = 0;
+
+    for (int k = 0; k < MAX_NUMBER_OF_PREPA_STUDENTS; ++k) {
+        generateStudentId(&studentsIdArray);
+    }
+    for (int k = 0; k < MAX_NUMBER_OF_PREPA_STUDENTS; ++k) {
+        printf("Hey! I'm here!\n");
+        generateStudentName(lastNamesFile, firstNamesAndGendersFile, &studentsNamesArray);
+    }
+    Student student;
+    int level = 0;
+
+    int indexI = 0;
+    int indexJ = 0;
+    int k = 0;
+    *newYearI = 0;
+    *newYearJ = 0;
+    lireBlocTof(currentYearClassIndexFile, indexI, &bufferTofClass);
+
+    while (bufferTofClass.tab[indexJ].id < 100) { //because that's the smallest classId of a 1st year class
+        if (indexJ >= bufferTofClass.nb) {
+            if (indexI < getEnteteTof(currentYearClassIndexFile, 1) - 1) {
+                indexI++;
+                lireBlocTof(currentYearClassIndexFile, indexI, &bufferTofClass);
+                indexJ = 0;
+            } else break;
+        }
+
+        //writing the class positions into the index
+        classIdArray->tab[k].id = bufferTofClass.tab[indexJ].id;
+        classIdArray->tab[k].i = *newYearI;
+        classIdArray->tab[k].j = *newYearJ;
+
+
+        for (int l = 0; l < STUDENT_PER_CLASS; ++l) {
+            //get student information
+            student.id = studentsIdArray.tab[k * STUDENT_PER_CLASS + l].id;
+            student.class = bufferTofClass.tab[k].id;
+            strcpy(student.fullName, studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].fullName);
+            student.gender = studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].gender;
+            printf("student class: %d\n", student.class);
+
+            level = (student.class / 100) % 10; //refactor it using variables
+            getMarks(student.marks, level);
+
+            student.isDeleted = '0';
+
+            writeStudent(nextYearFile, &student, newYearI, newYearJ);
+
+        }
+        k++;
+        indexJ++;
+
+    }
+    classIdArray->nb = k;
+
+    //close first names file
+    fclose(firstNamesAndGendersFile);
+
+    //close last names file
+    fclose(lastNamesFile);
+
+}
+
+void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile, FichierTovc *archiveFile,
+             FichierTofMoyenne *moyennefile, FichierTovc *nextYearFile, FichierTof *nextYearClassIndexFile) {
     // the file pointers will be passed as parameters in the menu
     // Testing if the file pointers are NULL will be in the MENU interface !!!
+
+    //prepare to create new joiners to the next Year
+    int newYearI = 0;
+    int newYearJ = 0;
+    ClassIdArray classIdArray; //to create an index for the new year at the end
+    createNewPrepaStudents(nextYearFile, &classIdArray, currentYearClassIndexFile, &newYearI, &newYearJ);
+    //now the first part of our new year file is filled with prepa students who just joined us in this new year
+
     StudentsMoyenneArray studentsMoyenneArray;
     studentsMoyenneArray.nb = 0;
+    StudentsWhoFailed studentsWhoFailed;
+    studentsWhoFailed.nb = 0;
     bool endOfFile = false;
     int currentYearI = 0;
     int currentYearJ = 0;
@@ -222,22 +320,29 @@ void archive(FichierTovc *currentYearFile, FichierTof *classIndexFile, FichierTo
     char gender;
     char markWholePartString[MARK_WHOLE_PART_LENGTH + 1];
     char markDecimalPartString[MARK_DECIMAL_PART_LENGTH + 1];
-    char stringBuffer[
+    char archiveStringBuffer[
             STUDENT_ID_SIZE + CLASS_ID_SIZE + IS_DELETED_SIZE + LASTNAME_LENGTH + FIRSTNAME_LENGTH + GENDER_SIZE +
             MAX_NUMBER_OF_SUBJECTS *
             (MARK_WHOLE_PART_LENGTH + MARK_DECIMAL_PART_LENGTH) + MAX_LAST_NAME_SIZE + MAX_FIRST_NAME_SIZE];
+    Student student;
     char lastNameSizeString[LASTNAME_LENGTH + 1];
     char firstNameSizeString[FIRSTNAME_LENGTH + 1];
     char classID[CLASS_ID_SIZE + 1];
+    char roomString[ROOM_SIZE + 1];
     char ID[STUDENT_ID_SIZE + 1];
     char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + 1];
-
 
     if (currentYearI == getEntete(currentYearFile, 1)) {
         if (currentYearJ == getEntete(currentYearFile, 2)) endOfFile = true;
     }
 
-    lireBlocTof(classIndexFile, classIndexI, &bufferTofClass);
+    lireBlocTof(currentYearClassIndexFile, classIndexI, &bufferTofClass);
+    if (bufferTofClass.tab[classIndexJ].id < MIN_5TH_GRADE_CLASS_ID){
+        classIdArray.tab[classIdArray.nb].id = bufferTofClass.tab[classIndexJ].id + 100;
+        classIdArray.tab[classIdArray.nb].i = bufferTofClass.tab[classIndexJ].i;
+        classIdArray.tab[classIdArray.nb].j = bufferTofClass.tab[classIndexJ].j;
+        classIdArray.nb++;
+    }
     int level = (bufferTofClass.tab[classIndexJ].id / 100) % 10;
     int nextClassI = bufferTofClass.tab[classIndexJ + 1].i;
     int nextClassJ = bufferTofClass.tab[classIndexJ + 1].j;
@@ -245,27 +350,47 @@ void archive(FichierTovc *currentYearFile, FichierTof *classIndexFile, FichierTo
     lireBloc(currentYearFile, currentYearI, &bufferTovcData);
     while (!endOfFile) {
         if ((currentYearI == nextClassI) && (currentYearJ == nextClassJ)) {
-            classIndexJ++;
+            classIndexJ++; //Normally we're considering that the index file can be fully uploaded in the buffer
+            if (bufferTofClass.tab[classIndexJ].id < MIN_5TH_GRADE_CLASS_ID){ //Because that's the lowest id a 5th grade class can take
+                classIdArray.tab[classIdArray.nb].id = bufferTofClass.tab[classIndexJ].id + 100;
+                classIdArray.tab[classIdArray.nb].i = bufferTofClass.tab[classIndexJ].i;
+                classIdArray.tab[classIdArray.nb].j = bufferTofClass.tab[classIndexJ].j;
+                classIdArray.nb++;
+            }
+            //WE HAVE TO RECHECK THIS !!!!!
             level = (bufferTofClass.tab[classIndexJ].id / 100) % 10;
-            if (classIndexJ + 1 < bufferTofClass.nb) {
+            if (classIndexJ + 1 < bufferTofClass.nb) { // ELSE !!!!!
                 nextClassI = bufferTofClass.tab[classIndexJ + 1].i;
                 nextClassJ = bufferTofClass.tab[classIndexJ + 1].j;
             }
         }
 
         lirechaine(currentYearFile, &bufferTovcData, lastNameSizeString, LASTNAME_LENGTH, &currentYearI, &currentYearJ);
-        strcpy(stringBuffer, lastNameSizeString);
+        strcpy(archiveStringBuffer, lastNameSizeString);
+        student.lastNameSize = stringToInt(lastNameSizeString, LASTNAME_LENGTH);
         lastNameSize = stringToInt(lastNameSizeString, LASTNAME_LENGTH);
+
         lirechaine(currentYearFile, &bufferTovcData, firstNameSizeString, FIRSTNAME_LENGTH, &currentYearI,
                    &currentYearJ);
-        strcat(stringBuffer, firstNameSizeString);
+        strcat(archiveStringBuffer, firstNameSizeString);
+        student.firstNameSize = stringToInt(firstNameSizeString, FIRSTNAME_LENGTH);
         firstNameSize = stringToInt(firstNameSizeString, FIRSTNAME_LENGTH);
+
         //we don't have to extract the level from the class ID because we're already having it from the index
         lirechaine(currentYearFile, &bufferTovcData, classID, CLASS_ID_SIZE, &currentYearI, &currentYearJ);
-        strcat(stringBuffer, classID);
+        strcat(archiveStringBuffer, classID);
+        if (classID[0] == 'p') { //CHANGE IT'S PLACE
+            student.class = 100;
+        } else {
+            student.class = 100 * stringToInt(&classID[0], SCHOOL_LEVEL_SIZE) + 100;
+        }
+        strncpy(roomString, classID + SCHOOL_LEVEL_SIZE, ROOM_SIZE);
+        student.class += stringToInt(roomString, ROOM_SIZE);
+
 
         lirechaine(currentYearFile, &bufferTovcData, ID, STUDENT_ID_SIZE, &currentYearI, &currentYearJ);
-        strcat(stringBuffer, ID);
+        strcat(archiveStringBuffer, ID);
+        student.id = stringToInt(ID, STUDENT_ID_SIZE);
 
         //now we'll be at the effacement char so we'll have to test it to see if we're going to archibe this student or not
         if (bufferTovcData.tab[currentYearJ] == '1') {
@@ -279,6 +404,10 @@ void archive(FichierTovc *currentYearFile, FichierTof *classIndexFile, FichierTo
             }
             continue; // SAFELY jump to the next iteration
         }
+        student.isDeleted = '0'; // because if we reached this place it means that this student isn't deleted
+
+        //We're going to update the classIdArray here to make sur that the student isn't deleted and to
+        //avoid conflicts
 
         //IF WE WANT WE CAN ADD THE DELETED CHAR BUT IT'S USELESS
 
@@ -296,6 +425,8 @@ void archive(FichierTovc *currentYearFile, FichierTof *classIndexFile, FichierTo
             moyenne += (float) markWholePart + (float) markDecimalPart / MARK_DECIMAL_PART_LENGTH;
         }
         moyenne /= (float) numberOfSubjectsPerLevel[level];
+        //new marks for the new year
+        getMarks(student.marks, level);
         //to make the string -> int conversion easier
         intMoyenne = (int) moyenne * 100;
         markWholePart = intMoyenne / 100;
@@ -305,26 +436,52 @@ void archive(FichierTovc *currentYearFile, FichierTof *classIndexFile, FichierTo
 //
 //        sprintf(markWholePartString, "%d%d", (markWholePart / 10) % 10, markWholePart % 10);
 //        sprintf(markDecimalPartString, "%d%d", (markDecimalPart / 10) % 10, markDecimalPart % 10);
-        strcat(stringBuffer, markWholePartString);
-        strcat(stringBuffer, markDecimalPartString);
+        strcat(archiveStringBuffer, markWholePartString);
+        strcat(archiveStringBuffer, markDecimalPartString);
         insertStudentMoyenneInArray(&studentsMoyenneArray, archiveI, archiveJ, moyenne);
 
         lirechaine(currentYearFile, &bufferTovcData, fullName, MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE, &currentYearI,
                    &currentYearJ);
-        strcat(stringBuffer, fullName);
+        strcat(archiveStringBuffer, fullName);
+        strcpy(student.fullName, fullName);
         lirechaine(currentYearFile, &bufferTovcData, &gender, GENDER_SIZE, &currentYearI,
                    &currentYearJ);
-        strcat(stringBuffer, &gender);
+        strcat(archiveStringBuffer, &gender);
+        strcpy(&student.gender, &gender);
 
-        ecrireChaine(archiveFile, &bufferTovcArchive, stringBuffer, (int)strlen(stringBuffer), &archiveI, &archiveJ);
-        ecrireBloc(archiveFile, archiveI, &bufferTovcArchive);
-        setEntete(archiveFile, 3, getEntete(archiveFile, 3) + (int)strlen(stringBuffer));
+        ecrireChaine(archiveFile, &bufferTovcArchive, archiveStringBuffer, (int) strlen(archiveStringBuffer), &archiveI,
+                     &archiveJ);
+
+        setEntete(archiveFile, 3, getEntete(archiveFile, 3) + (int) strlen(archiveStringBuffer));
 
         if (currentYearI == getEntete(currentYearFile, 1)) {
             if (currentYearJ == getEntete(currentYearFile, 2)) endOfFile = true;
         }
 
+        //Check wether the student passed, failed or graduated from the school
+        if (student.class >= MIN_5TH_GRADE_CLASS_ID + 100) { //was a 5th grade student
+            if (moyenne < 10) {
+                student.class -= 100;
+                if (studentsWhoFailed.nb == 0)
+                    studentsWhoFailed.tab[0] = student;
+                else studentsWhoFailed.tab[studentsWhoFailed.nb] = student;
+                studentsWhoFailed.nb++;
+            }
+        } else { //CHANGE THE OREDER OF THE CONDITIONS
+            if (moyenne < 10) {
+                student.class -= 100;
+                if (studentsWhoFailed.nb == 0)
+                    studentsWhoFailed.tab[0] = student;
+                else studentsWhoFailed.tab[studentsWhoFailed.nb] = student;
+                studentsWhoFailed.nb++;
+            } else {
+                writeStudent(nextYearFile, &student, &newYearI, &newYearJ);
+            }
+        }
+
     }
+    // This should go outside the loop !!!
+    ecrireBloc(archiveFile, archiveI, &bufferTovcArchive);
     setEntete(archiveFile, 1, archiveI + 1);
     setEntete(archiveFile, 2, archiveJ);
     setEntete(archiveFile, 4, 0);
@@ -349,10 +506,38 @@ void archive(FichierTovc *currentYearFile, FichierTof *classIndexFile, FichierTo
     ecrireBlocMoyenne(moyennefile, i1, &bufferTofMoyenne);
     setEnteteMoyenne(moyennefile, 1, i1 + 1);
     setEnteteMoyenne(moyennefile, 2, studentsMoyenneArray.nb);
+
+    //Create the next year index file
+    i1 = 0;
+    j1 = 0;
+    IndexRecord record;
+    for (int k = 0; k < classIdArray.nb; ++k) {
+        record.id = classIdArray.tab[k].id;
+        record.isDeleted = false;
+        record.i = classIdArray.tab[k].i;
+        record.j = classIdArray.tab[k].j;
+        if (j1 < TOF_BUFFER_SIZE) {
+            bufferTofClass.tab[j1] = record;
+            j1++;
+        } else {
+            bufferTofClass.nb = j1;
+            ecrireBlocTof(nextYearClassIndexFile, i1, &bufferTofClass);
+            i1++;
+            bufferTofClass.tab[0] = record;
+            j1 = 1;
+        }
+    }
+    bufferTofClass.nb = j1;
+    ecrireBlocTof(nextYearClassIndexFile, i1, &bufferTofClass);
+    setEnteteTof(nextYearClassIndexFile, 1, i1 + 1);
+    setEnteteTof(nextYearClassIndexFile, 2, classIdArray.nb);
 }
 
+
+
 void
-searchStudentMoyenneInArray(StudentsMoyenneArray *studentsMoyenneArray, int archiveI, int archiveJ, float moyenne, int *k) {
+searchStudentMoyenneInArray(StudentsMoyenneArray *studentsMoyenneArray, int archiveI, int archiveJ, float moyenne,
+                            int *k) {
     //we won't need the found variable because the values will be repetetive
     if (studentsMoyenneArray->nb > 0) {
         while ((*k < studentsMoyenneArray->nb)) {
