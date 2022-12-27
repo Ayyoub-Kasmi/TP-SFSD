@@ -81,7 +81,6 @@ int main() {
     bool found;
 //    searchStudent(fichier, classIndexFile, student, &i, &j, &tempI, &tempJ, &found);
     int indexI, indexJ; bool isDeleted;
-//    searchStudent(fichier, classIndexFile, student, &i, &j, &indexI, &indexJ, &found);
     insertStudent(fichier, classIndexFile, student);
     printf("\n\ni: %d\tj: %d\n\n", i, j);
     i = 23; j = 196;

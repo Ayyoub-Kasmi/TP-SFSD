@@ -181,10 +181,11 @@ void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student)
     if (!found) {
         //some code to create the student string
         char container1[4];//used to do the int => string conversion
-        char stringBuffer[
-                STUDENT_ID_SIZE + CLASS_ID_SIZE + IS_DELETED_SIZE + LASTNAME_LENGTH + FIRSTNAME_LENGTH + GENDER_SIZE +
-                MAX_NUMBER_OF_SUBJECTS *
-                (MARK_WHOLE_PART_LENGTH + MARK_DECIMAL_PART_LENGTH) + student.firstNameSize + student.lastNameSize];
+        int totalStudentSize = FIRSTNAME_LENGTH + LASTNAME_LENGTH + CLASS_ID_SIZE + STUDENT_ID_SIZE + IS_DELETED_SIZE
+                + numberOfSubjectsPerLevel[student.class / 100] * MARK_LENGTH + student.firstNameSize
+                + student.lastNameSize + GENDER_SIZE;
+        char stringBuffer[totalStudentSize+1];
+        stringBuffer[totalStudentSize] = '\0';
 
         sprintf(container1, "%d%d", student.lastNameSize / 10,
                 student.lastNameSize % 10); //lastNameSize can be a number of one digit
@@ -250,10 +251,12 @@ void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student)
         if (i == getEntete(fichier, 1)-1) bufferPos = getEntete(fichier, 2);
         //TO BE TESTED IMMEDIATELY !!!
         while((!endOfFile) || (k != m + 1)){
-            if (k >= strlen(stringBuffer)) k = 0;
+            if (k >= totalStudentSize) k = 0;
             if (j >= TOVC_BUFFER_SIZE) {
-                j = 0;
                 i++;
+                j = 0;
+                //there's something suspicious here: we're supposed to read the next block after writing the current
+                    //one...
                 if (i == getEntete(fichier, 1)-1) bufferPos = getEntete(fichier, 2);
                 ecrireBloc(fichier, i, &bufferTovc);
             }
@@ -278,7 +281,24 @@ void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student)
             lireBlocTof(indexFile, indexI, &bufferTof);
         }
 
+        //Aoufar's suggested code for the last loop:
 
+//        int numberOfCharsInserted = (int) strlen(stringBuffer);
+//        indexJ++;
+//        if (indexJ >= TOF_BUFFER_SIZE) indexI++;
+//        while (indexI < getEnteteTof(indexFile, 1)){
+//            if (indexJ >= TOF_BUFFER_SIZE){
+//                indexI++;
+//                lireBlocTof(indexFile, indexI, &bufferTofClass);
+//            }
+//            bufferTofClass.tab[indexJ].j += numberOfCharsInserted;
+//            while (bufferTofClass.tab[indexJ].j >= TOF_BUFFER_SIZE){
+//                bufferTofClass.tab[indexJ].i++;
+//                bufferTofClass.tab[indexJ].j -= TOF_BUFFER_SIZE;
+//            }
+//            indexJ++;
+//
+//        }
         setEntete(fichier, 1, i+1);
 //    if (*j >= buffer->positionLibre) buffer->positionLibre = *j; ==> j will be auto set inside ecrire chaine
         setEntete(fichier, 2, j);
