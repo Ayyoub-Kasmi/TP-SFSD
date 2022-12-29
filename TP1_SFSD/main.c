@@ -57,6 +57,7 @@ int main() {
         classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
     }
 
+
     i=0; j=0;
     classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
     lireBlocTof(classIndexFile, 0, &bufferTof);
@@ -81,9 +82,14 @@ int main() {
     bool found;
 //    searchStudent(fichier, classIndexFile, student, &i, &j, &tempI, &tempJ, &found);
     int indexI, indexJ; bool isDeleted;
-    insertStudent(fichier, classIndexFile, student);
+//    insertStudent(fichier, classIndexFile, student);
+
+    printf("\n\n");
+    printStudentsFile(fichier);
+    printf("\n\n");
+
     printf("\n\ni: %d\tj: %d\n\n", i, j);
-    i = 23; j = 196;
+    i = 2; j = 0;
 
     lireBloc(fichier, i, &bufferTovc);
     for(int k = 0; k<50; k++){

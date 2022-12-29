@@ -114,6 +114,7 @@ void lirechaine(FichierTovc *fichier, BufferTovc *bufferTovc, char *chaine, int 
 
     if(*j == TOVC_BUFFER_SIZE){
         (*i)++;
+        lireBloc(fichier, *i, bufferTovc);
         *j = 0;
     }
 }

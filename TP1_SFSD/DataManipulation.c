@@ -657,4 +657,68 @@ void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, c
 
 }
 
+void printStudentsFile(FichierTovc *fichier){
+    int i=0, j=0;
+    Student student;
+
+    char firstNameSize[FIRSTNAME_LENGTH + 1];
+    char lastNameSize[LASTNAME_LENGTH + 1];
+    char classID[CLASS_ID_SIZE + 1];
+    char ID[STUDENT_ID_SIZE + 1];
+    char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + 1];
+    char mark[MARK_LENGTH + 1];
+
+    lireBloc(fichier, i, &bufferTovc);
+
+    while( i< getEntete(fichier, 1)-1 || j < getEntete(fichier, 2)){
+        //Reading all information of the current student from the file:
+
+        //Reading first name and last name sizes
+        lirechaine(fichier, &bufferTovc, firstNameSize, FIRSTNAME_LENGTH, &i, &j);
+        student.firstNameSize = stringToInt(firstNameSize, FIRSTNAME_LENGTH);
+        lirechaine(fichier, &bufferTovc, lastNameSize, LASTNAME_LENGTH, &i, &j);
+        student.lastNameSize = stringToInt(lastNameSize, LASTNAME_LENGTH);
+
+        //Reading the class ID
+        lirechaine(fichier, &bufferTovc, classID, CLASS_ID_SIZE, &i, &j);
+        if(classID[0] == 'p') classID[0] = '0';
+        student.class = stringToInt(classID, CLASS_ID_SIZE);
+
+        //Reading the student ID
+        lirechaine(fichier, &bufferTovc, ID, STUDENT_ID_SIZE, &i, &j);
+        student.id = stringToInt(ID, STUDENT_ID_SIZE);
+
+        //Reading the isDeleted character
+        student.isDeleted = bufferTovc.tab[j];
+        j++;
+        if(j == TOVC_BUFFER_SIZE){
+            i++;
+            lireBloc(fichier, i, &bufferTovc);
+            j=0;
+        }
+
+        //Reading the marks
+        int count = numberOfSubjectsPerLevel[student.class / 100];
+        for(int k = 0; k< count; k++){
+            lirechaine(fichier, &bufferTovc, mark, MARK_LENGTH, &i, &j);
+            student.marks[k] = stringToInt(mark, MARK_LENGTH) / 100.0;
+        }
+
+        //Reading last name and first name
+        lirechaine(fichier, &bufferTovc, student.fullName, student.lastNameSize + student.firstNameSize, &i, &j);
+        student.fullName[student.lastNameSize + student.firstNameSize] = '\0';
+
+        //Reading the gender character
+        student.gender = bufferTovc.tab[j];
+        j++;
+        if(j == TOVC_BUFFER_SIZE){
+            i++;
+            lireBloc(fichier, i, &bufferTovc);
+            j=0;
+        }
+
+        printf("class: %d\tID: %d\tname: %s\n", student.class, student.id, student.fullName);
+
+    }
+}
 

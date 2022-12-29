@@ -62,7 +62,6 @@ void ecrireChaine(FichierTovc* fichier, BufferTovc *bufferTovc, char* chaine, in
 
 void lirechaine(FichierTovc *fichier, BufferTovc *bufferTovc, char *chaine, int taille, int *i, int *j);
 
-void printFile(FichierTovc* fichier);
 
 
 
