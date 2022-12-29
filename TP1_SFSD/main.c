@@ -24,6 +24,10 @@ struct subjectsArray {
 int numberOfSubjectsPerLevel[6] =  {4, 5, 5, 7, 7, 7}; //just an example, not real i
 //we can also declare the names of subjects as a matrix of Levels-Subjects, if we need the names
 
+int numberOfClassesPerLevel[6];
+
+NonDenseIndexElement moyenneNonDenseIndex[MAX_STUDENTS_PER_YEAR/TOF_BUFFER_SIZE + TOF_BUFFER_SIZE];
+
 //Strings buffers
 char *firstName;
 char *lastName;

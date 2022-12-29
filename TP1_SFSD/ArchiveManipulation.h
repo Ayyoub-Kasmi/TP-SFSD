@@ -9,8 +9,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "DataManipulation.h"
+#include "TofIndexFunctions.h"
 
-#define TOF_MOYENNE_BUFFER_SIZE 35
+#define TOF_MOYENNE_BUFFER_SIZE 55
 
 typedef struct {
     int LastBloc;
@@ -38,8 +39,15 @@ typedef struct {
     int nb; //number of elements within the array
 } StudentsMoyenneArray;
 
+typedef struct {
+    float minMoyenne;
+    float maxMoyenne;
+}NonDenseIndexElement;
+
 extern BufferTofMoyenne bufferTofMoyenne;
 extern BufferTovc bufferTovcArchive;
+extern NonDenseIndexElement moyenneNonDenseIndex[MAX_STUDENTS_PER_YEAR/TOF_BUFFER_SIZE + TOF_BUFFER_SIZE];
+int numberOfClassesPerLevel[6];
 
 void setEnteteMoyenne(FichierTofMoyenne *fichier, int pos, int value);
 
@@ -72,6 +80,8 @@ void searchStudentMoyenneInArray(StudentsMoyenneArray *studentsMoyenneArray, int
 void insertStudentMoyenneInArray(StudentsMoyenneArray *studentsMoyenneArray, int archiveI, int archiveJ,float moyenne);
 
 void insertStudentMoyenneWithoutSearchingInArray(StudentsMoyenneArray *studentsMoyenneArray, float moyenne, int i);
+
+void createNewClass(ClassIdArray *classIdArray, int level, int min, int max);
 
 
 

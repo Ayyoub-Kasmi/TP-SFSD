@@ -288,6 +288,31 @@ createNewPrepaStudents(FichierTovc *nextYearFile, ClassIdArray *classIdArray, Fi
 
 }
 
+void createNewClass(ClassIdArray *classIdArray, int level, int min, int max) {
+    //initialize classIdArray.nb with 0 (outside) before running this function
+
+    int classID = 0, roomNumber = 0;
+
+    int seed = classIdArray->tab[classIdArray->nb].id;
+    if (classIdArray->nb != 0) seed += classIdArray->tab[classIdArray->nb - 1].id;
+
+    //generate a "unique" class number
+    bool found = true;
+    while (found) {
+        roomNumber = generate2positionInt(seed);
+        if ((roomNumber>= min) && (roomNumber < max)){
+            checkRoomNumber(classIdArray, roomNumber, &found);
+        }
+        seed = roomNumber;
+    }
+    //class number has been generated. Now assign a level for this class
+
+    classID = roomNumber + 100 * level;
+
+    insertClassId(classIdArray, classID);
+
+}
+
 void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile, FichierTovc *archiveFile,
              FichierTofMoyenne *moyennefile, FichierTovc *nextYearFile, FichierTof *nextYearClassIndexFile) {
     // the file pointers will be passed as parameters in the menu
@@ -314,6 +339,7 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
     int lastNameSize = 0;
     int firstNameSize = 0;
     int intMoyenne = 0;
+    int level;
     int markWholePart;
     int markDecimalPart;
     float moyenne = 0;
@@ -327,7 +353,7 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
     Student student;
     char lastNameSizeString[LASTNAME_LENGTH + 1];
     char firstNameSizeString[FIRSTNAME_LENGTH + 1];
-    char classID[CLASS_ID_SIZE + 1];
+    char classIdString[CLASS_ID_SIZE + 1];
     char roomString[ROOM_SIZE + 1];
     char ID[STUDENT_ID_SIZE + 1];
     char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + 1];
@@ -337,28 +363,35 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
     }
 
     lireBlocTof(currentYearClassIndexFile, classIndexI, &bufferTofClass);
+
+    level = 1;
     if (bufferTofClass.tab[classIndexJ].id < MIN_5TH_GRADE_CLASS_ID){
-        classIdArray.tab[classIdArray.nb].id = bufferTofClass.tab[classIndexJ].id + 100;
-        classIdArray.tab[classIdArray.nb].i = bufferTofClass.tab[classIndexJ].i;
-        classIdArray.tab[classIdArray.nb].j = bufferTofClass.tab[classIndexJ].j;
-        classIdArray.nb++;
+        createNewClass(&classIdArray, level, 0, 0); //for a new 1st grade class
+        //BUT THE i AND j MUST BE UPDATED TOO
+        classIdArray.tab[classIdArray.nb - 1].i = newYearI;
+        classIdArray.tab[classIdArray.nb - 1].j = newYearJ;
+
     }
-    int level = (bufferTofClass.tab[classIndexJ].id / 100) % 10;
+
+    level = (bufferTofClass.tab[classIndexJ].id / 100) % 10; //Used to get the number marks in the table of marks
     int nextClassI = bufferTofClass.tab[classIndexJ + 1].i;
     int nextClassJ = bufferTofClass.tab[classIndexJ + 1].j;
 
     lireBloc(currentYearFile, currentYearI, &bufferTovcData);
+
+
     while (!endOfFile) {
         if ((currentYearI == nextClassI) && (currentYearJ == nextClassJ)) {
             classIndexJ++; //Normally we're considering that the index file can be fully uploaded in the buffer
-            if (bufferTofClass.tab[classIndexJ].id < MIN_5TH_GRADE_CLASS_ID){ //Because that's the lowest id a 5th grade class can take
-                classIdArray.tab[classIdArray.nb].id = bufferTofClass.tab[classIndexJ].id + 100;
-                classIdArray.tab[classIdArray.nb].i = bufferTofClass.tab[classIndexJ].i;
-                classIdArray.tab[classIdArray.nb].j = bufferTofClass.tab[classIndexJ].j;
-                classIdArray.nb++;
-            }
+
             //WE HAVE TO RECHECK THIS !!!!!
             level = (bufferTofClass.tab[classIndexJ].id / 100) % 10;
+            if (bufferTofClass.tab[classIndexJ].id < MIN_5TH_GRADE_CLASS_ID){ //Because that's the lowest id a 5th grade class can take
+                createNewClass(&classIdArray, level + 1, 0, 0);
+
+
+            }
+
             if (classIndexJ + 1 < bufferTofClass.nb) { // ELSE !!!!!
                 nextClassI = bufferTofClass.tab[classIndexJ + 1].i;
                 nextClassJ = bufferTofClass.tab[classIndexJ + 1].j;
@@ -377,15 +410,17 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
         firstNameSize = stringToInt(firstNameSizeString, FIRSTNAME_LENGTH);
 
         //we don't have to extract the level from the class ID because we're already having it from the index
-        lirechaine(currentYearFile, &bufferTovcData, classID, CLASS_ID_SIZE, &currentYearI, &currentYearJ);
-        strcat(archiveStringBuffer, classID);
-        if (classID[0] == 'p') { //CHANGE IT'S PLACE
-            student.class = 100;
-        } else {
-            student.class = 100 * stringToInt(&classID[0], SCHOOL_LEVEL_SIZE) + 100;
-        }
-        strncpy(roomString, classID + SCHOOL_LEVEL_SIZE, ROOM_SIZE);
-        student.class += stringToInt(roomString, ROOM_SIZE);
+        lirechaine(currentYearFile, &bufferTovcData, classIdString, CLASS_ID_SIZE, &currentYearI, &currentYearJ);
+        strcat(archiveStringBuffer, classIdString);
+//        if (classIdString[0] == 'p') { //CHANGE IT'S PLACE
+//            student.class = 100;
+//        } else {
+//            student.class = 100 * stringToInt(&classIdString[0], SCHOOL_LEVEL_SIZE) + 100;
+//        }
+//        strncpy(roomString, classIdString + SCHOOL_LEVEL_SIZE, ROOM_SIZE);
+//        student.class += stringToInt(roomString, ROOM_SIZE);
+          student.class = classIdArray.tab[classIdArray.nb - 1].id; //FALSE
+
 
 
         lirechaine(currentYearFile, &bufferTovcData, ID, STUDENT_ID_SIZE, &currentYearI, &currentYearJ);
@@ -496,6 +531,8 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
             j1++;
         } else {
             bufferTofMoyenne.nb = j1;
+            moyenneNonDenseIndex[i1].minMoyenne = bufferTofMoyenne.tab[0].moyenne;
+            moyenneNonDenseIndex[i1].maxMoyenne = bufferTofMoyenne.tab[j1-1].moyenne;
             ecrireBlocMoyenne(moyennefile, i1, &bufferTofMoyenne);
             i1++;
             bufferTofMoyenne.tab[0] = studentsMoyenneArray.tab[k];
@@ -503,6 +540,8 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
         }
     }
     bufferTofMoyenne.nb = j1;
+    moyenneNonDenseIndex[i1].minMoyenne = bufferTofMoyenne.tab[0].moyenne;
+    moyenneNonDenseIndex[i1].maxMoyenne = bufferTofMoyenne.tab[j1-1].moyenne;
     ecrireBlocMoyenne(moyennefile, i1, &bufferTofMoyenne);
     setEnteteMoyenne(moyennefile, 1, i1 + 1);
     setEnteteMoyenne(moyennefile, 2, studentsMoyenneArray.nb);

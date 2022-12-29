@@ -204,7 +204,7 @@ void generateClassId(ClassIdArray *classIdArray) {
 }
 
 void searchClassId(ClassIdArray *roomIdArray, int id, int *i, bool *found) {
-    //normal binary search in the studentsIdArray
+    //normal binary search in the classIdArray
     *found = false;
     if (roomIdArray->nb > 0) {
         int inf = 0;
