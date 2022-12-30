@@ -257,23 +257,23 @@ void checkClassID(ClassIdArray *classIdArray, int classID, bool *found) {
     }
 }
 
-void insertClassId(ClassIdArray *roomIdArray, int id) {
+void insertClassId(ClassIdArray *classIdArray, int id) {
     //insertionTof with delays to keep the order in the studentsIdArray
-    if (roomIdArray->nb == 0) {
-        roomIdArray->tab[0].id = id;
-        roomIdArray->nb++;
+    if (classIdArray->nb == 0) {
+        classIdArray->tab[0].id = id;
+        classIdArray->nb++;
     } else {
         int i = 0;
         bool found = false;
-        searchClassId(roomIdArray, id, &i, &found);
+        searchClassId(classIdArray, id, &i, &found);
 
-        if (id < roomIdArray->tab[i].id) {
-            for (int k = roomIdArray->nb; k >= i; --k) {
-                roomIdArray->tab[k].id = roomIdArray->tab[k - 1].id;
+        if (id < classIdArray->tab[i].id) {
+            for (int k = classIdArray->nb; k >= i; --k) {
+                classIdArray->tab[k].id = classIdArray->tab[k - 1].id;
             }
         }
-        roomIdArray->tab[i].id = id;
-        roomIdArray->nb++;
+        classIdArray->tab[i].id = id;
+        classIdArray->nb++;
     }
 
 }
@@ -349,7 +349,6 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     //open the classes index file
 
 
-    int year = CURRENT_YEAR;
     int level;
 
     //initialize the index array
@@ -417,6 +416,10 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
 
     }
 
+    updateNumberOfClassesPerLevel(&classIdArray);
+
+
+
     setEntete(fichier, 1, (*i) + 1); //Total number blocs
     setEntete(fichier, 2, *j); //Last position in the lastBloc
     setEntete(fichier, 3, TOVC_BUFFER_SIZE * (*i + 1) + (*j) + 1); //Total number of characters in the file
@@ -458,6 +461,7 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
 
     //close the index file
     fermerFichierTof(classIndexFile);
+    currentYear++;
 }
 
 void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
@@ -671,6 +675,25 @@ void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, c
 
     }
 
+}
+
+void updateNumberOfClassesPerLevel(ClassIdArray* classIdArray){
+    //calculate number of classes per level:
+    int classSup = MIN_1TH_GRADE_CLASS_ID;
+    int count = 0, classIdArrayIndex = 0;
+    int level = 0;
+    while(classIdArrayIndex<classIdArray->nb){
+        if(classIdArray->tab[classIdArrayIndex].id < classSup){
+            count++;
+            classIdArrayIndex++;
+        } else {
+            numberOfClassesPerLevel[level] = count;
+            level++;
+            count = 0;
+            classSup += 100;
+        }
+    }
+    numberOfClassesPerLevel[level] = count; //Because at the end where going to quit the loop without saving the count
 }
 
 

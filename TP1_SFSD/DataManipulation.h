@@ -6,6 +6,7 @@
 
 //definition of system constants
 #define CURRENT_YEAR_FILE_PATH  "2022_STUDENTS.bin"
+#define DATE_OF_THE_CREATION_OF_THE_SCHOOL 2022
 #define STUDENT_ID_SIZE 4
 #define CLASS_ID_SIZE 3
 #define ROOM_SIZE 2
@@ -25,11 +26,11 @@
 #define MAX_FIRST_NAME_SIZE 30
 #define MAX_LAST_NAME_SIZE 30
 #define MAX_NUMBER_OF_SUBJECTS 7
-#define CURRENT_YEAR 2022
 #define MARK_LENGTH 4
 #define MARK_WHOLE_PART_LENGTH 2
 #define MARK_DECIMAL_PART_LENGTH 2
 #define MIN_5TH_GRADE_CLASS_ID 500
+#define MIN_1TH_GRADE_CLASS_ID 100
 
 
 typedef struct {
@@ -91,10 +92,12 @@ typedef struct {
 
 //Global variables:
 extern int numberOfSubjectsPerLevel[6];
+extern int numberOfClassesPerLevel[6];
 extern BufferTovc bufferTovcData;
 extern position classesIndex[FIRST_LOAD_OF_CLASSES];
 extern int tempStudentID;
 extern int tempStudentClass;
+extern int currentYear;
 
 //functions of part 1
 // a-
@@ -130,7 +133,7 @@ void checkClassID(ClassIdArray *classIdArray, int classID, bool *found);
 
 void searchClassId(ClassIdArray *roomIdArray, int id, int *i, bool *found);
 
-void insertClassId(ClassIdArray *roomIdArray, int id);
+void insertClassId(ClassIdArray *classIdArray, int id);
 
 void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i);
 
@@ -147,5 +150,7 @@ void insertStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, c
 
 void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, char *fullName, char gender, int firstNameSize,
                                        int lastNameSize, int i);
+
+void updateNumberOfClassesPerLevel(ClassIdArray* classIdArray);
 
 #endif //TP1_SFSD_DATAMANIPULATION_H

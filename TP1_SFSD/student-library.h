@@ -26,4 +26,6 @@ void updateStudentInfo(FichierTovc *fichierTovc, Student student, int numberOfAr
 
 void deleteStudent(FichierTovc *fichier, Student student);
 
+void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student);
+
 #endif //TP1_SFSD_STUDENT_LIBRARY_H

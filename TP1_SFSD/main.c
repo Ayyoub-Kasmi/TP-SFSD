@@ -26,7 +26,7 @@ int numberOfSubjectsPerLevel[6] =  {4, 5, 5, 7, 7, 7}; //just an example, not re
 
 int numberOfClassesPerLevel[6];
 
-NonDenseIndexElement moyenneNonDenseIndex[MAX_STUDENTS_PER_YEAR/TOF_BUFFER_SIZE + TOF_BUFFER_SIZE];
+MoyenneNonDenseIndex moyenneNonDenseIndex;
 
 //Strings buffers
 char *firstName;
@@ -44,6 +44,8 @@ BufferTovc bufferTovcArchive;
 
 int tempStudentID;
 int tempStudentClass;
+
+int currentYear;
 
 void print_result( int, char *, char *, int );
 
@@ -77,7 +79,10 @@ int main() {
     strncpy(roomString, classID + SCHOOL_LEVEL_SIZE, ROOM_SIZE);
     student.class += stringToInt(roomString, ROOM_SIZE);
 
-    printf("%f %s %d %c", (float) 25/100, roomString, student.class, student.isDeleted);
+    printf("%f %s %d %c\n", (float) 25/100, roomString, student.class, student.isDeleted);
+    system("ls");
+
+    printf("Hello AYYOUB");
 
     //system("mkdir archive");
 

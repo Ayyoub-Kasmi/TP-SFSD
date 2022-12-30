@@ -44,9 +44,14 @@ typedef struct {
     float maxMoyenne;
 }NonDenseIndexElement;
 
+typedef struct {
+    NonDenseIndexElement tab[MAX_STUDENTS_PER_YEAR/TOF_BUFFER_SIZE + TOF_BUFFER_SIZE];
+    int nb;
+}MoyenneNonDenseIndex;
+
 extern BufferTofMoyenne bufferTofMoyenne;
 extern BufferTovc bufferTovcArchive;
-extern NonDenseIndexElement moyenneNonDenseIndex[MAX_STUDENTS_PER_YEAR/TOF_BUFFER_SIZE + TOF_BUFFER_SIZE];
+extern MoyenneNonDenseIndex moyenneNonDenseIndex;
 int numberOfClassesPerLevel[6];
 
 void setEnteteMoyenne(FichierTofMoyenne *fichier, int pos, int value);
