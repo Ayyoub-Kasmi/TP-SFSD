@@ -88,6 +88,10 @@ void insertStudentMoyenneWithoutSearchingInArray(StudentsMoyenneArray *studentsM
 
 void createNewClass(ClassIdArray *classIdArray, int level, int min, int max);
 
+void printStudentInArchiveFile(FichierTovc *archiveFile, int* archiveFileI, int* archiveFileJ);
+
+void insertStudentInArchive(FichierTovc* archiveFile, FichierTofMoyenne* archiveFileIndex,Student student);
+
 
 
 

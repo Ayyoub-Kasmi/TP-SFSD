@@ -675,66 +675,19 @@ void listerParArchive(FichierTovc *archiveFile, FichierTofMoyenne *archiveIndexF
             return;
         }
     }
-    char stringBuffer[MAX_LAST_NAME_SIZE + MAX_FIRST_NAME_SIZE + 1];
-    char roomString[ROOM_SIZE];
-    char lastName[MAX_LAST_NAME_SIZE];
-    char firstName[MAX_FIRST_NAME_SIZE];
-    int markWholePart, markDecimalPart;
-    Student student;
+
     moyenneIndexI = nonDenseIndexPos;
     lireBlocMoyenne(archiveIndexFile, moyenneIndexI, &bufferTofMoyenne);
     while (moyenne < bufferTofMoyenne.tab[moyenneIndexJ].moyenne) moyenneIndexJ++;
     while (moyenneIndexI < getEnteteMoyenne(archiveIndexFile, 1)) {
-        archiveFileI = bufferTofMoyenne.tab[moyenneIndexJ].i;
+
+        if (archiveFileI != bufferTofMoyenne.tab[moyenneIndexJ].i){
+            archiveFileI = bufferTofMoyenne.tab[moyenneIndexJ].i;
+            lireBloc(archiveFile, archiveFileI, &bufferTovcArchive);
+        }
         archiveFileJ = bufferTofMoyenne.tab[moyenneIndexJ].j;
 
-        //LASTNAME LENGTH
-        lirechaine(archiveFile, &bufferTovcArchive, stringBuffer, LASTNAME_LENGTH, &archiveFileI, &archiveFileJ);
-        student.lastNameSize = stringToInt(stringBuffer, LASTNAME_LENGTH);
-
-        //FIRSTNAME LENGTH
-        lirechaine(archiveFile, &bufferTovcArchive, stringBuffer, FIRSTNAME_LENGTH, &archiveFileI, &archiveFileJ);
-        student.firstNameSize = stringToInt(stringBuffer, FIRSTNAME_LENGTH);
-
-        //CLASS_ID
-        lirechaine(archiveFile, &bufferTovcArchive, stringBuffer, CLASS_ID_SIZE, &archiveFileI, &archiveFileJ);
-        if (stringBuffer[0] == 'p') { //CHANGE IT'S PLACE
-            student.class = 100;
-        } else {
-            student.class = 100 * stringToInt(&stringBuffer[0], SCHOOL_LEVEL_SIZE) + 100;
-        }
-        strncpy(roomString, stringBuffer + SCHOOL_LEVEL_SIZE, ROOM_SIZE);
-        student.class += stringToInt(roomString, ROOM_SIZE);
-
-        //STUDENT_ID
-        lirechaine(archiveFile, &bufferTovcArchive, stringBuffer, STUDENT_ID_SIZE, &archiveFileI, &archiveFileJ);
-        student.id = stringToInt(stringBuffer, STUDENT_ID_SIZE);
-
-        //MOYENNE
-        lirechaine(archiveFile, &bufferTovcData, stringBuffer, MARK_WHOLE_PART_LENGTH, &archiveFileI,
-                   &archiveFileJ);
-        markWholePart = stringToInt(stringBuffer, MARK_WHOLE_PART_LENGTH);
-        lirechaine(archiveFile, &bufferTovcData, stringBuffer, MARK_DECIMAL_PART_LENGTH, &archiveFileI,
-                   &archiveFileJ);
-        markDecimalPart = stringToInt(stringBuffer, MARK_DECIMAL_PART_LENGTH);
-        //Where just putting it int the first element of the marks array so that we won't create another Student Structer
-        student.marks[0] = (float) markWholePart + (float) markDecimalPart / 100;
-
-        //FULLNAME
-        lirechaine(archiveFile, &bufferTovcArchive, stringBuffer, student.firstNameSize + student.lastNameSize,
-                   &archiveFileI, &archiveFileJ);
-        strcpy(student.fullName, stringBuffer);
-
-        //GENDER
-        lirechaine(archiveFile, &bufferTovcArchive, stringBuffer, GENDER_SIZE, &archiveFileI, &archiveFileJ);
-        strcpy(&student.gender, stringBuffer);
-
-        strncpy(lastName, student.fullName, student.lastNameSize);
-        strncpy(firstName, student.fullName + student.lastNameSize, student.firstNameSize);
-
-        //Printing the student
-        printf("\nLast Name: %s, First Name: %s, ID: %d, ClassId: %d, Moyenne: %f, Gender: %c\n", lastName, firstName,
-               student.class, student.id, student.marks[0], student.gender);
+        printStudentInArchiveFile(archiveFile, &archiveFileI, &archiveFileJ);
 
         moyenneIndexJ++;
         if (moyenneIndexJ >= bufferTofMoyenne.nb){
@@ -746,4 +699,62 @@ void listerParArchive(FichierTovc *archiveFile, FichierTofMoyenne *archiveIndexF
         }
 
     }
+}
+
+void printStudentInArchiveFile(FichierTovc *archiveFile, int* archiveFileI, int* archiveFileJ){
+
+    char stringBuffer[MAX_LAST_NAME_SIZE + MAX_FIRST_NAME_SIZE + 1];
+    char lastName[MAX_LAST_NAME_SIZE];
+    char firstName[MAX_FIRST_NAME_SIZE];
+    int markWholePart, markDecimalPart;
+    Student student;
+
+    //LASTNAME LENGTH
+    lirechaine(archiveFile, &bufferTovcArchive, stringBuffer, LASTNAME_LENGTH, archiveFileI, archiveFileJ);
+    student.lastNameSize = stringToInt(stringBuffer, LASTNAME_LENGTH);
+
+    //FIRSTNAME LENGTH
+    lirechaine(archiveFile, &bufferTovcArchive, stringBuffer, FIRSTNAME_LENGTH, archiveFileI, archiveFileJ);
+    student.firstNameSize = stringToInt(stringBuffer, FIRSTNAME_LENGTH);
+
+    //CLASS_ID
+    lirechaine(archiveFile, &bufferTovcArchive, stringBuffer, CLASS_ID_SIZE, archiveFileI, archiveFileJ);
+    if (stringBuffer[0] == 'p') { //CHANGE IT'S PLACE
+        stringBuffer[0] = '0';
+    }
+    student.class = stringToInt(stringBuffer, CLASS_ID_SIZE);
+
+    //STUDENT_ID
+    lirechaine(archiveFile, &bufferTovcArchive, stringBuffer, STUDENT_ID_SIZE, archiveFileI, archiveFileJ);
+    student.id = stringToInt(stringBuffer, STUDENT_ID_SIZE);
+
+    //MOYENNE
+    lirechaine(archiveFile, &bufferTovcData, stringBuffer, MARK_WHOLE_PART_LENGTH, archiveFileI,
+               archiveFileJ);
+    markWholePart = stringToInt(stringBuffer, MARK_WHOLE_PART_LENGTH);
+    lirechaine(archiveFile, &bufferTovcData, stringBuffer, MARK_DECIMAL_PART_LENGTH, archiveFileI,
+               archiveFileJ);
+    markDecimalPart = stringToInt(stringBuffer, MARK_DECIMAL_PART_LENGTH);
+    //Where just putting it int the first element of the marks array so that we won't create another Student Structer
+    student.marks[0] = (float) markWholePart + (float) markDecimalPart / 100;
+
+    //FULLNAME
+    lirechaine(archiveFile, &bufferTovcArchive, stringBuffer, student.firstNameSize + student.lastNameSize,
+               archiveFileI, archiveFileJ);
+    strcpy(student.fullName, stringBuffer);
+
+    //GENDER
+    lirechaine(archiveFile, &bufferTovcArchive, stringBuffer, GENDER_SIZE, archiveFileI, archiveFileJ);
+    strcpy(&student.gender, stringBuffer);
+
+    strncpy(lastName, student.fullName, student.lastNameSize);
+    strncpy(firstName, student.fullName + student.lastNameSize, student.firstNameSize);
+
+    //Printing the student
+    printf("\nLast Name: %s, First Name: %s, ID: %d, ClassId: %d, Moyenne: %f, Gender: %c\n", lastName, firstName,
+           student.class, student.id, student.marks[0], student.gender);
+}
+
+void insertStudentInArchive(FichierTovc* archiveFile, FichierTofMoyenne* archiveFileIndex,Student student){
+
 }

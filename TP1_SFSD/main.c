@@ -66,21 +66,18 @@ int main() {
     student.marks[2] = 9.25;
     student.marks[3] = 5.5;
     student.marks[4] = 8.0;
-    char classID[CLASS_ID_SIZE + 1] = "p53";
+    char classID[CLASS_ID_SIZE + 1] = "153";
     char roomString[ROOM_SIZE + 1];
 
     strncpy(roomString, classID + SCHOOL_LEVEL_SIZE, ROOM_SIZE);
 
     if (classID[0] == 'p'){
-        student.class = 100;
-    } else {
-        student.class = 100 * stringToInt(&classID[0], SCHOOL_LEVEL_SIZE) + 100;
+        classID[0] = '0';
     }
     strncpy(roomString, classID + SCHOOL_LEVEL_SIZE, ROOM_SIZE);
-    student.class += stringToInt(roomString, ROOM_SIZE);
+    student.class = stringToInt(classID, CLASS_ID_SIZE);
 
-    printf("%f %s %d %c\n", (float) 25/100, roomString, student.class, student.isDeleted);
-    system("ls");
+    printf("%f  %d %c\n", (float) 25/100,student.class, student.isDeleted);
 
     printf("Hello AYYOUB");
 
