@@ -74,9 +74,9 @@ void printFileMoyenne(FichierTofMoyenne* fichier);
 
 void chargementInitialeMoyenne(FichierTofMoyenne *fichier, int n, BufferTofMoyenne* buffer);
 
-void rechercheMoyenne(FichierTofMoyenne *fichier, float moyenne, int *i, int *j, BufferTofMoyenne *buffer, bool *found);
+void rechercheMoyenne(FichierTofMoyenne *archiveFileIndex, float moyenne, int *archiveFileI, int *archiveFileJ);
 
-void insertionMoyenne(FichierTofMoyenne* fichier, StudentsMoyenneArrayElement record, BufferTofMoyenne* buffer);
+void insertionMoyenne(FichierTofMoyenne *archiveFileIndex, StudentsMoyenneArrayElement recordToBeInserted);
 
 void supressionMoyenne(FichierTofMoyenne* fichier, float moyenne, BufferTofMoyenne* buffer);
 

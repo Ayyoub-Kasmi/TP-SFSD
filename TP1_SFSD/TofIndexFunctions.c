@@ -155,7 +155,7 @@ void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffe
 
 void insertionTof(FichierTof *fichier, IndexRecord record, BufferTof *buffer) {
 
-    lireBlocTof(fichier, getEnteteTof(fichier, 1), buffer);
+    lireBlocTof(fichier, getEnteteTof(fichier, 1) - 1, buffer);
     if (buffer->nb < TOF_BUFFER_SIZE - 1) {
         buffer->tab[buffer->nb] = record;
         buffer->nb++;

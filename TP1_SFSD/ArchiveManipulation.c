@@ -126,60 +126,114 @@ void printFileMoyenne(FichierTofMoyenne *fichier) {
 }
 
 void
-rechercheMoyenne(FichierTofMoyenne *fichier, float moyenne, int *i, int *j, BufferTofMoyenne *buffer, bool *found) {
+rechercheMoyenne(FichierTofMoyenne *archiveFileIndex, float moyenne, int *moyenneIndexI, int *moyenneIndexJ) {
     //don't forget to check if it's not erased !!!
 
     //TO BE CHANGED ASAP
+//
+//    *i = 0;
+//    *j = 0;
+//    int bi = 0;
+//    int bs = getEnteteMoyenne(archiveFileIndex, 1) - 1;
+//    int sup = 0;
+//    int inf = 0;
+//    bool stop = false;
+//    *found = false;
+//    while ((bi <= bs) && (!*(found)) && (!stop)) {
+//        *i = (bi + bs) / 2;
+//        lireBlocMoyenne(archiveFileIndex, *i, buffer);
+//        if ((moyenne >= buffer->tab[0].moyenne) && (moyenne <= buffer->tab[buffer->nb].moyenne)) {
+//            inf = 0;
+//            sup = buffer->nb - 1;
+//            while ((inf <= sup) && (!*(found))) {
+//                *j = (inf + sup) / 2;
+//                if (moyenne < buffer->tab[*j].moyenne) sup = (*j) - 1;
+//                else if (moyenne > buffer->tab[*j].moyenne) inf = (*j) + 1;
+//                else {
+//                    *found = true;
+//                }
+//            }
+//            if (inf > sup) {
+//                *j = inf;
+//                stop = true;
+//            }
+//        } else if ((moyenne < buffer->tab[0].moyenne)) bs = (*i) - 1;
+//        else if (moyenne > buffer->tab[buffer->nb].moyenne) bi = (*i) + 1;
+//    }
+//    if (bi > bs) {
+//        *i = bi;
+//        *j = 0;
+//    }
 
-    *i = 0;
-    *j = 0;
-    int bi = 0;
-    int bs = getEnteteMoyenne(fichier, 1) - 1;
-    int sup = 0;
-    int inf = 0;
-    bool stop = false;
-    *found = false;
-    while ((bi <= bs) && (!*(found)) && (!stop)) {
-        *i = (bi + bs) / 2;
-        lireBlocMoyenne(fichier, *i, buffer);
-        if ((moyenne >= buffer->tab[0].moyenne) && (moyenne <= buffer->tab[buffer->nb].moyenne)) {
-            inf = 0;
-            sup = buffer->nb - 1;
-            while ((inf <= sup) && (!*(found))) {
-                *j = (inf + sup) / 2;
-                if (moyenne < buffer->tab[*j].moyenne) sup = (*j) - 1;
-                else if (moyenne > buffer->tab[*j].moyenne) inf = (*j) + 1;
-                else {
-                    *found = true;
-                }
-            }
-            if (inf > sup) {
-                *j = inf;
-                stop = true;
-            }
-        } else if ((moyenne < buffer->tab[0].moyenne)) bs = (*i) - 1;
-        else if (moyenne > buffer->tab[buffer->nb].moyenne) bi = (*i) + 1;
+
+
+    int nonDenseIndexPos = 0;
+
+    //Looking for rthe starting position in the indexFile
+    while (moyenne <= moyenneNonDenseIndex.tab[nonDenseIndexPos].maxMoyenne) {
+        nonDenseIndexPos++;
+        if (nonDenseIndexPos == moyenneNonDenseIndex.nb) {
+            printf("\nNo student got this mark that year\n");
+            *moyenneIndexI = getEnteteMoyenne(archiveFileIndex, 1) - 1;
+            lireBlocMoyenne(archiveFileIndex, *moyenneIndexI, &bufferTofMoyenne);
+            *moyenneIndexJ = bufferTofMoyenne.nb - 1;
+            return;
+        }
     }
-    if (bi > bs) {
-        *i = bi;
-        *j = 0;
-    }
+
+    *moyenneIndexI = nonDenseIndexPos;
+    lireBlocMoyenne(archiveFileIndex, *moyenneIndexI, &bufferTofMoyenne);
+    while (moyenne >= bufferTofMoyenne.tab[*moyenneIndexJ].moyenne) moyenneIndexJ++;
+    *moyenneIndexI = bufferTofMoyenne.tab[*moyenneIndexJ].i;
+    *moyenneIndexI = bufferTofMoyenne.tab[*moyenneIndexJ].j;
+
 
 }
 
-void insertionMoyenne(FichierTofMoyenne *fichier, StudentsMoyenneArrayElement record, BufferTofMoyenne *buffer) {
+void insertionMoyenne(FichierTofMoyenne *archiveFileIndex, StudentsMoyenneArrayElement recordToBeInserted) {
+    int archiveIndexI, archiveIndexJ, borneSup;
+    StudentsMoyenneArrayElement container;
+    rechercheMoyenne(archiveFileIndex, recordToBeInserted.moyenne, &archiveIndexI, &archiveIndexJ);
 
-    lireBlocMoyenne(fichier, getEnteteMoyenne(fichier, 1), buffer);
-    if (buffer->nb < TOF_BUFFER_SIZE - 1) {
-        buffer->tab[buffer->nb] = record;
-        buffer->nb++;
-    } else {
-        buffer->tab[0] = record;
-        buffer->nb = 0;
-        setEnteteMoyenne(fichier, 1, getEnteteMoyenne(fichier, 1));
+    while (archiveIndexI < getEnteteMoyenne(archiveFileIndex, 1)) {
+        lireBlocMoyenne(archiveFileIndex, archiveIndexI, &bufferTofMoyenne);
+        container = bufferTofMoyenne.tab[bufferTofMoyenne.nb -1];
+        borneSup = bufferTofMoyenne.nb -1;
+
+        while (borneSup > archiveIndexJ){
+            bufferTofMoyenne.tab[borneSup] = bufferTofMoyenne.tab[borneSup-1];
+            borneSup--;
+        }
+        bufferTofMoyenne.tab[archiveIndexJ] = recordToBeInserted;
+        if (bufferTofMoyenne.nb < TOF_MOYENNE_BUFFER_SIZE){
+            bufferTofMoyenne.tab[bufferTofMoyenne.nb] = container;
+            bufferTofMoyenne.nb++;
+            ecrireBlocMoyenne(archiveFileIndex, archiveIndexI, &bufferTofMoyenne);
+            //Updating the nonDenseIndexArray
+            moyenneNonDenseIndex.tab[archiveIndexI].minMoyenne = bufferTofMoyenne.tab[0].moyenne;
+            moyenneNonDenseIndex.tab[archiveIndexI].maxMoyenne = bufferTofMoyenne.tab[bufferTofMoyenne.nb -1].moyenne;
+            break; //So that we don't use another boolean variable
+        } // NO need to use an else because if we enter this bloc the loop will stop
+        ecrireBlocMoyenne(archiveFileIndex, archiveIndexI, &bufferTofMoyenne);
+        //Updating the nonDenseIndexArray
+        moyenneNonDenseIndex.tab[archiveIndexI].minMoyenne = bufferTofMoyenne.tab[0].moyenne;
+        moyenneNonDenseIndex.tab[archiveIndexI].maxMoyenne = bufferTofMoyenne.tab[bufferTofMoyenne.nb -1].moyenne;
+        archiveIndexI++;
+        archiveIndexJ = 0;
+        recordToBeInserted = container;
     }
-    ecrireBlocMoyenne(fichier, getEnteteMoyenne(fichier, 1), buffer);
-    setEnteteMoyenne(fichier, 2, getEnteteMoyenne(fichier, 2) + 1);
+    if (archiveIndexI >= getEnteteMoyenne(archiveFileIndex, 1)){
+        bufferTofMoyenne.tab[0] = recordToBeInserted;
+        bufferTofMoyenne.nb = 1;
+        //Updating the nonDenseIndexArray
+        moyenneNonDenseIndex.tab[archiveIndexI].minMoyenne = bufferTofMoyenne.tab[0].moyenne;
+        moyenneNonDenseIndex.tab[archiveIndexI].maxMoyenne = bufferTofMoyenne.tab[bufferTofMoyenne.nb -1].moyenne;
+        ecrireBlocMoyenne(archiveFileIndex, archiveIndexI, &bufferTofMoyenne);
+        setEnteteMoyenne(archiveFileIndex, 1, archiveIndexI +1 );
+    }
+    setEnteteMoyenne(archiveFileIndex ,2 , getEnteteMoyenne(archiveFileIndex, 2) +1);
+
+
 
 }
 
@@ -187,7 +241,7 @@ void supressionMoyenne(FichierTofMoyenne *fichier, float moyenne, BufferTofMoyen
     int i, j;
     StudentsMoyenneArrayElement record;
     bool found = false;
-    rechercheMoyenne(fichier, moyenne, &i, &j, buffer, &found);
+    rechercheMoyenne(fichier, moyenne, &i, &j);
     if (found) {
         lireBlocMoyenne(fichier, i, buffer);
         record = buffer->tab[buffer->nb];
@@ -544,6 +598,7 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
     moyenneNonDenseIndex.tab[i1].maxMoyenne = bufferTofMoyenne.tab[j1 - 1].moyenne;
     moyenneNonDenseIndex.nb;
     ecrireBlocMoyenne(moyennefile, i1, &bufferTofMoyenne);
+
     setEnteteMoyenne(moyennefile, 1, i1 + 1);
     setEnteteMoyenne(moyennefile, 2, studentsMoyenneArray.nb);
 
@@ -681,7 +736,7 @@ void listerParArchive(FichierTovc *archiveFile, FichierTofMoyenne *archiveIndexF
     while (moyenne < bufferTofMoyenne.tab[moyenneIndexJ].moyenne) moyenneIndexJ++;
     while (moyenneIndexI < getEnteteMoyenne(archiveIndexFile, 1)) {
 
-        if (archiveFileI != bufferTofMoyenne.tab[moyenneIndexJ].i){
+        if (archiveFileI != bufferTofMoyenne.tab[moyenneIndexJ].i) {
             archiveFileI = bufferTofMoyenne.tab[moyenneIndexJ].i;
             lireBloc(archiveFile, archiveFileI, &bufferTovcArchive);
         }
@@ -690,7 +745,7 @@ void listerParArchive(FichierTovc *archiveFile, FichierTofMoyenne *archiveIndexF
         printStudentInArchiveFile(archiveFile, &archiveFileI, &archiveFileJ);
 
         moyenneIndexJ++;
-        if (moyenneIndexJ >= bufferTofMoyenne.nb){
+        if (moyenneIndexJ >= bufferTofMoyenne.nb) {
             if (moyenneIndexI == getEnteteMoyenne(archiveIndexFile, 1) - 1) break;
             //We're using a break so that we don't waste a boolean
             moyenneIndexJ = 0;
@@ -701,7 +756,7 @@ void listerParArchive(FichierTovc *archiveFile, FichierTofMoyenne *archiveIndexF
     }
 }
 
-void printStudentInArchiveFile(FichierTovc *archiveFile, int* archiveFileI, int* archiveFileJ){
+void printStudentInArchiveFile(FichierTovc *archiveFile, int *archiveFileI, int *archiveFileJ) {
 
     char stringBuffer[MAX_LAST_NAME_SIZE + MAX_FIRST_NAME_SIZE + 1];
     char lastName[MAX_LAST_NAME_SIZE];
@@ -755,6 +810,96 @@ void printStudentInArchiveFile(FichierTovc *archiveFile, int* archiveFileI, int*
            student.class, student.id, student.marks[0], student.gender);
 }
 
-void insertStudentInArchive(FichierTovc* archiveFile, FichierTofMoyenne* archiveFileIndex,Student student){
+void insertStudentInArchive(FichierTovc *archiveFile, FichierTofMoyenne *archiveFileIndex, Student student) {
 
+    int archiveFileI = getEntete(archiveFile, 1) - 1;
+    int archiveFileJ = getEntete(archiveFile, 2);
+    StudentsMoyenneArrayElement recordToBeInserted;
+    recordToBeInserted.moyenne = student.marks[0];
+    if (archiveFileJ == TOVC_BUFFER_SIZE){
+        archiveFileJ = 0;
+        archiveFileI++;
+    }
+    recordToBeInserted.i = archiveFileI;
+    recordToBeInserted.j = archiveFileJ;
+
+    lireBloc(archiveFile, archiveFileI, &bufferTovcArchive);
+
+    char container1[4];//used to do the int => string conversion
+    int totalStudentSize = FIRSTNAME_LENGTH + LASTNAME_LENGTH + CLASS_ID_SIZE + STUDENT_ID_SIZE + IS_DELETED_SIZE
+                           + MARK_LENGTH + student.firstNameSize
+                           + student.lastNameSize + GENDER_SIZE;
+    char stringBuffer[totalStudentSize + 1];
+    stringBuffer[totalStudentSize] = '\0';
+
+    sprintf(container1, "%d%d", student.lastNameSize / 10,
+            student.lastNameSize % 10); //lastNameSize can be a number of one digit
+
+    //Write First Name size
+    strcpy(stringBuffer, container1);
+    char firstNameSizeString[FIRSTNAME_LENGTH + 1]; //+1 for the '\0' character
+    sprintf(container1, "%d%d", student.firstNameSize / 10,
+            student.firstNameSize % 10); //firstNameSize can be a number of one digit
+    strcat(stringBuffer, container1);
+    //the string that we are going to insert
+    //Write ClassID
+    char classIDString[CLASS_ID_SIZE + 1];
+    strcpy(classIDString, "XXX");
+
+    strcat(stringBuffer, classIDString);
+    //Write ID
+    char studentIdString[STUDENT_ID_SIZE + 1];
+    strcpy(studentIdString, "XXXX");
+
+    strcat(stringBuffer, studentIdString);
+
+    //Write isDeleted
+    char isDeletedString[IS_DELETED_SIZE + 1];
+    isDeletedString[0] = student.isDeleted;
+    isDeletedString[1] = '\0';
+    strcat(stringBuffer, isDeletedString);
+    //Write marks array
+    int level = (student.class / 100) % 10;
+    int markWholePart;
+    int markDecimalPart;
+    int intMark;
+    char markWholePartString[MARK_WHOLE_PART_LENGTH + 1];
+    char markDecimalPartString[MARK_DECIMAL_PART_LENGTH + 1];
+
+    intMark = student.marks[0] * 100;
+    markWholePart = intMark / 100;
+    markDecimalPart = intMark % 100;
+
+    sprintf(markWholePartString, "%d%d", (markWholePart / 10) % 10, markWholePart % 10);
+    sprintf(markDecimalPartString, "%d%d", (markDecimalPart / 10) % 10, markDecimalPart % 10);
+
+    strcat(stringBuffer, markWholePartString);
+    strcat(stringBuffer, markDecimalPartString);
+
+
+    //Write Full name
+    strcat(stringBuffer, student.fullName);
+
+    //Write gender
+    strcat(stringBuffer, &student.gender);
+
+
+    ecrireChaine(archiveFile, &bufferTovcArchive, stringBuffer, totalStudentSize, &archiveFileI,
+                 &archiveFileJ);
+    if (archiveFileI >= getEntete(archiveFile,1)){
+        setEntete(archiveFile, 1 , archiveFileI +1);
+    }
+    insertionMoyenne(archiveFileIndex, recordToBeInserted);
+
+
+}
+
+void loadTheNonDenseIndex(FichierTofMoyenne* archiveIndex){
+    int archiveIndexI = 0;
+    while (archiveIndexI < getEnteteMoyenne(archiveIndex, 1)){
+        lireBlocMoyenne(archiveIndex, archiveIndexI, &bufferTofMoyenne);
+        moyenneNonDenseIndex.tab[archiveIndexI].minMoyenne = bufferTofMoyenne.tab[0].moyenne;
+        moyenneNonDenseIndex.tab[archiveIndexI].maxMoyenne = bufferTofMoyenne.tab[bufferTofMoyenne.nb -1].moyenne;
+    }
+    moyenneNonDenseIndex.nb = archiveIndexI;
 }

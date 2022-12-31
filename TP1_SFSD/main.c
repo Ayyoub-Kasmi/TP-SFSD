@@ -77,7 +77,7 @@ int main() {
     strncpy(roomString, classID + SCHOOL_LEVEL_SIZE, ROOM_SIZE);
     student.class = stringToInt(classID, CLASS_ID_SIZE);
 
-    printf("%f  %d %c\n", (float) 25/100,student.class, student.isDeleted);
+    printf("%d  %d %c\n", 2.5*100,student.class, student.isDeleted);
 
     printf("Hello AYYOUB");
 
