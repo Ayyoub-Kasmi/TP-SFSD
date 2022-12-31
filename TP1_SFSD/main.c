@@ -65,11 +65,11 @@ int main() {
     lireBlocTof(classIndexFile, 0, &bufferTof);
 
     Student student;
-    student.id = 5000;
-    student.class = 585;
-    student.lastNameSize = 5;
-    student.firstNameSize = 6;
-    strcpy(student.fullName ,"kasmiayyoub");
+    student.id = 9500;
+    student.class = 561;
+    student.lastNameSize = 6;
+    student.firstNameSize = 5;
+    strcpy(student.fullName ,"aoufarfares");
     student.gender = 'M';
     student.isDeleted = '0';
     student.marks[0] = 12.34;
@@ -84,12 +84,18 @@ int main() {
     bool found;
 //    searchStudent(fichier, classIndexFile, student, &i, &j, &tempI, &tempJ, &found);
     int indexI, indexJ; bool isDeleted;
+
+    printClassIndex(classIndexFile);
+
     insertStudent(fichier, classIndexFile, student);
 
 
     printf("\n\n");
     printStudentsFile(fichier);
     printf("\n\n");
+    i = 0;
+
+    printClassIndex(classIndexFile);
 
     printf("\n\ni: %d\tj: %d\n\n", i, j);
     i = 23; j = 47;

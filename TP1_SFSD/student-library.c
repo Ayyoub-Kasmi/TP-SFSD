@@ -277,58 +277,25 @@ void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student)
         }
 
         if(j != 0) ecrireBloc(fichier, i, &bufferTovc);
-//        int bufferPos = TOVC_BUFFER_SIZE;
-//        if (i == getEntete(fichier, 1)-1) bufferPos = getEntete(fichier, 2); //is it necessary?
-//        //TO BE TESTED IMMEDIATELY !!!
-//        while((!endOfFile) || (k != m + 1)){
-//            if (k >= totalStudentSize) k = 0;
-//            if (j >= TOVC_BUFFER_SIZE) {
-//                i++;
-//                j = 0;
-//                //there's something suspicious here: we're supposed to read the next block after writing the current
-//                    //one...
-//                if (i == getEntete(fichier, 1)-1) bufferPos = getEntete(fichier, 2);
-//                ecrireBloc(fichier, i, &bufferTovc);
-//            }
-//            if (j < bufferPos) {
-//                c = bufferTovc.tab[j];
-//                bufferTovc.tab[j] = stringBuffer[k];
-//                k++;
-//                m++;
-//                if (m >= strlen(stringBuffer)) m = 0;
-//                stringBuffer[m] = c;
-//            } else {
-//                endOfFile = true;
-//                bufferTovc.tab[j] = stringBuffer[k];
-//                k++;
-//            }
-//            j++;
-//        }
-//        int numberOfCharsInserted = (int) strlen(stringBuffer);
-//        indexJ++;
-//        if (indexJ >= TOF_BUFFER_SIZE) indexI++;
-//        while (indexI < getEnteteTof(indexFile, 1)){
-//            lireBlocTof(indexFile, indexI, &bufferTof);
-//        }
 
-        //Aoufar's suggested code for the last loop:
+        //Normally the good bloc is read when we called the search function
+        indexJ++;
+        while (indexI < getEnteteTof(indexFile, 1)) {
+            if (indexJ >= TOF_BUFFER_SIZE) {
+                indexJ = 0;
+                indexI++;
+                if (indexI >= getEnteteTof(indexFile, 1)) break;
+                lireBlocTof(indexFile, indexI, &bufferTof);
+            }
+            bufferTof.tab[indexJ].j += totalStudentSize;
+            while (bufferTof.tab[indexJ].j >= TOVC_BUFFER_SIZE) {
+                bufferTof.tab[indexJ].i++;
+                bufferTof.tab[indexJ].j -= TOVC_BUFFER_SIZE;
+            }
+            indexJ++;
+        }
 
-//        int numberOfCharsInserted = (int) strlen(stringBuffer);
-//        indexJ++;
-//        if (indexJ >= TOF_BUFFER_SIZE) indexI++;
-//        while (indexI < getEnteteTof(indexFile, 1)){
-//            if (indexJ >= TOF_BUFFER_SIZE){
-//                indexI++;
-//                lireBlocTof(indexFile, indexI, &bufferTofClass);
-//            }
-//            bufferTofClass.tab[indexJ].j += numberOfCharsInserted;
-//            while (bufferTofClass.tab[indexJ].j >= TOF_BUFFER_SIZE){
-//                bufferTofClass.tab[indexJ].i++;
-//                bufferTofClass.tab[indexJ].j -= TOF_BUFFER_SIZE;
-//            }
-//            indexJ++;
-//
-        //
+
         setEntete(fichier, 1, i+1);
 //    if (*j >= buffer->positionLibre) buffer->positionLibre = *j; ==> j will be auto set inside ecrire chaine
         setEntete(fichier, 2, j);

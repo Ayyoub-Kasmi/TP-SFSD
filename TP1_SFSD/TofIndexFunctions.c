@@ -192,3 +192,17 @@ void supressionTof(FichierTof *fichier, int k, BufferTof *buffer) {
     }
 
 }
+
+void printClassIndex(FichierTof* classIndexFile){
+    int i= 0;
+    int j;
+    while (i < getEnteteTof(classIndexFile, 1)){
+        lireBlocTof(classIndexFile, 1, &bufferTof);
+        j = 0;
+        while (j < bufferTof.nb){
+            printf("\nclass id: %d\t i: %d\t j: %d\n", bufferTof.tab[j].id, bufferTof.tab[j].i, bufferTof.tab[j].j);
+            j++;
+        }
+        i++;
+    }
+}

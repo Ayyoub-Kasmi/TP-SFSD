@@ -61,4 +61,6 @@ void insertionTof(FichierTof* fichier, IndexRecord record, BufferTof* buffer);
 
 void supressionTof(FichierTof* fichier, int k, BufferTof* buffer);
 
+void printClassIndex(FichierTof* classIndexFile);
+
 #endif //TP1_SFSD_TOFINDEXFUNCTIONS_H
