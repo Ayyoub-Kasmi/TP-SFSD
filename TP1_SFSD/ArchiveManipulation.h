@@ -94,6 +94,9 @@ void insertStudentInArchive(FichierTovc* archiveFile, FichierTofMoyenne* archive
 
 void printArchiveFile(FichierTovc *archiveFile);
 
+void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile, FichierTovc *archiveFile,
+             FichierTofMoyenne *moyennefile, FichierTovc *nextYearFile, FichierTof *nextYearClassIndexFile);
+
 
 
 

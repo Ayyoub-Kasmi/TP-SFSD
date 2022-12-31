@@ -392,19 +392,6 @@ void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, 
 
             student.isDeleted = '0';
 
-//            studentsIdArray.tab[k * STUDENT_PER_CLASS + l].i = *i;
-//            studentsIdArray.tab[k * STUDENT_PER_CLASS + l].j = *j;
-//
-//            classIdArray.tab[k].i = *i;
-//            classIdArray.tab[k].j = *j;
-
-
-//            if(k==28 && l==1) {
-//                tempStudentID = student.id;
-//                printf("student id: %d\n", tempStudentID);
-//                tempStudentClass = student.class;
-//                printf("student class: %d\n", tempStudentClass);
-//            }
             writeStudent(fichier, &student, i, j);
 
         }
@@ -424,7 +411,6 @@ void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, 
 
     int i1 = 0, j1 = 0;
     IndexRecord record;
-    //BufferTof bufferTovcData;
     for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
         record.id = classIdArray.tab[k].id;
         record.isDeleted = false;

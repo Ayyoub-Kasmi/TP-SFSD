@@ -21,7 +21,7 @@ position classesIndex[FIRST_LOAD_OF_CLASSES]; //positions i and j in the school 
 struct subjectsArray {
 
 };
-int numberOfSubjectsPerLevel[6] =  {4, 5, 5, 7, 7, 7}; //just an example, not real i
+int numberOfSubjectsPerLevel[6] = {4, 5, 5, 7, 7, 7}; //just an example, not real i
 //we can also declare the names of subjects as a matrix of Levels-Subjects, if we need the names
 
 int numberOfClassesPerLevel[6];
@@ -47,36 +47,37 @@ int tempStudentClass;
 
 int currentYear;
 
-void print_result( int, char *, char *, int );
+void print_result(int, char *, char *, int);
 
 int main() {
 
-    FichierTovc * currentYearFile;
-    FichierTovc * archiveFile = ouvrirFichierTovc(CURRENT_YEAR_ARCHIVE_FILE_PATH, 'N');
+    FichierTovc *currentYearFile;
+    FichierTovc *archiveFile = ouvrirFichierTovc(CURRENT_YEAR_ARCHIVE_FILE_PATH, 'N');
     FichierTof *classIndexFile;
     int i = 0;
     int j = 0;
-    bool new=true;
-    if(new){
+    bool new = true;
+    if (new) {
         currentYearFile = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'N');
         classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'N');
         createSchoolYear(currentYearFile, classIndexFile, &i, &j);
         rewind(getFile(currentYearFile));
         fwrite(&currentYearFile->entete, sizeof(EnteteTovc), 1, getFile(currentYearFile));
 
-    }else{
+    } else {
         currentYearFile = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
         classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
     }
 
 
-    i=0; j=0;
-    lireBlocTof(classIndexFile, 0, &bufferTofClass);
+    i = 0;
+    j = 0;
+//    lireBlocTof(classIndexFile, 0, &bufferTofClass);
 
     Student student;
     student.id = 1111;
-    student.class = 460;
-    strcpy(student.fullName ,"Houari Mohammed");
+    student.class = 260;
+    strcpy(student.fullName, "Houari Mohammed");
     student.gender = 'M';
     student.isDeleted = '0';
     student.marks[0] = 10.00;
@@ -103,7 +104,7 @@ int main() {
 //    char testString[TOVC_BUFFER_SIZE];
 //    FichierTovc * currentYearFile = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
 ////    updateStudentInfo(currentYearFile, 2, 3, 2039);
-   // createSchoolYear(currentYearFile, &i, &j);
+    // createSchoolYear(currentYearFile, &i, &j);
 //
 ////    Custom student for test
 //    Student student;
@@ -218,15 +219,14 @@ int main() {
 //    fermerFichierTof(fichier);
 
 
-void print_result( int res, char * p_buffer1, char * p_buffer2, int index )
-{
-    if ( res == 0 )
-        printf( "first %i characters of \"%s\" is identical to \"%s\"\n",
-                index,  p_buffer1, p_buffer2);
-    else if ( res < 0 )
-        printf( "\"%s\" is less than \"%s\"\n", p_buffer1, p_buffer2 );
+void print_result(int res, char *p_buffer1, char *p_buffer2, int index) {
+    if (res == 0)
+        printf("first %i characters of \"%s\" is identical to \"%s\"\n",
+               index, p_buffer1, p_buffer2);
+    else if (res < 0)
+        printf("\"%s\" is less than \"%s\"\n", p_buffer1, p_buffer2);
     else
-        printf( "\"%s\" is greater than \"%s\"\n", p_buffer1, p_buffer2 );
+        printf("\"%s\" is greater than \"%s\"\n", p_buffer1, p_buffer2);
 }
 //    //Custom student for test
 //    student.id = 3333;

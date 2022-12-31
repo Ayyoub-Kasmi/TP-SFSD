@@ -36,7 +36,7 @@ FILE *getFileTof(FichierTof *fichier) {
 }
 
 FichierTof *ouvrirFichierTof(char *name, char mode) {
-    FichierTof *fichier = malloc(sizeof(fichier));
+    FichierTof *fichier = malloc(sizeof(FichierTof));
     if (mode == 'N') { //Nouveau fichier
         fichier->file = fopen(name, "wb+");
         setEnteteTof(fichier, 1, 0);

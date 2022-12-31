@@ -41,7 +41,7 @@ FILE *getFile(FichierTovc *fichier) {
 }
 
 FichierTovc *ouvrirFichierTovc(char *name, char mode) {
-    FichierTovc *fichier = malloc(sizeof(fichier));
+    FichierTovc *fichier = malloc(sizeof(FichierTovc));
     if (mode == 'N') { //Nouveau fichier
         fichier->file = fopen(name, "wb+");
         setEntete(fichier, 1, 0);
