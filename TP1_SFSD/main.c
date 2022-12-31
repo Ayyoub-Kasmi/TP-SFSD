@@ -51,7 +51,9 @@ int main() {
         fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'N');
         classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'N');
         createSchoolYear(fichier, classIndexFile, &i, &j);
-        fermerFichier(fichier);
+        rewind(getFile(fichier));
+        fwrite(&fichier->entete, sizeof(EnteteTovc), 1, getFile(fichier));
+
     }else{
         fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
         classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
@@ -63,39 +65,41 @@ int main() {
     lireBlocTof(classIndexFile, 0, &bufferTof);
 
     Student student;
-    student.id = 1;
-    student.class = 599;
-    student.lastNameSize = 4;
-    student.firstNameSize = 5;
-    strcpy(student.fullName ,"aaaaabbbb");
+    student.id = 5000;
+    student.class = 585;
+    student.lastNameSize = 5;
+    student.firstNameSize = 6;
+    strcpy(student.fullName ,"kasmiayyoub");
     student.gender = 'M';
     student.isDeleted = '0';
-    student.marks[0] = 10.00;
-    student.marks[1] = 7.5;
-    student.marks[2] = 9.25;
-    student.marks[3] = 5.5;
-    student.marks[4] = 8.0;
-    student.marks[5] = 6.0;
-    student.marks[6] = 8.75;
+    student.marks[0] = 12.34;
+    student.marks[1] = 12.34;
+    student.marks[2] = 12.34;
+    student.marks[3] = 12.34;
+    student.marks[4] = 12.34;
+    student.marks[5] = 12.34;
+    student.marks[6] = 12.34;
 
     int tempI, tempJ;
     bool found;
 //    searchStudent(fichier, classIndexFile, student, &i, &j, &tempI, &tempJ, &found);
     int indexI, indexJ; bool isDeleted;
-//    insertStudent(fichier, classIndexFile, student);
+    insertStudent(fichier, classIndexFile, student);
+
 
     printf("\n\n");
     printStudentsFile(fichier);
     printf("\n\n");
 
     printf("\n\ni: %d\tj: %d\n\n", i, j);
-    i = 2; j = 0;
+    i = 23; j = 47;
 
     lireBloc(fichier, i, &bufferTovc);
-    for(int k = 0; k<50; k++){
+    for(int k = 0; k<47; k++){
         printf("%c", bufferTovc.tab[j]);
         j++;
     }
+    fermerFichier(fichier);
 
     //    loadSubjects();
 

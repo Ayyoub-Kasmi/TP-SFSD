@@ -187,7 +187,7 @@ void generateClassId(ClassIdArray *classIdArray) {
     while (found) {
         classNumber = generate2positionInt(seed);
         checkRoomNumber(classIdArray, classNumber, &found);
-        seed = classNumber;
+        seed += classNumber;
     }
     //class number has been generated. Now assign a "unique" level for this class
     found = true;

@@ -139,7 +139,7 @@ searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int 
                 fullName[firstNameSizeInt + lastNameSizeInt] = '\0';
                 printf("This is the result of the comparison: %d\n", strcmp(student.fullName, fullName));
                 printf("these are the last chars: %d %d\n", student.fullName[10], fullName[10]);
-                if (strcmp(student.fullName, fullName) == -1) {
+                if (strcmp(student.fullName, fullName) < 0) {
 
                     *i = tempI;
                     *j = tempJ;
@@ -251,7 +251,7 @@ void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student)
         bool new = false;
 
         while( !endOfFile || k != m +1){
-            if(k > totalStudentSize) k = 0;
+            if(k >= totalStudentSize) k = 0;
             if( j >= TOVC_BUFFER_SIZE){
                 ecrireBloc(fichier, i, &bufferTovc);
                 i++;
@@ -262,16 +262,18 @@ void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student)
 
                 if (j < bufferPos){
                     c = bufferTovc.tab[j];
-                    m++; if(m>totalStudentSize) m = 0;
+                    bufferTovc.tab[j] = stringBuffer[k];
+                    k++;
+                    m++; if(m>=totalStudentSize) m = 0;
                     stringBuffer[m] = c;
-                }
-                else
+                } else {
                     endOfFile = true;
-
-                bufferTovc.tab[j] = stringBuffer[k];
-                k++;
-                j++;
+                    bufferTovc.tab[j] = stringBuffer[k];
+                    k++;
+                }
+                j++;//Here
             }
+
         }
 
         if(j != 0) ecrireBloc(fichier, i, &bufferTovc);
@@ -326,12 +328,12 @@ void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student)
 //            }
 //            indexJ++;
 //
-//        }
-//        setEntete(fichier, 1, i+1);
-////    if (*j >= buffer->positionLibre) buffer->positionLibre = *j; ==> j will be auto set inside ecrire chaine
-//        setEntete(fichier, 2, j);
-//        ecrireBloc(fichier, i, &bufferTovc);
-//        setEntete(fichier, 3, getEntete(fichier, 3) + numberOfCharsInserted);
+        //
+        setEntete(fichier, 1, i+1);
+//    if (*j >= buffer->positionLibre) buffer->positionLibre = *j; ==> j will be auto set inside ecrire chaine
+        setEntete(fichier, 2, j);
+        ecrireBloc(fichier, i, &bufferTovc);
+        setEntete(fichier, 3, getEntete(fichier, 3) + totalStudentSize);
     }
 }
 
