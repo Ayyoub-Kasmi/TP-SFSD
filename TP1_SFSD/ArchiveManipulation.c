@@ -47,7 +47,7 @@ FILE *getFileMoyenne(FichierTofMoyenne *fichier) {
 }
 
 FichierTofMoyenne *ouvrirFichierMoyenne(char *name, char mode) {
-    FichierTofMoyenne *fichier = malloc(sizeof(fichier));
+    FichierTofMoyenne *fichier = malloc(sizeof(FichierTofMoyenne));
     if (mode == 'N') { //Nouveau fichier
         fichier->file = fopen(name, "wb+");
         setEnteteMoyenne(fichier, 1, 0);

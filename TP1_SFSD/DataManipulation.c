@@ -306,9 +306,11 @@ int stringToInt(char* string, int length){
 
 void intToString(char *string, int number, int length) {
     int digit;
+    //    string[length] = '\0'; <== this line can be enabled for printing purpose
     for (int i = length-1; i >= 0; i--) {
         digit = number % 10;
         string[i] = digit + '0';
+        string[i] = '0' + digit;
         number/=10;
     }
 }
@@ -445,17 +447,17 @@ void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, 
 
 void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
     /*
-        Structure of records inside the file (or buffer):
-        1- Size of the first name
-        2- Size of the last name
-        3- Class id
-        4- Student id
-        5- isDeleted (boolean)
-        6- Marks array
-        7- First name
-        8- Last name
-        9- Gender
-   */
+         Structure of records inside the file (or buffer):
+         1- Size of the first name
+         2- Size of the last name
+         3- Class id
+         4- Student id
+         5- isDeleted (boolean)
+         6- Marks array
+         7- First name
+         8- Last name
+         9- Gender
+    */
 
 
     //Write LastName size
@@ -739,4 +741,3 @@ void printStudentsFile(FichierTovc *fichier){
 
     }
 }
-

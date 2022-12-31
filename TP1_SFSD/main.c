@@ -53,6 +53,9 @@ int main() {
 
     FichierTovc *currentYearFile;
     FichierTovc *archiveFile = ouvrirFichierTovc(CURRENT_YEAR_ARCHIVE_FILE_PATH, 'N');
+    FichierTofMoyenne *archiveIndexFile = ouvrirFichierMoyenne("archiveIndexFile", 'N');
+    FichierTovc* nextYearFile = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'N');
+    FichierTof* nextYearIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'N');
     FichierTof *classIndexFile;
     int i = 0;
     int j = 0;
@@ -86,6 +89,8 @@ int main() {
     student.marks[3] = 5.5;
     student.marks[4] = 8.0;
     printStudentsFile(currentYearFile);
+
+//    archive(currentYearFile, classIndexFile, archiveFile, archiveIndexFile, nextYearFile, nextYearIndexFile);
 
     printArchiveFile(archiveFile);
 
