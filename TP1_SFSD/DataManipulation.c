@@ -187,7 +187,7 @@ void generateClassId(ClassIdArray *classIdArray) {
     while (found) {
         classNumber = generate2positionInt(seed);
         checkRoomNumber(classIdArray, classNumber, &found);
-        seed = classNumber;
+        seed += classNumber;
     }
     //class number has been generated. Now assign a "unique" level for this class
     found = true;
@@ -329,7 +329,7 @@ void intToString(char *string, int number, int length) {
  }
 */
 
-void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
+void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, int *j) {
     //open first names file
     FILE *firstNamesAndGendersFile;
     firstNamesAndGendersFile = fopen(FIRST_NAMES_AND_GENDER_FILE_PATH, "r");
@@ -348,13 +348,8 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
 
     //open the classes index file
 
-
     int level;
 
-    //initialize the index array
-    for(int k=0; k<FIRST_LOAD_OF_CLASSES; k++){
-        classesIndex[k].i=INT_MAX;
-    }
     *i = 0;
     *j = 0;
     Student student;
@@ -373,7 +368,6 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
         generateStudentId(&studentsIdArray);
     }
     for (int k = 0; k < FIRST_LOAD_OF_STUDENTS; ++k) {
-        printf("Hey! I'm here!\n");
         generateStudentName(lastNamesFile, firstNamesAndGendersFile, &studentsNamesArray);
     }
 
@@ -389,8 +383,9 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
             student.id = studentsIdArray.tab[k * STUDENT_PER_CLASS + l].id;
             student.class = classIdArray.tab[k].id;
             strcpy(student.fullName, studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].fullName);
+            student.firstNameSize = studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].firstNameSize;
+            student.lastNameSize = studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].lastNameSize;
             student.gender = studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].gender;
-            printf("student class: %d\n", student.class);
 
             level = (student.class / 100) % 10; //refactor it using variables
             getMarks(student.marks, level);
@@ -426,7 +421,6 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     setEntete(fichier, 4, 0); //number of chars deleted
 
     //saving the index into a file
-    FichierTof* classIndexFile = ouvrirFichierTof("classIndexFile", 'N');
 
     int i1 = 0, j1 = 0;
     IndexRecord record;
@@ -451,6 +445,7 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     ecrireBlocTof(classIndexFile, i1, &bufferTofClass);
     setEnteteTof(classIndexFile, 1, i1 + 1);
     setEnteteTof(classIndexFile, 2, FIRST_LOAD_OF_CLASSES);
+    setEnteteTof(classIndexFile, 3, 0);
 
 
     //close first names file
@@ -460,53 +455,53 @@ void createSchoolYear(FichierTovc *fichier, int *i, int *j) {
     fclose(lastNamesFile);
 
     //close the index file
-    fermerFichierTof(classIndexFile);
-    currentYear++;
 }
 
 void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
     /*
-         Structure of records inside the file (or buffer):
-
-         1- Size of the first name
-         2- Size of the last name
-         3- Class id
-         4- Student id
-         5- isDeleted (boolean)
-         6- Marks array
-         7- First name
-         8- Last name
-         9- Gender
-    */
+        Structure of records inside the file (or buffer):
+        1- Size of the first name
+        2- Size of the last name
+        3- Class id
+        4- Student id
+        5- isDeleted (boolean)
+        6- Marks array
+        7- First name
+        8- Last name
+        9- Gender
+   */
 
 
     //Write LastName size
     char lastNameSizeString[LASTNAME_LENGTH + 1]; //+1 for the '\0' character
-    sprintf(lastNameSizeString, "%d%d", student->lastNameSize / 10,
-            student->lastNameSize % 10); //lastNameSize can be a number of one digit
+
+    intToString(lastNameSizeString, student->lastNameSize, LASTNAME_LENGTH);
+
     ecrireChaine(fichier, &bufferTovcData, lastNameSizeString, LASTNAME_LENGTH, i, j);
 
 
     //Write First Name size
     char firstNameSizeString[FIRSTNAME_LENGTH + 1]; //+1 for the '\0' character
-    sprintf(firstNameSizeString, "%d%d", student->firstNameSize / 10,
-            student->firstNameSize % 10); //firstNameSize can be a number of one digit
+
+    intToString(firstNameSizeString, student->firstNameSize, FIRSTNAME_LENGTH);
+
     ecrireChaine(fichier, &bufferTovcData, firstNameSizeString, FIRSTNAME_LENGTH, i, j);
 
     //Write ClassID
     char classIDString[CLASS_ID_SIZE + 1];
-    char roomString[ROOM_SIZE + 1];
+    intToString(classIDString, student->class, CLASS_ID_SIZE);
+
     if ((student->class / 100) % 10 == 0){
-        strcpy(classIDString, "p");
+        classIDString[0] = 'p';
     }
-    sprintf(roomString, "%d%d", (student->class / 10) % 10, student->class % 10);
-    strcat(classIDString, roomString);
+
     ecrireChaine(fichier, &bufferTovcData, classIDString, CLASS_ID_SIZE, i, j);
 
     //Write ID
     char studentIdString[STUDENT_ID_SIZE + 1];
-    sprintf(studentIdString, "%d%d%d%d", student->id / 1000, (student->id / 100) % 10, (student->id / 10) % 10,
-            student->id % 10);
+
+    intToString(studentIdString, student->id, STUDENT_ID_SIZE);
+
     ecrireChaine(fichier, &bufferTovcData, studentIdString, STUDENT_ID_SIZE, i, j);
 
     //Write isDeleted
@@ -524,8 +519,8 @@ void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
         markWholePart = intMark / 100;
         markDecimalPart = intMark % 100;
 
-        sprintf(markWholePartString, "%d%d", (markWholePart / 10) % 10, markWholePart % 10);
-        sprintf(markDecimalPartString, "%d%d", (markDecimalPart / 10) % 10, markDecimalPart % 10);
+        intToString(markWholePartString, markWholePart, MARK_WHOLE_PART_LENGTH);
+        intToString(markDecimalPartString, markDecimalPart, DECIMAL_PART_SIZE);
 
         ecrireChaine(fichier, &bufferTovcData, markWholePartString, MARK_WHOLE_PART_LENGTH, i, j);
         ecrireChaine(fichier, &bufferTovcData, markDecimalPartString, MARK_DECIMAL_PART_LENGTH, i, j);
@@ -538,11 +533,9 @@ void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
 
     //Write gender
     ecrireChaine(fichier, &bufferTovcData, &student->gender, GENDER_SIZE, i, j);
+    ecrireBloc(fichier, *i, &bufferTovcData);
 
-    setEntete(fichier, 1, *i);
-//    if (*j >= buffer->positionLibre) buffer->positionLibre = *j; ==> j will be auto set inside ecrire chaine
-    setEntete(fichier, 2, *j);
-    ecrireBloc(fichier, *i, &bufferTovcData); //for the last bloc that hasn't been written
+//    printf("student id: %d\t student class: %d\t fullname: %s\n", student->id, student->class, student->fullName);
 }
 
 void generateStudentName(FILE* lastNamesFile, FILE* firstNamesAndGendersFile,StudentsNamesArray *studentsNamesArray) {
@@ -696,4 +689,68 @@ void updateNumberOfClassesPerLevel(ClassIdArray* classIdArray){
     numberOfClassesPerLevel[level] = count; //Because at the end where going to quit the loop without saving the count
 }
 
+void printStudentsFile(FichierTovc *fichier){
+    int i=0, j=0;
+    Student student;
+
+    char firstNameSize[FIRSTNAME_LENGTH + 1];
+    char lastNameSize[LASTNAME_LENGTH + 1];
+    char classID[CLASS_ID_SIZE + 1];
+    char ID[STUDENT_ID_SIZE + 1];
+    char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + 1];
+    char mark[MARK_LENGTH + 1];
+
+    lireBloc(fichier, i, &bufferTovcData);
+
+    while( i< getEntete(fichier, 1)-1 || j < getEntete(fichier, 2)){
+        //Reading all information of the current student from the file:
+
+        //Reading first name and last name sizes
+        lirechaine(fichier, &bufferTovcData, firstNameSize, FIRSTNAME_LENGTH, &i, &j);
+        student.firstNameSize = stringToInt(firstNameSize, FIRSTNAME_LENGTH);
+        lirechaine(fichier, &bufferTovcData, lastNameSize, LASTNAME_LENGTH, &i, &j);
+        student.lastNameSize = stringToInt(lastNameSize, LASTNAME_LENGTH);
+
+        //Reading the class ID
+        lirechaine(fichier, &bufferTovcData, classID, CLASS_ID_SIZE, &i, &j);
+        if(classID[0] == 'p') classID[0] = '0';
+        student.class = stringToInt(classID, CLASS_ID_SIZE);
+
+        //Reading the student ID
+        lirechaine(fichier, &bufferTovcData, ID, STUDENT_ID_SIZE, &i, &j);
+        student.id = stringToInt(ID, STUDENT_ID_SIZE);
+
+        //Reading the isDeleted character
+        student.isDeleted = bufferTovcData.tab[j];
+        j++;
+        if(j == TOVC_BUFFER_SIZE){
+            i++;
+            lireBloc(fichier, i, &bufferTovcData);
+            j=0;
+        }
+
+        //Reading the marks
+        int count = numberOfSubjectsPerLevel[student.class / 100];
+        for(int k = 0; k< count; k++){
+            lirechaine(fichier, &bufferTovcData, mark, MARK_LENGTH, &i, &j);
+            student.marks[k] = stringToInt(mark, MARK_LENGTH) / 100.0;
+        }
+
+        //Reading last name and first name
+        lirechaine(fichier, &bufferTovcData, student.fullName, student.lastNameSize + student.firstNameSize, &i, &j);
+        student.fullName[student.lastNameSize + student.firstNameSize] = '\0';
+
+        //Reading the gender character
+        student.gender = bufferTovcData.tab[j];
+        j++;
+        if(j == TOVC_BUFFER_SIZE){
+            i++;
+            lireBloc(fichier, i, &bufferTovcData);
+            j=0;
+        }
+
+        printf("class: %d\tID: %d\tname: %s\n", student.class, student.id, student.fullName);
+
+    }
+}
 

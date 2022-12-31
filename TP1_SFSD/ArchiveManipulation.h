@@ -92,6 +92,8 @@ void printStudentInArchiveFile(FichierTovc *archiveFile, int* archiveFileI, int*
 
 void insertStudentInArchive(FichierTovc* archiveFile, FichierTofMoyenne* archiveFileIndex,Student student);
 
+void printArchiveFile(FichierTovc *archiveFile);
+
 
 
 

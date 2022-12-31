@@ -51,9 +51,27 @@ void print_result( int, char *, char *, int );
 
 int main() {
 
-    FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'N');
+    FichierTovc * currentYearFile;
+    FichierTovc * archiveFile = ouvrirFichierTovc(CURRENT_YEAR_ARCHIVE_FILE_PATH, 'N');
+    FichierTof *classIndexFile;
     int i = 0;
     int j = 0;
+    bool new=true;
+    if(new){
+        currentYearFile = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'N');
+        classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'N');
+        createSchoolYear(currentYearFile, classIndexFile, &i, &j);
+        rewind(getFile(currentYearFile));
+        fwrite(&currentYearFile->entete, sizeof(EnteteTovc), 1, getFile(currentYearFile));
+
+    }else{
+        currentYearFile = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
+        classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
+    }
+
+
+    i=0; j=0;
+    lireBlocTof(classIndexFile, 0, &bufferTofClass);
 
     Student student;
     student.id = 1111;
@@ -66,34 +84,26 @@ int main() {
     student.marks[2] = 9.25;
     student.marks[3] = 5.5;
     student.marks[4] = 8.0;
-    char classID[CLASS_ID_SIZE + 1] = "153";
-    char roomString[ROOM_SIZE + 1];
+    printStudentsFile(currentYearFile);
 
-    strncpy(roomString, classID + SCHOOL_LEVEL_SIZE, ROOM_SIZE);
+    printArchiveFile(archiveFile);
 
-    if (classID[0] == 'p'){
-        classID[0] = '0';
-    }
-    strncpy(roomString, classID + SCHOOL_LEVEL_SIZE, ROOM_SIZE);
-    student.class = stringToInt(classID, CLASS_ID_SIZE);
 
-    printf("%d  %d %c\n", 2.5*100,student.class, student.isDeleted);
 
-    printf("Hello AYYOUB");
 
     //system("mkdir archive");
 
 //    loadSubjects();
 
-//    updateStudentInfo(fichier, student, 2, 5, 3.25);
+//    updateStudentInfo(currentYearFile, student, 2, 5, 3.25);
 //    int x = stringToInt(s, 3);
 //    intToString(s, x, 3);
 //    int i = 0;
 //    int j = 0;
 //    char testString[TOVC_BUFFER_SIZE];
-//    FichierTovc * fichier = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
-////    updateStudentInfo(fichier, 2, 3, 2039);
-   // createSchoolYear(fichier, &i, &j);
+//    FichierTovc * currentYearFile = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
+////    updateStudentInfo(currentYearFile, 2, 3, 2039);
+   // createSchoolYear(currentYearFile, &i, &j);
 //
 ////    Custom student for test
 //    Student student;
@@ -117,20 +127,20 @@ int main() {
 //    student.id = tempStudentID;
 //    student.class = tempStudentClass;
 //    bool found;
-//    searchStudent(fichier, student, &i, &j, &found);
+//    searchStudent(currentYearFile, student, &i, &j, &found);
 
 
 //    j = 0;
 //    i = 0;
-//    lireBloc(fichier, i, &buffer);
-//    lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
+//    lireBloc(currentYearFile, i, &buffer);
+//    lirechaine(currentYearFile, &buffer, testString,  buffer.positionLibre, &i, &j);
 //    printf("%s", testString);
 //
 //    printf("\n\n");
-//    lireBloc(fichier, i, &buffer);
-//    lirechaine(fichier, &buffer, testString,  buffer.positionLibre, &i, &j);
+//    lireBloc(currentYearFile, i, &buffer);
+//    lirechaine(currentYearFile, &buffer, testString,  buffer.positionLibre, &i, &j);
 //    printf("%s", testString);
-//    fermerFichier(fichier);
+//    fermerFichier(currentYearFile);
 
 //    studentsNamesArray.nb = 0;
 //

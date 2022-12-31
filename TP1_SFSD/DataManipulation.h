@@ -3,9 +3,11 @@
 
 #include <stdbool.h>
 #include "tovcFunctions.h"
+#include "TofIndexFunctions.h"
 
 //definition of system constants
 #define CURRENT_YEAR_FILE_PATH  "2022_STUDENTS.bin"
+#define CURRENT_YEAR_ARCHIVE_FILE_PATH  "2022_ARCHIVE.bin"
 #define DATE_OF_THE_CREATION_OF_THE_SCHOOL 2022
 #define STUDENT_ID_SIZE 4
 #define CLASS_ID_SIZE 3
@@ -137,7 +139,7 @@ void insertClassId(ClassIdArray *classIdArray, int id);
 
 void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i);
 
-void createSchoolYear(FichierTovc *fichier, int *i, int *j);
+void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, int *j);
 
 void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j);
 
@@ -152,5 +154,7 @@ void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, c
                                        int lastNameSize, int i);
 
 void updateNumberOfClassesPerLevel(ClassIdArray* classIdArray);
+
+void printStudentsFile(FichierTovc *fichier);
 
 #endif //TP1_SFSD_DATAMANIPULATION_H
