@@ -355,7 +355,7 @@ void createNewClass(ClassIdArray *classIdArray, int level, int min, int max) {
 
     //generate a "unique" class number
     bool found = true;
-    while (found) {
+     while (found) {
         roomNumber = generate2positionInt(seed);
         if ((roomNumber >= min) && (roomNumber < max)) {
             checkRoomNumber(classIdArray, roomNumber, &found);
@@ -524,7 +524,7 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
         //new marks for the new year
         getMarks(student.marks, level);
         //to make the string -> int conversion easier
-        intMoyenne = (int) moyenne * 100;
+        intMoyenne = moyenne * 100;
         markWholePart = intMoyenne / 100;
         markDecimalPart = intMoyenne % 100;
         intToString(markWholePartString, markWholePart, MARK_WHOLE_PART_LENGTH);
@@ -542,7 +542,7 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
         lirechaine(currentYearFile, &bufferTovcData, &gender, GENDER_SIZE, &currentYearI,
                    &currentYearJ);
         strcat(archiveStringBuffer, &gender);
-        strcpy(&student.gender, &gender);
+        student.gender = gender;
 
         ecrireChaine(archiveFile, &bufferTovcArchive, archiveStringBuffer, (int) strlen(archiveStringBuffer), &archiveI,
                      &archiveJ);
