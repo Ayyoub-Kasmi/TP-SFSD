@@ -409,8 +409,7 @@ void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, 
     setEntete(fichier, 3, TOVC_BUFFER_SIZE * (*i + 1) + (*j) + 1); //Total number of characters in the file
     setEntete(fichier, 4, 0); //number of chars deleted
 
-    //saving the index into a file
-
+    //saving the class index into the file
     int i1 = 0, j1 = 0;
     IndexRecord record;
     for (int k = 0; k < FIRST_LOAD_OF_CLASSES; ++k) {
@@ -658,13 +657,13 @@ void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, c
 
 }
 
-void updateNumberOfClassesPerLevel(ClassIdArray* classIdArray){
+void updateNumberOfClassesPerLevel(ClassIdArray* classIdArray) {
     //calculate number of classes per level:
     int classSup = MIN_1TH_GRADE_CLASS_ID;
     int count = 0, classIdArrayIndex = 0;
     int level = 0;
-    while(classIdArrayIndex<classIdArray->nb){
-        if(classIdArray->tab[classIdArrayIndex].id < classSup){
+    while (classIdArrayIndex < classIdArray->nb) {
+        if (classIdArray->tab[classIdArrayIndex].id < classSup) {
             count++;
             classIdArrayIndex++;
         } else {
@@ -675,6 +674,7 @@ void updateNumberOfClassesPerLevel(ClassIdArray* classIdArray){
         }
     }
     numberOfClassesPerLevel[level] = count; //Because at the end where going to quit the loop without saving the count
+
 }
 
 void printStudentsFile(FichierTovc *fichier){

@@ -1,7 +1,3 @@
-//
-// Created by AOUFAR FARES on 23/10/2022.
-//
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "tovcFunctions.h"
@@ -42,6 +38,7 @@ FILE *getFile(FichierTovc *fichier) {
 
 FichierTovc *ouvrirFichierTovc(char *name, char mode) {
     FichierTovc *fichier = malloc(sizeof(FichierTovc));
+
     if (mode == 'N') { //Nouveau fichier
         fichier->file = fopen(name, "wb+");
         setEntete(fichier, 1, 0);
@@ -92,9 +89,6 @@ void ecrireChaine(FichierTovc *fichier, BufferTovc *bufferTovc, char *chaine, in
             (*j) = 1;
         }
     }
-
-    setEntete(fichier, 2, *j); //to check
-    setEntete(fichier, 3, getEntete(fichier, 3) + taille); //move this to "Ecrire Enregistrement
 }
 
 void lirechaine(FichierTovc *fichier, BufferTovc *bufferTovc, char *chaine, int taille, int *i, int *j) {

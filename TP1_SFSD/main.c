@@ -50,6 +50,7 @@ int currentYear;
 void print_result(int, char *, char *, int);
 
 int main() {
+    FichierTovc *fichier;
 
     FichierTovc *currentYearFile;
     FichierTovc *archiveFile = ouvrirFichierTovc(CURRENT_YEAR_ARCHIVE_FILE_PATH, 'N');
@@ -69,6 +70,7 @@ int main() {
 
     } else {
         currentYearFile = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
+
         classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
     }
 
@@ -99,7 +101,30 @@ int main() {
 
     //system("mkdir archive");
 
-//    loadSubjects();
+
+    printClassIndex(classIndexFile);
+
+    insertStudent(fichier, classIndexFile, student);
+
+
+    printf("\n\n");
+    printStudentsFile(fichier);
+    printf("\n\n");
+    i = 0;
+
+    printClassIndex(classIndexFile);
+
+    printf("\n\ni: %d\tj: %d\n\n", i, j);
+    i = 23; j = 47;
+
+    lireBloc(fichier, i, &bufferTovcData);
+    for(int k = 0; k<47; k++){
+        printf("%c", bufferTovcData.tab[j]);
+        j++;
+    }
+    fermerFichier(fichier);
+
+    //    loadSubjects();
 
 //    updateStudentInfo(currentYearFile, student, 2, 5, 3.25);
 //    int x = stringToInt(s, 3);
@@ -357,3 +382,15 @@ void print_result(int res, char *p_buffer1, char *p_buffer2, int index) {
 //    sscanf(str1, "%d", &i1);
 //    printf("\n%d", i1);
 
+//    char str[50];
+//    lirechaine(fichier, &bufferTovc, str, 2, &i, &j);
+//    lirechaine(fichier, &bufferTovc, str, 2, &i, &j);
+//    lirechaine(fichier, &bufferTovc, str, 3, &i, &j); str[3] = '\0';
+//    printf("this is the class id: %s\n", str);
+//    lirechaine(fichier, &bufferTovc, str, 4, &i, &j); str[4] = '\0';
+//    printf("this is the student id: %s\n", str);
+//    skip(fichier, 1+4*4, &i, &j);
+//    lirechaine(fichier, &bufferTovc, str, 5, &i, &j); str[5] = '\0';
+//    printf("this is the first name: %s\n", str);
+//    lirechaine(fichier, &bufferTovc, str, 6, &i, &j); str[6] = '\0';
+//    printf("this is the last name: %s\n", str);

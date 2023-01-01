@@ -20,12 +20,12 @@ void
 searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int *i, int *j, int *indexI, int *indexJ,
               bool *found);
 
-void skip(FichierTovc *fichier, int steps, int *i, int *j);
+void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student);
 
-void updateStudentInfo(FichierTovc *fichierTovc, Student student, int numberOfArguments, ...);
+void updateStudentInfo(FichierTovc* fichierTovc, Student student, int numberOfArguments, ...);
 
 void deleteStudent(FichierTovc *fichier, Student student);
 
-void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student);
+void skip(FichierTovc *fichier, int steps, int *i, int *j);
 
 #endif //TP1_SFSD_STUDENT_LIBRARY_H

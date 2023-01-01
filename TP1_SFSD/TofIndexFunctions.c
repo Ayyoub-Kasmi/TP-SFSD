@@ -6,10 +6,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <limits.h>
 
 void setEnteteTof(FichierTof *fichier, int pos, int value) {
     if (pos == 1) {
-        fichier->entete.LastBloc = value;
+        fichier->entete.NumberOfBlocks = value;
     } else if (pos == 2) {
         fichier->entete.NumberOfRecordsInserted = value;
     } else if (pos == 3) {
@@ -19,7 +20,7 @@ void setEnteteTof(FichierTof *fichier, int pos, int value) {
 
 int getEnteteTof(FichierTof *fichier, int pos) {
     if (pos == 1) {
-        return fichier->entete.LastBloc;
+        return fichier->entete.NumberOfBlocks;
     } else if (pos == 2) {
         return fichier->entete.NumberOfRecordsInserted;
     } else if (pos == 3) {
@@ -72,34 +73,34 @@ void ecrireBlocTof(FichierTof *fichier, int i, BufferTof *buffer) {
     //setEnteteTof(fichier, 2, getEnteteTof(fichier,2) + 1); on les fait individuellement dans chaque fonction
 }
 
-void chargementInitialeTof(FichierTof *fichier, int n, BufferTof *buffer) {
-    int i = 0, j = 0;
-    IndexRecord record;
-    //BufferTof buffer;
-    for (int k = 0; k < n; ++k) {
-        printf("La cle: ");
-        scanf("%d", &record.id);
-        printf("L\'information: ");
-        scanf("%d", &record.i);
-        printf("\n");
-        if (j < TOF_BUFFER_SIZE) {
-            buffer->tab[j] = record;
-            j++;
-        } else {
-            buffer->nb = j - 1;
-            //fwrite(&buffer, sizeof(BufferTof), 1, getFileTof(fichier));
-            ecrireBlocTof(fichier, i, buffer);
-            i++;
-            buffer->tab[0] = record;
-            j = 1;
-        }
-    }
-    buffer->nb = j - 1;
-    //fwrite(&buffer, sizeof(BufferTof), 1, getFileTof(fichier));
-    ecrireBlocTof(fichier, i, buffer);
-    setEnteteTof(fichier, 1, i);
-    setEnteteTof(fichier, 2, n);
-}
+//void chargementInitialeTof(FichierTof *fichier, int n, BufferTof *buffer) {
+//    int i = 0, j = 0;
+//    IndexRecord record;
+//    //BufferTof buffer;
+//    for (int k = 0; k < n; ++k) {
+//        printf("La cle: ");
+//        scanf("%d", &record.id);
+//        printf("L\'information: ");
+//        scanf("%d", &record.i);
+//        printf("\n");
+//        if (j < TOF_BUFFER_SIZE) {
+//            buffer->tab[j] = record;
+//            j++;
+//        } else {
+//            buffer->nb = j - 1;
+//            //fwrite(&buffer, sizeof(BufferTof), 1, getFileTof(fichier));
+//            ecrireBlocTof(fichier, i, buffer);
+//            i++;
+//            buffer->tab[0] = record;
+//            j = 1;
+//        }
+//    }
+//    buffer->nb = j - 1;
+//    //fwrite(&buffer, sizeof(BufferTof), 1, getFileTof(fichier));
+//    ecrireBlocTof(fichier, i, buffer);
+//    setEnteteTof(fichier, 1, i);
+//    setEnteteTof(fichier, 2, n);
+//}
 
 void printFileTof(FichierTof *fichier) {
     BufferTof buffer;
@@ -118,7 +119,7 @@ void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffe
     *i = 0;
     *j = 0;
     int bi = 0;
-    int bs = getEnteteTof(fichier, 1) - 1;
+    int bs = getEnteteTof(fichier, 1);
     int sup = 0;
     int inf = 0;
     bool stop = false;
@@ -127,7 +128,7 @@ void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffe
     while ((bi <= bs) && (!*(found)) && (!stop)) {
         *i = (bi + bs) / 2;
         lireBlocTof(fichier, *i, buffer);
-        if ((key >= buffer->tab[0].id) && (key <= buffer->tab[buffer->nb].id)) {
+        if ((key >= buffer->tab[0].id) && (key <= buffer->tab[buffer->nb-1].id)) {
             inf = 0;
             sup = buffer->nb - 1;
             while ((inf <= sup) && (!*(found))) {
@@ -147,8 +148,12 @@ void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffe
         else if (key > buffer->tab[buffer->nb].id) bi = (*i) + 1;
     }
     if (bi > bs){
-        *i = bi;
-        *j = 0;
+        if(bi >= getEnteteTof(fichier, 1)){
+            *i = INT_MAX; //a value to mean that we exceeded the file size
+        }else{
+            *i = bi;
+            *j = 0;
+        }
     }
 
 }
@@ -186,4 +191,18 @@ void supressionTof(FichierTof *fichier, int k, BufferTof *buffer) {
         setEnteteTof(fichier, 2, getEnteteTof(fichier, 2) - 1);
     }
 
+}
+
+void printClassIndex(FichierTof* classIndexFile){
+    int i= 0;
+    int j;
+    while (i < getEnteteTof(classIndexFile, 1)){
+        lireBlocTof(classIndexFile, 1, &bufferTof);
+        j = 0;
+        while (j < bufferTof.nb){
+            printf("\nclass id: %d\t i: %d\t j: %d\n", bufferTof.tab[j].id, bufferTof.tab[j].i, bufferTof.tab[j].j);
+            j++;
+        }
+        i++;
+    }
 }

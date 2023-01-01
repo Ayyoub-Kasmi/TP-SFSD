@@ -11,7 +11,7 @@
 #define TOF_BUFFER_SIZE 55
 
 typedef struct {
-    int LastBloc;
+    int NumberOfBlocks;
     int NumberOfRecordsInserted;
     int NumberOfRecordsDeleted;
 }EnteteTof;
@@ -60,5 +60,7 @@ void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffe
 void insertionTof(FichierTof* fichier, IndexRecord record, BufferTof* buffer);
 
 void supressionTof(FichierTof* fichier, int k, BufferTof* buffer);
+
+void printClassIndex(FichierTof* classIndexFile);
 
 #endif //TP1_SFSD_TOFINDEXFUNCTIONS_H

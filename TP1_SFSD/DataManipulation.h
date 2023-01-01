@@ -143,6 +143,8 @@ void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, 
 
 void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j);
 
+void printStudentsFile(FichierTovc *fichier);
+
 void generateStudentName(FILE* lastNamesFile, FILE* firstNamesAndGendersFile, StudentsNamesArray *studentsNamesArray);
 
 void searchStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, int* i, bool *found);
