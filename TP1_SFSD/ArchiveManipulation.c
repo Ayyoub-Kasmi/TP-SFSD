@@ -467,12 +467,14 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
         }
 
         lirechaine(currentYearFile, &bufferTovcData, lastNameSizeString, LASTNAME_LENGTH, &currentYearI, &currentYearJ);
+        lastNameSizeString[LASTNAME_LENGTH] = '\0';
         strcpy(archiveStringBuffer, lastNameSizeString);
         student.lastNameSize = stringToInt(lastNameSizeString, LASTNAME_LENGTH);
         lastNameSize = stringToInt(lastNameSizeString, LASTNAME_LENGTH);
 
         lirechaine(currentYearFile, &bufferTovcData, firstNameSizeString, FIRSTNAME_LENGTH, &currentYearI,
                    &currentYearJ);
+        firstNameSizeString[FIRSTNAME_LENGTH] = '\0';
         strcat(archiveStringBuffer, firstNameSizeString);
         student.firstNameSize = stringToInt(firstNameSizeString, FIRSTNAME_LENGTH);
         firstNameSize = stringToInt(firstNameSizeString, FIRSTNAME_LENGTH);
@@ -528,7 +530,9 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
         markWholePart = intMoyenne / 100;
         markDecimalPart = intMoyenne % 100;
         intToString(markWholePartString, markWholePart, MARK_WHOLE_PART_LENGTH);
+        markWholePartString[MARK_WHOLE_PART_LENGTH] = '\0';
         intToString(markDecimalPartString, markDecimalPart, MARK_DECIMAL_PART_LENGTH);
+        markDecimalPartString[MARK_DECIMAL_PART_LENGTH] = '\0';
 
         markDecimalPartString[MARK_DECIMAL_PART_LENGTH] = '\0';
         markWholePartString[MARK_WHOLE_PART_LENGTH] = '\0';
@@ -539,16 +543,17 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
         lirechaine(currentYearFile, &bufferTovcData, fullName, firstNameSize + lastNameSize, &currentYearI,
                    &currentYearJ);
         fullName[firstNameSize + lastNameSize] = '\0';
-        strcat(archiveStringBuffer, fullName);
         strcpy(student.fullName, fullName);
-        lirechaine(currentYearFile, &bufferTovcData, &gender, GENDER_SIZE, &currentYearI,
-                   &currentYearJ);
-        strcat(archiveStringBuffer, &gender);
-        student.gender = gender;
+        strcat(archiveStringBuffer, fullName);
+//        lirechaine(currentYearFile, &bufferTovcData, &gender, GENDER_SIZE, &currentYearI,
+//                   &currentYearJ);
+        student.gender = bufferTovcData.tab[currentYearJ];
+        skip(currentYearFile, GENDER_SIZE, &currentYearI, &currentYearJ);
+        strcat(archiveStringBuffer, &student.gender);
 
         ecrireChaine(archiveFile, &bufferTovcArchive, archiveStringBuffer, (int) strlen(archiveStringBuffer), &archiveI,
                      &archiveJ);
-        printf("class: %d\tId: %d\tlastNameSize: %d\tfirstNameSize: %d\tname: %s", student.class, student.id, student.lastNameSize, student.firstNameSize, student.fullName);
+        printf("class: %d\tId: %d\tlastNameSize: %d\tfirstNameSize: %d\tname: %s\n", student.class, student.id, student.lastNameSize, student.firstNameSize, student.fullName);
 
         /*
         if (currentYearI == getEntete(currentYearFile, 1)) {
