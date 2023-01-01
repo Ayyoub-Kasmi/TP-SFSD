@@ -57,8 +57,9 @@ void getMarks(float *tableOfMarks, int level) {
     int numberOfSubjects = numberOfSubjectsPerLevel[level]; // probleme here
 
     for (int i = 0; i < numberOfSubjects; ++i) {
-        tableOfMarks[i] = rand() % 41 * 0.25; //0.25 * 40 = 10
-        srand((unsigned) time(NULL) + i);
+        tableOfMarks[i] = rand() % 81 * 0.25; //0.25 * 80 = 20
+        if (tableOfMarks[i] <= 7) tableOfMarks[i] += 5;
+        srand((unsigned) time(NULL) + (unsigned)tableOfMarks[i]);
     }
 }
 

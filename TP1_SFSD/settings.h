@@ -8,6 +8,7 @@
 #define MAX_SUBJECTS 10
 #define MAX_LEVELS 6
 #define MAX_SUBJECT_NAME_LENGTH 30
+#define GLOBAL_VARIABLES_FILE_PATH "settings.txt"
 
 typedef struct {
     char name[MAX_SUBJECT_NAME_LENGTH];

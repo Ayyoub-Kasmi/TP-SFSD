@@ -81,38 +81,6 @@ void ecrireBlocMoyenne(FichierTofMoyenne *fichier, int i, BufferTofMoyenne *buff
     fseek(getFileMoyenne(fichier), sizeof(EnteteMoyenne) + sizeof(BufferTofMoyenne) * i, 0);
     fwrite(buffer, sizeof(BufferTofMoyenne), 1, getFileMoyenne(fichier));
 }
-//USELESS FUNCTION
-
-//void chargementInitialeMoyenne(FichierTofMoyenne *fichier, int n, BufferTofMoyenne *buffer) {
-//
-//
-//    int i = 0, j = 0;
-//    StudentsMoyenneArrayElement record;
-//    //BufferTof buffer;
-//    for (int k = 0; k < n; ++k) {
-//        printf("La cle: ");
-//        scanf("%f", &record.moyenne);
-//        printf("L\'information: ");
-//        scanf("%d", &record.i);
-//        printf("\n");
-//        if (j < TOF_BUFFER_SIZE) {
-//            buffer->tab[j] = record;
-//            j++;
-//        } else {
-//            buffer->nb = j - 1;
-//            //fwrite(&buffer, sizeof(BufferTof), 1, getFileTof(fichier));
-//            ecrireBlocMoyenne(fichier, i, buffer);
-//            i++;
-//            buffer->tab[0] = record;
-//            j = 1;
-//        }
-//    }
-//    buffer->nb = j - 1;
-//    //fwrite(&buffer, sizeof(BufferTof), 1, getFileTof(fichier));
-//    ecrireBlocMoyenne(fichier, i, buffer);
-//    setEnteteMoyenne(fichier, 1, i);
-//    setEnteteMoyenne(fichier, 2, n);
-//}
 
 void printFileMoyenne(FichierTofMoyenne *fichier) {
 
@@ -127,45 +95,6 @@ void printFileMoyenne(FichierTofMoyenne *fichier) {
 
 void
 rechercheMoyenne(FichierTofMoyenne *archiveFileIndex, float moyenne, int *moyenneIndexI, int *moyenneIndexJ) {
-    //don't forget to check if it's not erased !!!
-
-    //TO BE CHANGED ASAP
-//
-//    *i = 0;
-//    *j = 0;
-//    int bi = 0;
-//    int bs = getEnteteMoyenne(archiveFileIndex, 1) - 1;
-//    int sup = 0;
-//    int inf = 0;
-//    bool stop = false;
-//    *found = false;
-//    while ((bi <= bs) && (!*(found)) && (!stop)) {
-//        *i = (bi + bs) / 2;
-//        lireBlocMoyenne(archiveFileIndex, *i, buffer);
-//        if ((moyenne >= buffer->tab[0].moyenne) && (moyenne <= buffer->tab[buffer->nb].moyenne)) {
-//            inf = 0;
-//            sup = buffer->nb - 1;
-//            while ((inf <= sup) && (!*(found))) {
-//                *j = (inf + sup) / 2;
-//                if (moyenne < buffer->tab[*j].moyenne) sup = (*j) - 1;
-//                else if (moyenne > buffer->tab[*j].moyenne) inf = (*j) + 1;
-//                else {
-//                    *found = true;
-//                }
-//            }
-//            if (inf > sup) {
-//                *j = inf;
-//                stop = true;
-//            }
-//        } else if ((moyenne < buffer->tab[0].moyenne)) bs = (*i) - 1;
-//        else if (moyenne > buffer->tab[buffer->nb].moyenne) bi = (*i) + 1;
-//    }
-//    if (bi > bs) {
-//        *i = bi;
-//        *j = 0;
-//    }
-
-
 
     int nonDenseIndexPos = 0;
 
@@ -295,7 +224,8 @@ createNewPrepaStudents(FichierTovc *nextYearFile, ClassIdArray *classIdArray, Fi
     *newYearJ = 0;
     lireBlocTof(currentYearClassIndexFile, indexI, &bufferTofClass);
 
-    while (bufferTofClass.tab[indexJ].id < MIN_1TH_GRADE_CLASS_ID) { //because that's the smallest classId of a 1st year class
+    while (bufferTofClass.tab[indexJ].id <
+           MIN_1TH_GRADE_CLASS_ID) { //because that's the smallest classId of a 1st year class
         if (indexJ >= bufferTofClass.nb) {
             if (indexI < getEnteteTof(currentYearClassIndexFile, 1) - 1) {
                 indexI++;
@@ -334,7 +264,8 @@ createNewPrepaStudents(FichierTovc *nextYearFile, ClassIdArray *classIdArray, Fi
 
     setEntete(nextYearFile, 1, (*newYearI) + 1); //Total number blocs
     setEntete(nextYearFile, 2, *newYearJ); //Last position in the lastBloc
-    setEntete(nextYearFile, 3, TOVC_BUFFER_SIZE * (*newYearI + 1) + (*newYearJ)); //Total number of characters in the file
+    setEntete(nextYearFile, 3,
+              TOVC_BUFFER_SIZE * (*newYearI + 1) + (*newYearJ)); //Total number of characters in the file
     setEntete(nextYearFile, 4, 0); //number of chars deleted
 
     //close first names file
@@ -355,7 +286,7 @@ void createNewClass(ClassIdArray *classIdArray, int level, int min, int max) {
 
     //generate a "unique" class number
     bool found = true;
-     while (found) {
+    while (found) {
         roomNumber = generate2positionInt(seed);
         if ((roomNumber >= min) && (roomNumber < max)) {
             checkRoomNumber(classIdArray, roomNumber, &found);
@@ -401,6 +332,7 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
     int markDecimalPart;
     float moyenne = 0;
     char gender;
+    int archiveStudentSize;
     char markWholePartString[MARK_WHOLE_PART_LENGTH + 1];
     char markDecimalPartString[MARK_DECIMAL_PART_LENGTH + 1];
     char archiveStringBuffer[
@@ -437,6 +369,7 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
     int nextClassJ = bufferTofClass.tab[classIndexJ + 1].j;
 
     lireBloc(currentYearFile, currentYearI, &bufferTovcData);
+
 
     while (!endOfFile) {
         if ((currentYearI == nextClassI) && (currentYearJ == nextClassJ)) {
@@ -482,6 +415,8 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
         //we don't have to extract the level from the class ID because we're already having it from the index
         lirechaine(currentYearFile, &bufferTovcData, classIdString, CLASS_ID_SIZE, &currentYearI, &currentYearJ);
         classIdString[CLASS_ID_SIZE] = '\0';
+        if (classIdString[0] == 'p') level = 0; else level = stringToInt(classIdString, SCHOOL_LEVEL_SIZE);
+        //you could do: if ... else level = classIdString - 48;
         strcat(archiveStringBuffer, classIdString);
         student.class = classIdArray.tab[classIdArray.nb - 1].id;
 
@@ -538,6 +473,7 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
         markWholePartString[MARK_WHOLE_PART_LENGTH] = '\0';
         strcat(archiveStringBuffer, markWholePartString);
         strcat(archiveStringBuffer, markDecimalPartString);
+
         insertStudentMoyenneInArray(&studentsMoyenneArray, archiveI, archiveJ, moyenne);
 
         lirechaine(currentYearFile, &bufferTovcData, fullName, firstNameSize + lastNameSize, &currentYearI,
@@ -545,18 +481,25 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
         fullName[firstNameSize + lastNameSize] = '\0';
         strcpy(student.fullName, fullName);
         strcat(archiveStringBuffer, fullName);
-//        lirechaine(currentYearFile, &bufferTovcData, &gender, GENDER_SIZE, &currentYearI,
-//                   &currentYearJ);
+
         student.gender = bufferTovcData.tab[currentYearJ];
         skip(currentYearFile, GENDER_SIZE, &currentYearI, &currentYearJ);
         strcat(archiveStringBuffer, &student.gender);
 
-        ecrireChaine(archiveFile, &bufferTovcArchive, archiveStringBuffer, (int) strlen(archiveStringBuffer), &archiveI,
+        archiveStudentSize = FIRSTNAME_LENGTH + LASTNAME_LENGTH + CLASS_ID_SIZE + STUDENT_ID_SIZE
+                             + MARK_LENGTH + student.firstNameSize + student.lastNameSize + GENDER_SIZE;
+        ecrireChaine(archiveFile, &bufferTovcArchive, archiveStringBuffer, archiveStudentSize, &archiveI,
                      &archiveJ);
-        printf("class: %d\tId: %d\tlastNameSize: %d\tfirstNameSize: %d\tname: %s\n", student.class, student.id, student.lastNameSize, student.firstNameSize, student.fullName);
+        if (archiveJ == TOVC_BUFFER_SIZE){
+            archiveJ = 0;
+            archiveI++;
+            lireBloc(archiveFile, archiveI, &bufferTovcArchive);
+        }
+        //printf("class: %d\tId: %d\tlastNameSize: %d\tfirstNameSize: %d\tname: %s\tmoyenne: %f\n", student.class,
+               //student.id, student.lastNameSize, student.firstNameSize, student.fullName, moyenne);
 
-        /*
-        if (currentYearI == getEntete(currentYearFile, 1)) {
+
+        if (currentYearI == getEntete(currentYearFile, 1) - 1) {
             if (currentYearJ == getEntete(currentYearFile, 2)) endOfFile = true;
         }
 
@@ -580,7 +523,6 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
                 writeStudent(nextYearFile, &student, &newYearI, &newYearJ, &bufferTovcNewYear);
             }
         }
-         */
 
     }
     // This should go outside the loop !!!
@@ -595,6 +537,7 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
     //BufferTof bufferTovcData;
     for (int k = 0; k < studentsMoyenneArray.nb; ++k) {
         if (j1 < TOF_MOYENNE_BUFFER_SIZE) {
+            printf("\n%f\n", studentsMoyenneArray.tab[k].moyenne);
             bufferTofMoyenne.tab[j1] = studentsMoyenneArray.tab[k];
             j1++;
         } else {
@@ -603,6 +546,7 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
             moyenneNonDenseIndex.tab[i1].maxMoyenne = bufferTofMoyenne.tab[j1 - 1].moyenne;
             ecrireBlocMoyenne(moyennefile, i1, &bufferTofMoyenne);
             i1++;
+            printf("\n%f\n", studentsMoyenneArray.tab[k].moyenne);
             bufferTofMoyenne.tab[0] = studentsMoyenneArray.tab[k];
             j1 = 1;
         }
@@ -615,6 +559,8 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
 
     setEnteteMoyenne(moyennefile, 1, i1 + 1);
     setEnteteMoyenne(moyennefile, 2, studentsMoyenneArray.nb);
+
+    //printMoyenneIndex(moyennefile);
 
     //Create the next year index file
     i1 = 0;
@@ -644,12 +590,12 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
 
     //========= adding students who failed
     level = 0;
-    int studentWhoFailedI = 0, classIdArrayPos = 0, firstClassOfThisLevelPosition = 0, firstClassOfTheNextLevelPosition = numberOfClassesPerLevel[level];
+    int studentWhoFailedPos = 0, classIdArrayPos = 0, firstClassOfThisLevelPosition = 0, firstClassOfTheNextLevelPosition = numberOfClassesPerLevel[level];
 
-    while (studentWhoFailedI < studentsWhoFailed.nb) {
-        if (studentsWhoFailed.tab[studentWhoFailedI].class > (level + 1) * 100) {
+    while (studentWhoFailedPos < studentsWhoFailed.nb) {
+        if (studentsWhoFailed.tab[studentWhoFailedPos].class > (level + 1) * 100) {
 
-            level = (studentsWhoFailed.tab[studentWhoFailedI].class / 100) % 10;
+            level = (studentsWhoFailed.tab[studentWhoFailedPos].class / 100) % 10;
 
             firstClassOfThisLevelPosition = firstClassOfTheNextLevelPosition;
             firstClassOfTheNextLevelPosition += numberOfClassesPerLevel[level];
@@ -666,20 +612,14 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
 
 
 void
-searchStudentMoyenneInArray(StudentsMoyenneArray *studentsMoyenneArray, int archiveI, int archiveJ, float moyenne,
-                            int *k) {
+searchStudentMoyenneInArray(StudentsMoyenneArray *studentsMoyenneArray, float moyenne, int *k) {
+    *k = 0;
     //we won't need the found variable because the values will be repetetive
     if (studentsMoyenneArray->nb > 0) {
-        while ((*k < studentsMoyenneArray->nb)) {
-            // YOU HAVE DONE ALL OF THAT FOR NOTHING BECAUSE THE DATA COMES IN AN INCREASING WAY !!!
-            if (moyenne == studentsMoyenneArray->tab[*k].moyenne) {
-                if (archiveI == studentsMoyenneArray->tab[*k].i) {
-                    if (archiveJ > studentsMoyenneArray->tab[*k].j) (*k)++; else break;
-                } else if (archiveI > studentsMoyenneArray->tab[*k].i) (*k)++; else break;
-            } else if (moyenne > studentsMoyenneArray->tab[*k].moyenne) (*k)++;
-            else break;
-        }
 
+        while ((*k < studentsMoyenneArray->nb)) {
+            if (moyenne >= studentsMoyenneArray->tab[*k].moyenne) (*k)++; else break;
+        }
     } else {
         *k = 0;
     }
@@ -695,10 +635,10 @@ insertStudentMoyenneInArray(StudentsMoyenneArray *studentsMoyenneArray, int arch
         studentsMoyenneArray->nb++;
     } else {
         int i = 0;
-        searchStudentMoyenneInArray(studentsMoyenneArray, archiveI, archiveJ, moyenne, &i);
+        searchStudentMoyenneInArray(studentsMoyenneArray, moyenne, &i);
         //we have to recheck this
         if (moyenne < studentsMoyenneArray->tab[i].moyenne) {
-            for (int k = studentsMoyenneArray->nb; k >= i; --k) {
+            for (int k = studentsMoyenneArray->nb; k > i; --k) {
                 studentsMoyenneArray->tab[k] = studentsMoyenneArray->tab[k - 1];
             }
         }
@@ -926,59 +866,71 @@ void printArchiveFile(FichierTovc *archiveFile) {
     char lastNameSize[LASTNAME_LENGTH + 1];
     char classID[CLASS_ID_SIZE + 1];
     char ID[STUDENT_ID_SIZE + 1];
-    char fullName[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE + 1];
     char mark[MARK_LENGTH + 1];
 
-    lireBloc(archiveFile, i, &bufferTovcData);
+    lireBloc(archiveFile, i, &bufferTovcArchive);
 
     while (i < getEntete(archiveFile, 1) - 1 || j < getEntete(archiveFile, 2)) {
         //Reading all information of the current student from the file:
 
         //Reading first name and last name sizes
-        lirechaine(archiveFile, &bufferTovcData, firstNameSize, FIRSTNAME_LENGTH, &i, &j);
-        student.firstNameSize = stringToInt(firstNameSize, FIRSTNAME_LENGTH);
-        lirechaine(archiveFile, &bufferTovcData, lastNameSize, LASTNAME_LENGTH, &i, &j);
+
+        lirechaine(archiveFile, &bufferTovcArchive, lastNameSize, LASTNAME_LENGTH, &i, &j);
         student.lastNameSize = stringToInt(lastNameSize, LASTNAME_LENGTH);
+        lirechaine(archiveFile, &bufferTovcArchive, firstNameSize, FIRSTNAME_LENGTH, &i, &j);
+        student.firstNameSize = stringToInt(firstNameSize, FIRSTNAME_LENGTH);
 
         //Reading the class ID
-        lirechaine(archiveFile, &bufferTovcData, classID, CLASS_ID_SIZE, &i, &j);
+        lirechaine(archiveFile, &bufferTovcArchive, classID, CLASS_ID_SIZE, &i, &j);
         if (classID[0] == 'p') classID[0] = '0';
         student.class = stringToInt(classID, CLASS_ID_SIZE);
 
         //Reading the student ID
-        lirechaine(archiveFile, &bufferTovcData, ID, STUDENT_ID_SIZE, &i, &j);
+        lirechaine(archiveFile, &bufferTovcArchive, ID, STUDENT_ID_SIZE, &i, &j);
         student.id = stringToInt(ID, STUDENT_ID_SIZE);
-
-        //Reading the isDeleted character
-        student.isDeleted = bufferTovcData.tab[j];
-        j++;
-        if (j == TOVC_BUFFER_SIZE) {
-            i++;
-            lireBloc(archiveFile, i, &bufferTovcData);
-            j = 0;
-        }
 
         //Reading the marks
 
-        lirechaine(archiveFile, &bufferTovcData, mark, MARK_LENGTH, &i, &j);
+        lirechaine(archiveFile, &bufferTovcArchive, mark, MARK_LENGTH, &i, &j);
+        mark[MARK_LENGTH] = '\0';
         student.marks[0] = stringToInt(mark, MARK_LENGTH) / 100.0;
+        printf("\n%s\n", mark);
 
 
         //Reading last name and first name
-        lirechaine(archiveFile, &bufferTovcData, student.fullName, student.lastNameSize + student.firstNameSize, &i,
+        lirechaine(archiveFile, &bufferTovcArchive, student.fullName, student.lastNameSize + student.firstNameSize, &i,
                    &j);
         student.fullName[student.lastNameSize + student.firstNameSize] = '\0';
 
         //Reading the gender character
-        student.gender = bufferTovcData.tab[j];
+        student.gender = bufferTovcArchive.tab[j];
         j++;
         if (j == TOVC_BUFFER_SIZE) {
             i++;
-            lireBloc(archiveFile, i, &bufferTovcData);
+            lireBloc(archiveFile, i, &bufferTovcArchive);
             j = 0;
         }
 
-        printf("class: %d\tID: %d\tname: %s\tMoyenne: %f\n", student.class, student.id, student.fullName, student.marks[0]);
+//        printf("class: %d\tID: %d\tname: %s\tMoyenne: %f\n", student.class, student.id, student.fullName,
+//               student.marks[0]);
 
+        printf("class: %d\tID: %d\tname: %s\tMoyenne: %f\n", student.class, student.id, student.fullName,
+               student.marks[0]);
+
+    }
+}
+
+void printMoyenneIndex(FichierTofMoyenne *moyenneIndexFile) {
+    int i = 0;
+    int j;
+    while (i < getEnteteMoyenne(moyenneIndexFile, 1)) {
+        lireBlocMoyenne(moyenneIndexFile, i, &bufferTofMoyenne);
+        j = 0;
+        while (j < bufferTofMoyenne.nb) {
+            printf("\nMoyenne : %f\t i: %d\t j: %d\n", bufferTofMoyenne.tab[j].moyenne, bufferTofMoyenne.tab[j].i,
+                   bufferTofClass.tab[j].j);
+            j++;
+        }
+        i++;
     }
 }

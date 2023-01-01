@@ -33,6 +33,11 @@
 #define MARK_DECIMAL_PART_LENGTH 2
 #define MIN_5TH_GRADE_CLASS_ID 500
 #define MIN_1TH_GRADE_CLASS_ID 100
+#define DATA_FILE_NAME_SUFFIX "Data_File"
+#define ARCHIVE_FILE_NAME_SUFFIX "Archive_File"
+#define CLASS_INDEX_FILE_NAME_SUFFIX "Class_Index_File"
+#define MOYENNE_INDEX_FILE_NAME_SUFFIX "Moyenne_Index_File"
+
 
 
 typedef struct {

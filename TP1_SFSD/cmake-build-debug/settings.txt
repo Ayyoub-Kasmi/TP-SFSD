@@ -1,0 +1,24 @@
+# student ID size
+4
+# class ID size
+3
+# First load of classes
+30
+# First load of students
+120
+# Max student per class
+4
+# Max students in a school year
+300
+# Max first name length
+30
+# Max last name length
+30
+# Max number of subjects
+7
+# Mark length
+4
+# Mark whole part length
+2
+# Mark decimal part length
+2

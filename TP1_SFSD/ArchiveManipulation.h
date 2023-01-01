@@ -81,7 +81,7 @@ void insertionMoyenne(FichierTofMoyenne *archiveFileIndex, StudentsMoyenneArrayE
 
 void supressionMoyenne(FichierTofMoyenne* fichier, float moyenne, BufferTofMoyenne* buffer);
 
-void searchStudentMoyenneInArray(StudentsMoyenneArray *studentsMoyenneArray, int archiveI, int archiveJ, float moyenne, int *k);
+void searchStudentMoyenneInArray(StudentsMoyenneArray *studentsMoyenneArray, float moyenne, int *k);
 
 void insertStudentMoyenneInArray(StudentsMoyenneArray *studentsMoyenneArray, int archiveI, int archiveJ,float moyenne);
 
@@ -97,6 +97,8 @@ void printArchiveFile(FichierTovc *archiveFile);
 
 void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile, FichierTovc *archiveFile,
              FichierTofMoyenne *moyennefile, FichierTovc *nextYearFile, FichierTof *nextYearClassIndexFile);
+
+void printMoyenneIndex(FichierTofMoyenne * moyenneIndexFile);
 
 
 
