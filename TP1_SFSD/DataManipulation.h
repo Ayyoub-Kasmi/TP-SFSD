@@ -23,7 +23,7 @@
 #define MAX_NUMBER_OF_PREPA_STUDENTS 250
 #define LAST_NAMES_FILE_PATH "LastNames.txt" //this is the alternative for the moment
 #define FIRST_NAMES_AND_GENDER_FILE_PATH "FirstNamesAndGenders.txt"
-#define CLASS_INDEX_FILE_PATH "classIndexFile"
+#define CLASS_INDEX_FILE_PATH "classIndexFile.bin"
 #define FIRST_NAME_FILE_SIZE 614
 #define MAX_FIRST_NAME_SIZE 30
 #define MAX_LAST_NAME_SIZE 30

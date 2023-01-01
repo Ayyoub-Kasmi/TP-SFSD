@@ -263,7 +263,7 @@ void printClassIndex(FichierTof* classIndexFile){
     int i= 0;
     int j;
     while (i < getEnteteTof(classIndexFile, 1)){
-        lireBlocTof(classIndexFile, 1, &bufferTofClass);
+        lireBlocTof(classIndexFile, i, &bufferTofClass);
         j = 0;
         while (j < bufferTofClass.nb){
             printf("\nclass id: %d\t i: %d\t j: %d\n", bufferTofClass.tab[j].id, bufferTofClass.tab[j].i, bufferTofClass.tab[j].j);

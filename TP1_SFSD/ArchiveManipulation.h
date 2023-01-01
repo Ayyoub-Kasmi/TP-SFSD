@@ -52,7 +52,7 @@ typedef struct {
 extern BufferTofMoyenne bufferTofMoyenne;
 extern BufferTovc bufferTovcArchive;
 extern MoyenneNonDenseIndex moyenneNonDenseIndex;
-int numberOfClassesPerLevel[6];
+extern int numberOfClassesPerLevel[6];
 
 void setEnteteMoyenne(FichierTofMoyenne *fichier, int pos, int value);
 

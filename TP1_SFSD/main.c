@@ -55,11 +55,11 @@ int main() {
     FichierTovc *archiveFile = ouvrirFichierTovc(CURRENT_YEAR_ARCHIVE_FILE_PATH, 'N');
     FichierTofMoyenne *archiveIndexFile = ouvrirFichierMoyenne("archiveIndexFile", 'N');
     FichierTovc* nextYearFile = ouvrirFichierTovc("2023_STUDENTS", 'N');
-    FichierTof* nextYearIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'N');
+    FichierTof* nextYearIndexFile;
     FichierTof *classIndexFile;
     int i = 0;
     int j = 0;
-    bool new = true;
+    bool new = false;
     if (new) {
         currentYearFile = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'N');
         classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'N');
@@ -105,7 +105,7 @@ int main() {
 
     printClassIndex(classIndexFile);
 
-    insertStudent(currentYearFile, classIndexFile, student);
+//    insertStudent(currentYearFile, classIndexFile, student);
 
 
     printf("\n\n");
