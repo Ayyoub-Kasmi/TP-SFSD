@@ -130,6 +130,8 @@ int main() {
 
     int choice;
     int numberOfArchives; //Add it to settings.h
+    int numberOfArguments;
+    int subjectNumber;
     Student student;
     FichierTovc *currentYearFile;
     FichierTovc *archiveFile;
@@ -176,12 +178,15 @@ int main() {
 
         printf("Enter a number: ");
         scanf("%d", &choice);
+
         if(choice == 0) break;
+
         switch(choice){
             case 1:     //Edit the main file
                 while(1){
                     printf("1) Create a new file\n");
-                    printf("2) Edit current file\n\n");
+                    printf("2) Edit current file\n");
+                    printf("3) Archive this year\n");
                     printf("0) Exit\n\n");
                     printf("Enter a number: ");
                     scanf("%d", &choice);
@@ -237,7 +242,16 @@ int main() {
                                 switch(choice){
                                     case 1:     //Print a student
                                         //reading student info
+                                        printf("Enter Student info: \n\n");
+                                        printf("Enter student's class: ");
+                                        scanf("%d", &student.class);
+                                        printf("Enter student's ID: ");
+                                        scanf("%d", &student.id);
+
                                         //search
+                                        searchStudent(currentYearFile, classIndexFile, student,
+                                                      &currentYearFileJ, &currentYearFileJ, &classIndexI,
+                                                      &classIndexJ, &studentFound, &classFound);
                                         //print
                                         break;
                                     case 2:     //Insert a student
@@ -269,15 +283,17 @@ int main() {
 
                                         switch(choice){
                                             case 1:;
-                                                int id;
+
                                                 printf("Enter the new ID: ");
                                                 scanf("%d", &id);
-                                                updateStudentInfo(fichierTovc, student, numberOfArguments, id);
+                                                numberOfArguments = 1;
+                                                updateStudentInfo(currentYearFile, student, numberOfArguments, id);
                                                 break;
                                             case 2:;
                                                 printf("Enter the new class: ");
                                                 scanf("%d", &newClass);
-                                                updateStudentInfo(fichierTovc, student, numberOfArguments, newClass);
+                                                numberOfArguments = 1;
+                                                updateStudentInfo(currentYearFile, student, numberOfArguments, newClass);
                                                 break;
                                             case 3:;
 
@@ -286,20 +302,27 @@ int main() {
                                                 lastNameSizeInt = (int) strlen(lastName);
                                                 printf("Enter student's first name (lower case only): ");
                                                 scanf("%s", firstName);
-                                                int firstNameSizeInt = (int) strlen(firstName);
-                                                updateStudentInfo(fichierTovc, student, numberOfArguments, firstNameSizeInt, lastNameSizeInt, fullname);
+                                                firstNameSizeInt = (int) strlen(firstName);
+
+                                                numberOfArguments = 3;
+                                                updateStudentInfo(currentYearFile, student, numberOfArguments, firstNameSizeInt, lastNameSizeInt, fullname);
                                                 break;
                                             case 4:;
                                                 printf("Enter the gender ( 'm' or 'f') : ");
                                                 scanf("%c", &gender);
-                                                updateStudentInfo(fichierTovc, student, numberOfArguments, gender);
+
+                                                numberOfArguments = 1;
+                                                updateStudentInfo(currentYearFile, student, numberOfArguments, gender);
                                                 break;
                                             case 5:;
 
                                                 printf("Enter the student's mark: ");
                                                 scanf("%f", &mark);
+                                                printf("Enter the subject's number: ");
+                                                scanf("%d", &subjectNumber);
 
-                                                updateStudentInfo(fichierTovc, student, numberOfArguments, subjectNumber, mark);
+                                                numberOfArguments = 2;
+                                                updateStudentInfo(currentYearFile, student, numberOfArguments, subjectNumber, mark);
                                                 break;
                                             default:
                                                 printf("Wrong number! Try again\n");
@@ -311,6 +334,10 @@ int main() {
                             }
                             break;
 
+                        case 3: //Archive this year
+                            archive(currentYearFile, classIndexFile, archiveFile, archiveIndexFile, newYearFile, nextYearIndexFile);
+                            currentYear++;
+                            break;
                         default:
                             printf("Wrong number! Try again\n");
                     }
