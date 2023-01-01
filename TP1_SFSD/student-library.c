@@ -258,21 +258,23 @@ void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student)
         int bufferPos = TOVC_BUFFER_SIZE; if (i == getEntete(fichier, 1)-1) bufferPos = getEntete(fichier, 2);
         bool new = false;
 
-        while( !endOfFile || k != m +1){
-            if(k >= totalStudentSize) k = 0;
-            if( j >= TOVC_BUFFER_SIZE){
+        lireBloc(fichier, i, &bufferTovcData);
+        while( !endOfFile || k != m +1) {
+            if (k >= totalStudentSize) k = 0;
+            if (j >= TOVC_BUFFER_SIZE) {
                 ecrireBloc(fichier, i, &bufferTovcData);
                 i++;
-                j=0;
-                if(i < getEntete(fichier, 1)) lireBloc(fichier, i, &bufferTovcData);
-                if( i == getEntete(fichier, 1)-1) bufferPos = getEntete(fichier, 2);
-            }else{
+                j = 0;
+                if (i < getEntete(fichier, 1)) lireBloc(fichier, i, &bufferTovcData);
+                if (i == getEntete(fichier, 1) - 1) bufferPos = getEntete(fichier, 2);
+            } else {
 
-                if (j < bufferPos){
+                if (j < bufferPos) {
                     c = bufferTovcData.tab[j];
                     bufferTovcData.tab[j] = stringBuffer[k];
                     k++;
-                    m++; if(m>=totalStudentSize) m = 0;
+                    m++;
+                    if (m >= totalStudentSize) m = 0;
                     stringBuffer[m] = c;
                 } else {
                     endOfFile = true;
@@ -281,7 +283,6 @@ void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student)
                 }
                 j++;//Here
             }
-
         }
 
         if(j != 0) ecrireBloc(fichier, i, &bufferTovcData);

@@ -82,8 +82,8 @@ int main() {
     student.firstNameSize = 6;
     student.lastNameSize = 8;
     student.id = 1111;
-    student.class = 179;
-    strcpy(student.fullName, "HouariMohammed");
+    student.class = 160;
+    strcpy(student.fullName, "houarimohammed");
     student.gender = 'M';
     student.isDeleted = '0';
     student.marks[0] = 10.00;
@@ -105,7 +105,7 @@ int main() {
 
     printClassIndex(classIndexFile);
 
-//    insertStudent(currentYearFile, classIndexFile, student);
+    insertStudent(currentYearFile, classIndexFile, student);
 
 
     printf("\n\n");
