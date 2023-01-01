@@ -100,6 +100,8 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
 
 void printMoyenneIndex(FichierTofMoyenne * moyenneIndexFile);
 
+void listerParArchive(FichierTovc *archiveFile, FichierTofMoyenne *archiveIndexFile, float moyenne);
+
 
 
 

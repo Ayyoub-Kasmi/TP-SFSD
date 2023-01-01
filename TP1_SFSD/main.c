@@ -47,7 +47,7 @@ int main() {
 //    FichierTovc *currentYearFile;
 //    FichierTovc *archiveFile;
 //    FichierTofMoyenne *archiveIndexFile;
-//    FichierTovc* nextYearFile = ouvrirFichierTovc("2023_STUDENTS.bin", 'N');
+//    FichierTovc* newYearFile = ouvrirFichierTovc("2023_STUDENTS.bin", 'N');
 //    FichierTof* nextYearIndexFile = ouvrirFichierTof("2023_CLASS_INDEX.bin", 'N');
 //    FichierTof *classIndexFile;
 //    int i = 0;
@@ -92,7 +92,7 @@ int main() {
 ////    printStudentsFile(currentYearFile);
 //    printf("\n\n=======================\n\n");
 //
-//    archive(currentYearFile, classIndexFile, archiveFile, archiveIndexFile, nextYearFile, nextYearIndexFile);printf("\n\n=======================\n\n");
+//    archive(currentYearFile, classIndexFile, archiveFile, archiveIndexFile, newYearFile, nextYearIndexFile);printf("\n\n=======================\n\n");
 //    printArchiveFile(archiveFile);
 //    printMoyenneIndex(archiveIndexFile);
 //
@@ -123,7 +123,7 @@ int main() {
 //        j++;
 //    }
 //    fermerFichier(currentYearFile);
-//    fermerFichier(nextYearFile);
+//    fermerFichier(newYearFile);
 //    fermerFichierMoyenne(archiveIndexFile);
 //    fermerFichierTof(nextYearIndexFile);
 //    fermerFichierTof(classIndexFile);
@@ -131,6 +131,38 @@ int main() {
     int choice;
     int numberOfArchives; //Add it to settings.h
     Student student;
+    FichierTovc *currentYearFile;
+    FichierTovc *archiveFile;
+    FichierTofMoyenne *archiveIndexFile;
+    FichierTovc* newYearFile;
+    FichierTof* nextYearIndexFile;
+    FichierTof *classIndexFile;
+    float mark;
+    int currentYearFileI = 0;
+    int currentYearFileJ = 0;
+    int archiveI = 0;
+    int archiveJ = 0;
+    int classIndexI = 0;
+    int classIndexJ = 0;
+    int archiveIndexI = 0;
+    int archiveIndexJ = 0;
+    int newYearFileI = 0;
+    int newYearFileJ = 0;
+    int id;
+    int newClass;
+    int lastNameSizeInt;
+    int firstNameSizeInt;
+    int archiveYear;
+    char gender;
+    bool studentFound;
+    bool classFound;
+    int numberOfYears;
+    float average;
+    char archiveYearString[5];
+    char fileNameStringBuffer[20];
+    char firstName[MAX_FIRST_NAME_SIZE +1];
+    char lastName[MAX_LAST_NAME_SIZE +1];
+    char fullname[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE +1];
     while(1){
         //system("cls");
         //printHeader();
@@ -166,7 +198,13 @@ int main() {
                                 if(choice == 0) break;
                                 switch(choice){
                                     case 1: //Auto-generate data
-                                        //  createSchoolYear()
+                                        strcpy(fileNameStringBuffer, "currentYear");
+                                        strcat(fileNameStringBuffer, DATA_FILE_NAME_SUFFIX);
+                                        currentYearFile = ouvrirFichierTovc(fileNameStringBuffer, 'N');
+                                        strcpy(fileNameStringBuffer, "currentYear");
+                                        strcat(fileNameStringBuffer, CLASS_INDEX_FILE_NAME_SUFFIX);
+                                        classIndexFile = ouvrirFichierTof(fileNameStringBuffer, 'N');
+                                        createSchoolYear(currentYearFile, classIndexFile, &currentYearFileI, &currentYearFileJ);
                                         printf("\n\nFile has been successfully created\n\n");
                                         break;
 
@@ -180,6 +218,14 @@ int main() {
 
                         case 2:     //Edit current file
                             while(1){
+                                printf("Please check your repo and choose a Data file\n");
+                                scanf("%s",fileNameStringBuffer);
+                                currentYearFile = ouvrirFichierTovc(fileNameStringBuffer, 'A');
+                                printf("Please check your repo and choose a class index file\n");
+                                scanf("%s",fileNameStringBuffer);
+                                classIndexFile = ouvrirFichierTof(fileNameStringBuffer, 'A');
+                                lireBlocTof(classIndexFile, 0, &bufferTofClass);
+                                updateNumberOfClassesPerLevel(&bufferTofClass);
                                 printf("1) Print a student\n");
                                 printf("2) Insert a student\n");
                                 printf("3) Delete a student\n");
@@ -229,31 +275,27 @@ int main() {
                                                 updateStudentInfo(fichierTovc, student, numberOfArguments, id);
                                                 break;
                                             case 2:;
-                                                int newClass;
                                                 printf("Enter the new class: ");
                                                 scanf("%d", &newClass);
                                                 updateStudentInfo(fichierTovc, student, numberOfArguments, newClass);
                                                 break;
                                             case 3:;
-                                                char firstName[MAX_FIRST_NAME_SIZE +1];
-                                                char lastName[MAX_LAST_NAME_SIZE +1];
-                                                char fullname[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE +1];
+
                                                 printf("Enter student's family name: (lower case only)");
                                                 scanf("%s", lastName);
-                                                int lastNameSizeInt = (int) strlen(lastName);
+                                                lastNameSizeInt = (int) strlen(lastName);
                                                 printf("Enter student's first name (lower case only): ");
                                                 scanf("%s", firstName);
                                                 int firstNameSizeInt = (int) strlen(firstName);
                                                 updateStudentInfo(fichierTovc, student, numberOfArguments, firstNameSizeInt, lastNameSizeInt, fullname);
                                                 break;
                                             case 4:;
-                                                char gender;
                                                 printf("Enter the gender ( 'm' or 'f') : ");
                                                 scanf("%c", &gender);
                                                 updateStudentInfo(fichierTovc, student, numberOfArguments, gender);
                                                 break;
                                             case 5:;
-                                                float mark;
+
                                                 printf("Enter the student's mark: ");
                                                 scanf("%f", &mark);
 
@@ -277,21 +319,37 @@ int main() {
                 break;
             case 2:     //Edit the archive file
                 while(1){
-                    printf("1) List students with an average > ... : \n");
-                    printf("2) Transfer a student to the current school: \n");
+                    printf("1) Archive an already existing file : \n");
+                    printf("2) List students with an average > ... : \n");
+                    printf("3) Transfer a student to the current school: \n");
                     printf("0) Exit\n\n");
                     printf("Enter a number: ");
                     scanf("%d", &choice);
                     if(choice == 0) break;
 
                     switch(choice){
-                        case 1:     //List students with an average higher than ...
+                        case 1:
+                            strcpy(fileNameStringBuffer, "currentYear");
+                            strcat(fileNameStringBuffer, ARCHIVE_FILE_NAME_SUFFIX);
+                            archiveFile = ouvrirFichierTovc(fileNameStringBuffer, 'N');
+                            strcpy(fileNameStringBuffer, "currentYear");
+                            strcat(fileNameStringBuffer, ARCHIVE_FILE_NAME_SUFFIX);
+                            archiveIndexFile = ouvrirFichierMoyenne(fileNameStringBuffer, 'N');
+                            currentYear++;
+                            strcpy(fileNameStringBuffer, "currentYear");
+                            strcat(fileNameStringBuffer, ARCHIVE_FILE_NAME_SUFFIX);
+                            newYearFile = ouvrirFichierTovc(fileNameStringBuffer, 'N');
+
+                            archive(currentYearFile, classIndexFile, archiveFile, archiveIndexFile, newYearFile, nextYearIndexFile);printf("\n\n=======================\n\n");
+
+                            break;
+                        case 2:     //List students with an average higher than ...
                             //Lister()
                             break;
 
-                        case 2:;     //Transfer a student
-                            char firstName[MAX_FIRST_NAME_SIZE +1];
-                            char lastName[MAX_LAST_NAME_SIZE +1];
+                        case 3:;     //Transfer a student
+                            //char firstName[MAX_FIRST_NAME_SIZE +1];
+                            //char lastName[MAX_LAST_NAME_SIZE +1];
                             printf("Reading student's infos...\n");
                             printf("Enter student's class");
                             scanf("%d", &student.class);
@@ -304,14 +362,12 @@ int main() {
                             strcpy(student.fullName, lastName);
                             strcat(student.fullName, firstName);
 
-                            int numberOfYears;
+
                             printf("Enter the number of years already studied: ");
                             scanf("%d", &numberOfYears);
                             if(numberOfYears > numberOfArchives) numberOfYears = numberOfArchives;
 
-                            int archiveYear = currentYear -1;
-                            float average;
-                            char archiveYearString[5];
+                            archiveYear = currentYear -1;
                             for(int i=0; i<numberOfYears; i++){ //Check if loop should be integrated inside the insert function
                                 intToString(archiveYearString, archiveYear, 4);
                                 printf("Enter the average (moyenne) of the student in the year %d : ", archiveYear);
@@ -330,7 +386,14 @@ int main() {
         }
     }
 
-    printf("Thank you for using the application\n");
+    printf("\nThank you for using the application\n");
+
+    if (currentYearFile != NULL) fermerFichier(currentYearFile);
+    if (newYearFile != NULL) fermerFichier(newYearFile);
+    if (archiveIndexFile != NULL) fermerFichierMoyenne(archiveIndexFile);
+    if (nextYearIndexFile != NULL) fermerFichierTof(nextYearIndexFile);
+    if (classIndexFile != NULL) fermerFichierTof(classIndexFile);
+
     return 0;
 }
 
