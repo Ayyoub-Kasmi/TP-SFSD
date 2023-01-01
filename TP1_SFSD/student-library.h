@@ -18,7 +18,7 @@ searchClassIndex(FichierTof *indexFile, int *i, int *j, int id, int *indexI, int
 
 void
 searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int *i, int *j, int *indexI, int *indexJ,
-              bool *found);
+              bool *studentFound, bool *classFound);
 
 void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student);
 

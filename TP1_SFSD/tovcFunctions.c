@@ -89,6 +89,8 @@ void ecrireChaine(FichierTovc *fichier, BufferTovc *bufferTovc, char *chaine, in
             (*j) = 1;
         }
     }
+    setEntete(fichier, 2, *j); //to check
+    setEntete(fichier, 3, getEntete(fichier, 3) + taille); //move this to "Ecrire Enregistrement
 }
 
 void lirechaine(FichierTovc *fichier, BufferTovc *bufferTovc, char *chaine, int taille, int *i, int *j) {

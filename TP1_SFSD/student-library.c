@@ -44,17 +44,8 @@ void searchClassIndexDichoSup(FichierTof *indexFile, int classID, int pos, bool*
 
 void
 searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int *i, int *j, int *indexI, int *indexJ,
-              bool *found) {
-//    typedef struct {
-//
-//        char firstName[MAX_FIRST_NAME_SIZE];
-//        char lastName[MAX_LAST_NAME_SIZE];
-//        int class;
-//        int id;
-//        char gender;
-//        char isDeleted;
-//        float marks[MAX_NUMBER_OF_SUBJECTS];
-//    } Student;
+              bool *studentFound, bool *classFound) {
+
 
     //If we found him we're going to return the start of the record because we can have a lot of modifications
     //to do so we're going to decide later.
@@ -69,13 +60,13 @@ searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int 
 
     //declaring of necessary variables
     int class, offset;
-    *found = false;
+    *studentFound = false;
     bool isDeleted; //make this a param
 
     //Getting the starting positions of the studentLevel
-    searchClassIndex(indexFile, i, j, student.class, indexI, indexJ, found, &isDeleted);
+    searchClassIndex(indexFile, i, j, student.class, indexI, indexJ, classFound, &isDeleted);
 
-    if(!(*found)){
+    if(!(*classFound)){
         if( (*i) == INT_MAX){
             *i = getEntete(fichier, 1)-1;
             *j = getEntete(fichier, 2);
@@ -83,8 +74,6 @@ searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int 
         printf("class doesn't exist! ==> create a new class...\nHere are the coordinates: (%d , %d)\n", *i, *j);
         //set the correct i and j for the new class (or check if the search already does) then return
         return;
-    }else{
-        *found = false;
     }
     lireBloc(fichier, *i, &bufferTovcData);
 
@@ -92,7 +81,7 @@ searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int 
     int tempI;
     int tempJ;
 
-    while (!(*found)) {      //return statements are used to quit the loop if "stop" conditions are met to save variables
+    while (!(*studentFound)) {      //return statements are used to quit the loop if "stop" conditions are met to save variables
 
         //saving the starting positions of the read student before reading advancing and reading its information
         tempI = *i;
@@ -127,7 +116,7 @@ searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int 
                 *i = tempI; //i will receive the starting position (and not the IsDeleted field) since
                 // we will need to modify other fields as well
                 *j = tempJ;
-                *found = true;
+                *studentFound = true;
                 printf("student found!\t Here are the coordinates: (%d, %d)\n", *i, *j);
                 return;
             } else {
@@ -170,7 +159,7 @@ searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int 
                 //reached last element ==> quit the loop
                 printf("last element... current 'class' value is %d\n", class);
 
-                return; //i and j already have the correct values (but to be tested to confirm)
+                return; //i and j already have the correct values
             }
         }
     }
@@ -180,9 +169,19 @@ void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student)
     int j = 0;
     int indexI = 0;
     int indexJ = 0;
-    bool found = false;
-    searchStudent(fichier, indexFile, student, &i, &j, &indexI, &indexJ, &found);
-    if (!found) {
+    bool studentFound = false;
+    bool classFound = false;
+    searchStudent(fichier, indexFile, student, &i, &j, &indexI, &indexJ, &studentFound, &classFound);
+    if(!classFound){ //Take Into considertation the creation of a new class
+        IndexRecord indexRecord;
+        indexRecord.i = i;
+        indexRecord.j = j;
+        indexRecord.id = student.class;
+        indexRecord.isDeleted = false;
+        insertionTofWithoutSearch(indexFile, indexRecord, indexI, indexJ, &bufferTofClass);
+    }
+
+    if (!studentFound) {
         //some code to create the student string
         char container1[4];//used to do the int => string conversion
         int totalStudentSize = FIRSTNAME_LENGTH + LASTNAME_LENGTH + CLASS_ID_SIZE + STUDENT_ID_SIZE + IS_DELETED_SIZE
@@ -341,7 +340,7 @@ Format of the function for each case:
     char markString[MARK_LENGTH + 1];
 
     //search for the student first
-    searchStudent(fichierTovc, NULL, student, i, j, NULL, 0, &found);
+    searchStudent(fichierTovc, NULL, student, i, j, NULL, 0, &found, NULL);
     if (!found) {
         printf("student doesn't exist!\n");
         return;
@@ -529,7 +528,7 @@ void deleteStudent(FichierTovc *fichier, Student student) {
     int i = 0;
     int j = 0;
     bool found = false;
-    searchStudent(fichier, NULL, student, &i, &j, NULL, 0, &found);
+    searchStudent(fichier, NULL, student, &i, &j, NULL, 0, &found, NULL);
 
     if (found) {
         //we have to take the student level to calculate the length of his table of marks.

@@ -50,12 +50,11 @@ int currentYear;
 void print_result(int, char *, char *, int);
 
 int main() {
-    FichierTovc *fichier;
 
     FichierTovc *currentYearFile;
     FichierTovc *archiveFile = ouvrirFichierTovc(CURRENT_YEAR_ARCHIVE_FILE_PATH, 'N');
     FichierTofMoyenne *archiveIndexFile = ouvrirFichierMoyenne("archiveIndexFile", 'N');
-    FichierTovc* nextYearFile = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'N');
+    FichierTovc* nextYearFile = ouvrirFichierTovc("2023_STUDENTS", 'N');
     FichierTof* nextYearIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'N');
     FichierTof *classIndexFile;
     int i = 0;
@@ -80,9 +79,11 @@ int main() {
 //    lireBlocTof(classIndexFile, 0, &bufferTofClass);
 
     Student student;
+    student.firstNameSize = 6;
+    student.lastNameSize = 8;
     student.id = 1111;
-    student.class = 260;
-    strcpy(student.fullName, "Houari Mohammed");
+    student.class = 179;
+    strcpy(student.fullName, "HouariMohammed");
     student.gender = 'M';
     student.isDeleted = '0';
     student.marks[0] = 10.00;
@@ -94,7 +95,7 @@ int main() {
 
 //    archive(currentYearFile, classIndexFile, archiveFile, archiveIndexFile, nextYearFile, nextYearIndexFile);
 
-    printArchiveFile(archiveFile);
+//    printArchiveFile(archiveFile);
 
 
 
@@ -104,11 +105,11 @@ int main() {
 
     printClassIndex(classIndexFile);
 
-    insertStudent(fichier, classIndexFile, student);
+    insertStudent(currentYearFile, classIndexFile, student);
 
 
     printf("\n\n");
-    printStudentsFile(fichier);
+    printStudentsFile(currentYearFile);
     printf("\n\n");
     i = 0;
 
@@ -117,12 +118,13 @@ int main() {
     printf("\n\ni: %d\tj: %d\n\n", i, j);
     i = 23; j = 47;
 
-    lireBloc(fichier, i, &bufferTovcData);
+    lireBloc(currentYearFile, i, &bufferTovcData);
     for(int k = 0; k<47; k++){
         printf("%c", bufferTovcData.tab[j]);
         j++;
     }
-    fermerFichier(fichier);
+    fermerFichier(currentYearFile);
+    fermerFichierTof(classIndexFile);
 
     //    loadSubjects();
 

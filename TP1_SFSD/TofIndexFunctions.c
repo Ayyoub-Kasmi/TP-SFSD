@@ -158,19 +158,85 @@ void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffe
 
 }
 
-void insertionTof(FichierTof *fichier, IndexRecord record, BufferTof *buffer) {
+void insertionTof(FichierTof *classIndexFile, IndexRecord recordToBeInserted, BufferTof *buffer) {
+    int indexI, indexJ, borneSup;
+    IndexRecord container;
+    bool isDeleted = false, isFound = false;
+    rechercheTof(classIndexFile, recordToBeInserted.id, &indexI, &indexJ,&bufferTofClass, &isFound,&isDeleted);
 
-    lireBlocTof(fichier, getEnteteTof(fichier, 1) - 1, buffer);
-    if (buffer->nb < TOF_BUFFER_SIZE - 1) {
-        buffer->tab[buffer->nb] = record;
-        buffer->nb++;
-    } else {
-        buffer->tab[0] = record;
-        buffer->nb = 0;
-        setEnteteTof(fichier, 1, getEnteteTof(fichier, 1));
+    while (indexI < getEnteteTof(classIndexFile, 1)) {
+        lireBlocTof(classIndexFile, indexI, &bufferTofClass);
+        container = bufferTofClass.tab[bufferTofClass.nb - 1];
+        borneSup = bufferTofClass.nb - 1;
+
+        while (borneSup > indexJ) {
+            bufferTofClass.tab[borneSup] = bufferTofClass.tab[borneSup - 1];
+            borneSup--;
+        }
+        bufferTofClass.tab[indexJ] = recordToBeInserted;
+        if (bufferTofClass.nb < TOF_BUFFER_SIZE) {
+            bufferTofClass.tab[bufferTofClass.nb] = container;
+            bufferTofClass.nb++;
+            ecrireBlocTof(classIndexFile, indexI, &bufferTofClass);
+
+            break; //So that we don't use another boolean variable
+        } // NO need to use an else because if we enter this bloc the loop will stop
+        ecrireBlocTof(classIndexFile, indexI, &bufferTofClass);
+        //Updating the nonDenseIndexArray
+
+        indexI++;
+        indexJ = 0;
+        recordToBeInserted = container;
     }
-    ecrireBlocTof(fichier, getEnteteTof(fichier, 1), buffer);
-    setEnteteTof(fichier, 2, getEnteteTof(fichier, 2) + 1);
+    if (indexI >= getEnteteTof(classIndexFile, 1)) {
+        bufferTofClass.tab[0] = recordToBeInserted;
+        bufferTofClass.nb = 1;
+
+        ecrireBlocTof(classIndexFile, indexI, &bufferTofClass);
+        setEnteteTof(classIndexFile, 1, indexI + 1);
+    }
+
+    setEnteteTof(classIndexFile, 2, getEnteteTof(classIndexFile, 2) + 1);
+
+}
+
+void insertionTofWithoutSearch(FichierTof *classIndexFile, IndexRecord recordToBeInserted, int indexI, int indexJ, BufferTof *buffer) {
+    int borneSup;
+    IndexRecord container;
+    bool isDeleted = false, isFound = false;
+
+    while (indexI < getEnteteTof(classIndexFile, 1)) {
+        lireBlocTof(classIndexFile, indexI, &bufferTofClass);
+        container = bufferTofClass.tab[bufferTofClass.nb - 1];
+        borneSup = bufferTofClass.nb - 1;
+
+        while (borneSup > indexJ) {
+            bufferTofClass.tab[borneSup] = bufferTofClass.tab[borneSup - 1];
+            borneSup--;
+        }
+        bufferTofClass.tab[indexJ] = recordToBeInserted;
+        if (bufferTofClass.nb < TOF_BUFFER_SIZE) {
+            bufferTofClass.tab[bufferTofClass.nb] = container;
+            bufferTofClass.nb++;
+            ecrireBlocTof(classIndexFile, indexI, &bufferTofClass);
+
+            break; //So that we don't use another boolean variable
+        } // NO need to use an else because if we enter this bloc the loop will stop
+        ecrireBlocTof(classIndexFile, indexI, &bufferTofClass);
+
+        indexI++;
+        indexJ = 0;
+        recordToBeInserted = container;
+    }
+    if (indexI >= getEnteteTof(classIndexFile, 1)) {
+        bufferTofClass.tab[0] = recordToBeInserted;
+        bufferTofClass.nb = 1;
+
+        ecrireBlocTof(classIndexFile, indexI, &bufferTofClass);
+        setEnteteTof(classIndexFile, 1, indexI + 1);
+    }
+
+    setEnteteTof(classIndexFile, 2, getEnteteTof(classIndexFile, 2) + 1);
 
 }
 
@@ -197,10 +263,10 @@ void printClassIndex(FichierTof* classIndexFile){
     int i= 0;
     int j;
     while (i < getEnteteTof(classIndexFile, 1)){
-        lireBlocTof(classIndexFile, 1, &bufferTof);
+        lireBlocTof(classIndexFile, 1, &bufferTofClass);
         j = 0;
-        while (j < bufferTof.nb){
-            printf("\nclass id: %d\t i: %d\t j: %d\n", bufferTof.tab[j].id, bufferTof.tab[j].i, bufferTof.tab[j].j);
+        while (j < bufferTofClass.nb){
+            printf("\nclass id: %d\t i: %d\t j: %d\n", bufferTofClass.tab[j].id, bufferTofClass.tab[j].i, bufferTofClass.tab[j].j);
             j++;
         }
         i++;
