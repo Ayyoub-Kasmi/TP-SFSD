@@ -141,7 +141,7 @@ void insertRoomIdWithoutSearching(ClassIdArray *roomIdArray, int id, int i);
 
 void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, int *j);
 
-void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j);
+void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j, BufferTovc *buffer);
 
 void printStudentsFile(FichierTovc *fichier);
 

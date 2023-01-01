@@ -50,6 +50,7 @@ typedef struct {
 }MoyenneNonDenseIndex;
 
 extern BufferTofMoyenne bufferTofMoyenne;
+BufferTovc bufferTovcNewYear;
 extern BufferTovc bufferTovcArchive;
 extern MoyenneNonDenseIndex moyenneNonDenseIndex;
 extern int numberOfClassesPerLevel[6];

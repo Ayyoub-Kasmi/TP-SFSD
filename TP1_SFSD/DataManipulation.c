@@ -394,7 +394,7 @@ void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, 
 
             student.isDeleted = '0';
 
-            writeStudent(fichier, &student, i, j);
+            writeStudent(fichier, &student, i, j, &bufferTovcData);
 
         }
 
@@ -431,7 +431,7 @@ void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, 
     setEnteteTof(classIndexFile, 2, FIRST_LOAD_OF_CLASSES);
     setEnteteTof(classIndexFile, 3, 0);
 
-    updateNumberOfClassesPerLevel(&classIdArray);
+    updateNumberOfClassesPerLevel(&bufferTofClass);
 
 
     //close first names file
@@ -443,7 +443,7 @@ void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, 
     //close the index file
 }
 
-void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
+void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j, BufferTovc *buffer) {
     /*
          Structure of records inside the file (or buffer):
          1- Size of the first name
@@ -463,7 +463,7 @@ void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
 
     intToString(lastNameSizeString, student->lastNameSize, LASTNAME_LENGTH);
 
-    ecrireChaine(fichier, &bufferTovcData, lastNameSizeString, LASTNAME_LENGTH, i, j);
+    ecrireChaine(fichier, buffer, lastNameSizeString, LASTNAME_LENGTH, i, j);
 
 
     //Write First Name size
@@ -471,7 +471,7 @@ void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
 
     intToString(firstNameSizeString, student->firstNameSize, FIRSTNAME_LENGTH);
 
-    ecrireChaine(fichier, &bufferTovcData, firstNameSizeString, FIRSTNAME_LENGTH, i, j);
+    ecrireChaine(fichier, buffer, firstNameSizeString, FIRSTNAME_LENGTH, i, j);
 
     //Write ClassID
     char classIDString[CLASS_ID_SIZE + 1];
@@ -481,17 +481,17 @@ void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
         classIDString[0] = 'p';
     }
 
-    ecrireChaine(fichier, &bufferTovcData, classIDString, CLASS_ID_SIZE, i, j);
+    ecrireChaine(fichier, buffer, classIDString, CLASS_ID_SIZE, i, j);
 
     //Write ID
     char studentIdString[STUDENT_ID_SIZE + 1];
 
     intToString(studentIdString, student->id, STUDENT_ID_SIZE);
 
-    ecrireChaine(fichier, &bufferTovcData, studentIdString, STUDENT_ID_SIZE, i, j);
+    ecrireChaine(fichier, buffer, studentIdString, STUDENT_ID_SIZE, i, j);
 
     //Write isDeleted
-    ecrireChaine(fichier, &bufferTovcData, &student->isDeleted, IS_DELETED_SIZE, i, j);
+    ecrireChaine(fichier, buffer, &student->isDeleted, IS_DELETED_SIZE, i, j);
 
     //Write marks array
     int level = (student->class / 100) % 10;
@@ -508,18 +508,18 @@ void writeStudent(FichierTovc *fichier, Student *student, int *i, int *j) {
         intToString(markWholePartString, markWholePart, MARK_WHOLE_PART_LENGTH);
         intToString(markDecimalPartString, markDecimalPart, DECIMAL_PART_SIZE);
 
-        ecrireChaine(fichier, &bufferTovcData, markWholePartString, MARK_WHOLE_PART_LENGTH, i, j);
-        ecrireChaine(fichier, &bufferTovcData, markDecimalPartString, MARK_DECIMAL_PART_LENGTH, i, j);
+        ecrireChaine(fichier, buffer, markWholePartString, MARK_WHOLE_PART_LENGTH, i, j);
+        ecrireChaine(fichier, buffer, markDecimalPartString, MARK_DECIMAL_PART_LENGTH, i, j);
     }
 
 
 
     //Write Full names
-    ecrireChaine(fichier, &bufferTovcData, student->fullName, student->lastNameSize + student->firstNameSize, i, j);
+    ecrireChaine(fichier, buffer, student->fullName, student->lastNameSize + student->firstNameSize, i, j);
 
     //Write gender
-    ecrireChaine(fichier, &bufferTovcData, &student->gender, GENDER_SIZE, i, j);
-    ecrireBloc(fichier, *i, &bufferTovcData);
+    ecrireChaine(fichier, buffer, &student->gender, GENDER_SIZE, i, j);
+    ecrireBloc(fichier, *i, buffer);
 
 //    printf("student id: %d\t student class: %d\t fullname: %s\n", student->id, student->class, student->fullName);
 }

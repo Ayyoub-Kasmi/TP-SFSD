@@ -323,7 +323,7 @@ createNewPrepaStudents(FichierTovc *nextYearFile, ClassIdArray *classIdArray, Fi
 
             student.isDeleted = '0';
 
-            writeStudent(nextYearFile, &student, newYearI, newYearJ);
+            writeStudent(nextYearFile, &student, newYearI, newYearJ, &bufferTovcNewYear);
 
         }
         k++;
@@ -530,6 +530,8 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
         intToString(markWholePartString, markWholePart, MARK_WHOLE_PART_LENGTH);
         intToString(markDecimalPartString, markDecimalPart, MARK_DECIMAL_PART_LENGTH);
 
+        markDecimalPartString[MARK_DECIMAL_PART_LENGTH] = '\0';
+        markWholePartString[MARK_WHOLE_PART_LENGTH] = '\0';
         strcat(archiveStringBuffer, markWholePartString);
         strcat(archiveStringBuffer, markDecimalPartString);
         insertStudentMoyenneInArray(&studentsMoyenneArray, archiveI, archiveJ, moyenne);
@@ -546,9 +548,9 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
 
         ecrireChaine(archiveFile, &bufferTovcArchive, archiveStringBuffer, (int) strlen(archiveStringBuffer), &archiveI,
                      &archiveJ);
+        printf("class: %d\tId: %d\tlastNameSize: %d\tfirstNameSize: %d\tname: %s", student.class, student.id, student.lastNameSize, student.firstNameSize, student.fullName);
 
-        setEntete(archiveFile, 3, getEntete(archiveFile, 3) + (int) strlen(archiveStringBuffer));
-
+        /*
         if (currentYearI == getEntete(currentYearFile, 1)) {
             if (currentYearJ == getEntete(currentYearFile, 2)) endOfFile = true;
         }
@@ -570,10 +572,10 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
                 else studentsWhoFailed.tab[studentsWhoFailed.nb] = student;
                 studentsWhoFailed.nb++;
             } else {
-                writeStudent(nextYearFile, &student, &newYearI, &newYearJ);
+                writeStudent(nextYearFile, &student, &newYearI, &newYearJ, &bufferTovcNewYear);
             }
         }
-        printf("class: %d\tId: %d\tlastNameSize: %d\tfirstNameSize: %d\tname: %d");
+         */
 
     }
     // This should go outside the loop !!!
@@ -633,7 +635,7 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
     ecrireBlocTof(nextYearClassIndexFile, i1, &bufferTofClass);
     setEnteteTof(nextYearClassIndexFile, 1, i1 + 1);
     setEnteteTof(nextYearClassIndexFile, 2, classIdArray.nb);
-    updateNumberOfClassesPerLevel(&classIdArray);
+    updateNumberOfClassesPerLevel(&bufferTofClass);
 
     //========= adding students who failed
     level = 0;

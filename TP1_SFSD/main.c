@@ -38,6 +38,7 @@ float tableOfMarks[MAX_NUMBER_OF_SUBJECTS];
 
 //File buffer:
 BufferTovc bufferTovcData;
+BufferTovc bufferTovcNewYear;
 BufferTof bufferTofClass;
 BufferTofMoyenne bufferTofMoyenne;
 BufferTovc bufferTovcArchive;
