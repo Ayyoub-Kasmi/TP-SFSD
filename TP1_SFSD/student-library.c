@@ -19,8 +19,9 @@ void searchClassIndex(FichierTof *indexFile, int *i, int *j, int id, int *indexI
     //To change from here
 
     rechercheTof(indexFile, id, indexI, indexJ, &bufferTofClass, found, isDeleted);
-    if( (*indexI) == INT_MAX){
-        *i = INT_MAX;
+    if( (*indexI) == getEnteteTof(indexFile, 1) ||
+    ( (*indexI == getEnteteTof(indexFile, 1) -1) && (*indexJ) == bufferTofClass.nb) ){
+        *i = INT_MAX; //indicating that the student will be inserted in the end of the file
     } else {
         lireBlocTof(indexFile, *indexI, &bufferTofClass);
         *i = bufferTofClass.tab[*indexJ].i;
@@ -70,6 +71,9 @@ searchStudent(FichierTovc *fichier, FichierTof *indexFile, Student student, int 
         if( (*i) == INT_MAX){
             *i = getEntete(fichier, 1)-1;
             *j = getEntete(fichier, 2);
+        } else {
+            *i = bufferTofClass.tab[*indexJ].i;
+            *j = bufferTofClass.tab[*indexJ].j;
         }
         printf("class doesn't exist! ==> create a new class...\nHere are the coordinates: (%d , %d)\n", *i, *j);
         //set the correct i and j for the new class (or check if the search already does) then return
@@ -283,6 +287,7 @@ void insertStudent(FichierTovc *fichier, FichierTof *indexFile, Student student)
         if(j != 0) ecrireBloc(fichier, i, &bufferTovcData);
 
         //Normally the good bloc is read when we called the search function
+
         indexJ++;
 
         while (indexI < getEnteteTof(indexFile, 1)) {

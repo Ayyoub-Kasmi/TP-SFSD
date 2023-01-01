@@ -57,7 +57,7 @@ void chargementInitialeTof(FichierTof *fichier, int n, BufferTof* buffer);
 
 void rechercheTof(FichierTof *fichier, int key, int *i, int *j, BufferTof *buffer, bool *found, bool *isDeleted);
 
-void insertionTof(FichierTof* fichier, IndexRecord record, BufferTof* buffer);
+void insertionTof(FichierTof* classIndexFile, IndexRecord recordToBeInserted, BufferTof* buffer);
 
 void supressionTof(FichierTof* fichier, int k, BufferTof* buffer);
 
