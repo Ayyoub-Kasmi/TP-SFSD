@@ -555,7 +555,7 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
             if (currentYearJ == getEntete(currentYearFile, 2)) endOfFile = true;
         }
 
-        //Check wether the student passed, failed or graduated from the school
+        //Check whether the student passed, failed or graduated from the school
         if (student.class >= MIN_5TH_GRADE_CLASS_ID + 100) { //was a 5th grade student
             if (moyenne < 10) {
                 student.class -= 100;
