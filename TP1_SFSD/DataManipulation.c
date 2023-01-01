@@ -159,7 +159,7 @@ int generate2positionInt(int seed) {
 //        //this loop is to ensure the randomness of the generated value
 //        randomID = (rand() % 98) + 1; // So that the room numbers will be from 1 to 100
 //    }
-    return rand() % 98 + 1;
+    return rand() % 99 + 1;
 }
 
 int generateTheLevel(int seed) {
@@ -400,13 +400,10 @@ void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, 
 
     }
 
-    updateNumberOfClassesPerLevel(&classIdArray);
-
-
 
     setEntete(fichier, 1, (*i) + 1); //Total number blocs
     setEntete(fichier, 2, *j); //Last position in the lastBloc
-    setEntete(fichier, 3, TOVC_BUFFER_SIZE * (*i + 1) + (*j) + 1); //Total number of characters in the file
+    setEntete(fichier, 3, TOVC_BUFFER_SIZE * (*i + 1) + (*j)); //Total number of characters in the file
     setEntete(fichier, 4, 0); //number of chars deleted
 
     //saving the class index into the file
@@ -433,6 +430,8 @@ void createSchoolYear(FichierTovc *fichier, FichierTof *classIndexFile, int *i, 
     setEnteteTof(classIndexFile, 1, i1 + 1);
     setEnteteTof(classIndexFile, 2, FIRST_LOAD_OF_CLASSES);
     setEnteteTof(classIndexFile, 3, 0);
+
+    updateNumberOfClassesPerLevel(&classIdArray);
 
 
     //close first names file
@@ -657,15 +656,15 @@ void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, c
 
 }
 
-void updateNumberOfClassesPerLevel(ClassIdArray* classIdArray) {
+void updateNumberOfClassesPerLevel(BufferTof *bufferTof) {
     //calculate number of classes per level:
     int classSup = MIN_1TH_GRADE_CLASS_ID;
-    int count = 0, classIdArrayIndex = 0;
+    int count = 0, i = 0;
     int level = 0;
-    while (classIdArrayIndex < classIdArray->nb) {
-        if (classIdArray->tab[classIdArrayIndex].id < classSup) {
+    while (i < bufferTof->nb) {
+        if (bufferTof->tab[i].id < classSup) {
             count++;
-            classIdArrayIndex++;
+            i++;
         } else {
             numberOfClassesPerLevel[level] = count;
             level++;

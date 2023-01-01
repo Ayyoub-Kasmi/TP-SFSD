@@ -53,9 +53,9 @@ int main() {
 
     FichierTovc *currentYearFile;
     FichierTovc *archiveFile = ouvrirFichierTovc(CURRENT_YEAR_ARCHIVE_FILE_PATH, 'N');
-    FichierTofMoyenne *archiveIndexFile = ouvrirFichierMoyenne("archiveIndexFile", 'N');
-    FichierTovc* nextYearFile = ouvrirFichierTovc("2023_STUDENTS", 'N');
-    FichierTof* nextYearIndexFile;
+    FichierTofMoyenne *archiveIndexFile = ouvrirFichierMoyenne("archiveIndexFile.bin", 'N');
+    FichierTovc* nextYearFile = ouvrirFichierTovc("2023_STUDENTS.bin", 'N');
+    FichierTof* nextYearIndexFile = ouvrirFichierTof("2023_CLASS_INDEX.bin", 'N');
     FichierTof *classIndexFile;
     int i = 0;
     int j = 0;
@@ -69,8 +69,9 @@ int main() {
 
     } else {
         currentYearFile = ouvrirFichierTovc(CURRENT_YEAR_FILE_PATH, 'A');
-
         classIndexFile = ouvrirFichierTof(CLASS_INDEX_FILE_PATH, 'A');
+        lireBlocTof(classIndexFile, 0, &bufferTofClass);
+        updateNumberOfClassesPerLevel(&bufferTofClass);
     }
 
 
@@ -91,9 +92,9 @@ int main() {
     student.marks[2] = 9.25;
     student.marks[3] = 5.5;
     student.marks[4] = 8.0;
-    printStudentsFile(currentYearFile);
+//    printStudentsFile(currentYearFile);
 
-//    archive(currentYearFile, classIndexFile, archiveFile, archiveIndexFile, nextYearFile, nextYearIndexFile);
+    archive(currentYearFile, classIndexFile, archiveFile, archiveIndexFile, nextYearFile, nextYearIndexFile);
 
 //    printArchiveFile(archiveFile);
 
@@ -103,17 +104,17 @@ int main() {
     //system("mkdir archive");
 
 
-    printClassIndex(classIndexFile);
+//    printClassIndex(classIndexFile);
 
-    insertStudent(currentYearFile, classIndexFile, student);
+//    insertStudent(currentYearFile, classIndexFile, student);
 
 
     printf("\n\n");
-    printStudentsFile(currentYearFile);
+//    printStudentsFile(currentYearFile);
     printf("\n\n");
     i = 0;
 
-    printClassIndex(classIndexFile);
+//    printClassIndex(classIndexFile);
 
     printf("\n\ni: %d\tj: %d\n\n", i, j);
     i = 23; j = 47;
@@ -124,6 +125,9 @@ int main() {
         j++;
     }
     fermerFichier(currentYearFile);
+    fermerFichier(nextYearFile);
+    fermerFichierMoyenne(archiveIndexFile);
+    fermerFichierTof(nextYearIndexFile);
     fermerFichierTof(classIndexFile);
 
     //    loadSubjects();

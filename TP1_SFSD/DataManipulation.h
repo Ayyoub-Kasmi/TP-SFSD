@@ -155,7 +155,7 @@ void insertStudentName(StudentsNamesArray *studentsNamesArray, char *fullName, c
 void insertStudentNameWithoutSearching(StudentsNamesArray *studentsNamesArray, char *fullName, char gender, int firstNameSize,
                                        int lastNameSize, int i);
 
-void updateNumberOfClassesPerLevel(ClassIdArray* classIdArray);
+void updateNumberOfClassesPerLevel(BufferTof *bufferTof);
 
 void printStudentsFile(FichierTovc *fichier);
 

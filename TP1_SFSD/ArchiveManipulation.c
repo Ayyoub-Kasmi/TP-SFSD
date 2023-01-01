@@ -283,7 +283,6 @@ createNewPrepaStudents(FichierTovc *nextYearFile, ClassIdArray *classIdArray, Fi
         generateStudentId(&studentsIdArray);
     }
     for (int k = 0; k < MAX_NUMBER_OF_PREPA_STUDENTS; ++k) {
-        printf("Hey! I'm here!\n");
         generateStudentName(lastNamesFile, firstNamesAndGendersFile, &studentsNamesArray);
     }
     Student student;
@@ -296,7 +295,7 @@ createNewPrepaStudents(FichierTovc *nextYearFile, ClassIdArray *classIdArray, Fi
     *newYearJ = 0;
     lireBlocTof(currentYearClassIndexFile, indexI, &bufferTofClass);
 
-    while (bufferTofClass.tab[indexJ].id < 100) { //because that's the smallest classId of a 1st year class
+    while (bufferTofClass.tab[indexJ].id < MIN_1TH_GRADE_CLASS_ID) { //because that's the smallest classId of a 1st year class
         if (indexJ >= bufferTofClass.nb) {
             if (indexI < getEnteteTof(currentYearClassIndexFile, 1) - 1) {
                 indexI++;
@@ -312,12 +311,12 @@ createNewPrepaStudents(FichierTovc *nextYearFile, ClassIdArray *classIdArray, Fi
 
 
         for (int l = 0; l < STUDENT_PER_CLASS; ++l) {
-            //get student information
             student.id = studentsIdArray.tab[k * STUDENT_PER_CLASS + l].id;
-            student.class = bufferTofClass.tab[k].id;
+            student.class = classIdArray->tab[k].id;
             strcpy(student.fullName, studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].fullName);
+            student.firstNameSize = studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].firstNameSize;
+            student.lastNameSize = studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].lastNameSize;
             student.gender = studentsNamesArray.tab[k * STUDENT_PER_CLASS + l].gender;
-            printf("student class: %d\n", student.class);
 
             level = (student.class / 100) % 10; //refactor it using variables
             getMarks(student.marks, level);
@@ -332,6 +331,11 @@ createNewPrepaStudents(FichierTovc *nextYearFile, ClassIdArray *classIdArray, Fi
 
     }
     classIdArray->nb = k;
+
+    setEntete(nextYearFile, 1, (*newYearI) + 1); //Total number blocs
+    setEntete(nextYearFile, 2, *newYearJ); //Last position in the lastBloc
+    setEntete(nextYearFile, 3, TOVC_BUFFER_SIZE * (*newYearI + 1) + (*newYearJ)); //Total number of characters in the file
+    setEntete(nextYearFile, 4, 0); //number of chars deleted
 
     //close first names file
     fclose(firstNamesAndGendersFile);
@@ -356,7 +360,7 @@ void createNewClass(ClassIdArray *classIdArray, int level, int min, int max) {
         if ((roomNumber >= min) && (roomNumber < max)) {
             checkRoomNumber(classIdArray, roomNumber, &found);
         }
-        seed = roomNumber;
+        seed += roomNumber + seed % 47; // Don't ask us why :)
     }
     //class number has been generated. Now assign a level for this class
 
@@ -475,10 +479,12 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
 
         //we don't have to extract the level from the class ID because we're already having it from the index
         lirechaine(currentYearFile, &bufferTovcData, classIdString, CLASS_ID_SIZE, &currentYearI, &currentYearJ);
+        classIdString[CLASS_ID_SIZE] = '\0';
         strcat(archiveStringBuffer, classIdString);
         student.class = classIdArray.tab[classIdArray.nb - 1].id;
 
         lirechaine(currentYearFile, &bufferTovcData, ID, STUDENT_ID_SIZE, &currentYearI, &currentYearJ);
+        ID[STUDENT_ID_SIZE] = '\0';
         strcat(archiveStringBuffer, ID);
         student.id = stringToInt(ID, STUDENT_ID_SIZE);
 
@@ -528,8 +534,9 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
         strcat(archiveStringBuffer, markDecimalPartString);
         insertStudentMoyenneInArray(&studentsMoyenneArray, archiveI, archiveJ, moyenne);
 
-        lirechaine(currentYearFile, &bufferTovcData, fullName, MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE, &currentYearI,
+        lirechaine(currentYearFile, &bufferTovcData, fullName, firstNameSize + lastNameSize, &currentYearI,
                    &currentYearJ);
+        fullName[firstNameSize + lastNameSize] = '\0';
         strcat(archiveStringBuffer, fullName);
         strcpy(student.fullName, fullName);
         lirechaine(currentYearFile, &bufferTovcData, &gender, GENDER_SIZE, &currentYearI,
@@ -566,6 +573,7 @@ void archive(FichierTovc *currentYearFile, FichierTof *currentYearClassIndexFile
                 writeStudent(nextYearFile, &student, &newYearI, &newYearJ);
             }
         }
+        printf("class: %d\tId: %d\tlastNameSize: %d\tfirstNameSize: %d\tname: %d");
 
     }
     // This should go outside the loop !!!
