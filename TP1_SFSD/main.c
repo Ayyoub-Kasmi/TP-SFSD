@@ -161,7 +161,8 @@ int main() {
     int numberOfYears;
     float average;
     char archiveYearString[5];
-    char fileNameStringBuffer[20];
+    char yearStringBuffer[10];
+    char fileNameStringBuffer[100];
     char firstName[MAX_FIRST_NAME_SIZE +1];
     char lastName[MAX_LAST_NAME_SIZE +1];
     char fullname[MAX_FIRST_NAME_SIZE + MAX_LAST_NAME_SIZE +1];
@@ -197,16 +198,18 @@ int main() {
                             //system("cls");
                             while(1){
                                 printf("1) Auto-generated data\n");
-                                printf("2) Manual insertion\n\n");
+                                printf("2) Manual insertion\n");
+                                printf("0) To exit\n");
                                 printf("Enter a number: ");
                                 scanf("%d", &choice);
                                 if(choice == 0) break;
                                 switch(choice){
                                     case 1: //Auto-generate data
-                                        strcpy(fileNameStringBuffer, "currentYear");
+                                        intToString(yearStringBuffer, currentYear, 4);
+                                        strcpy(fileNameStringBuffer, yearStringBuffer);
                                         strcat(fileNameStringBuffer, DATA_FILE_NAME_SUFFIX);
                                         currentYearFile = ouvrirFichierTovc(fileNameStringBuffer, 'N');
-                                        strcpy(fileNameStringBuffer, "currentYear");
+                                        strcpy(fileNameStringBuffer, yearStringBuffer);
                                         strcat(fileNameStringBuffer, CLASS_INDEX_FILE_NAME_SUFFIX);
                                         classIndexFile = ouvrirFichierTof(fileNameStringBuffer, 'N');
                                         createSchoolYear(currentYearFile, classIndexFile, &currentYearFileI, &currentYearFileJ);
@@ -235,6 +238,7 @@ int main() {
                                 printf("2) Insert a student\n");
                                 printf("3) Delete a student\n");
                                 printf("4) Update a student's information\n");
+                                printf("5) Print the entire file\n");
                                 printf("0) Exit\n\n");
                                 printf("Enter a number: ");
                                 scanf("%d", &choice);
@@ -252,15 +256,42 @@ int main() {
                                         searchStudent(currentYearFile, classIndexFile, student,
                                                       &currentYearFileJ, &currentYearFileJ, &classIndexI,
                                                       &classIndexJ, &studentFound, &classFound);
-                                        //print
+                                        lireBloc(currentYearFile, currentYearFileI ,&bufferTovcData);
+                                        printf("class: %d\tId: %d\tname: %s\tgender %c\n", student.class,
+                                        student.id, student.fullName, student.gender);
                                         break;
                                     case 2:     //Insert a student
                                         //Reading student info
-                                        // insertStudent()
+                                        printClassIndex(classIndexFile);
+                                        printf("Please choose where to insert\n");
+                                        printf("Enter student's class: ");
+                                        scanf("%d", &student.class);
+                                        printf("Enter student's ID: ");
+                                        scanf("%d", &student.id);
+                                        printf("Enter student's family name (lower case only): ");
+                                        scanf("%s", lastName); //then calculate length and assign it
+                                        printf("Enter student's first name (lower case only): ");
+                                        scanf("%s", firstName); //then calculate length and assign it
+                                        strcpy(student.fullName, lastName);
+                                        strcat(student.fullName, firstName);
+                                        lastNameSizeInt = (int) strlen(lastName);
+                                        firstNameSizeInt = (int) strlen(firstName);
+                                        student.lastNameSize = lastNameSizeInt;
+                                        student.firstNameSize = firstNameSizeInt;
+                                        getMarks(student.marks, student.class /100);
+                                        student.isDeleted = '0';
+
+
+                                        insertStudent(currentYearFile, classIndexFile, student);
                                         break;
                                     case 3:     //Delete a student
                                         //Reading class and ID
-                                        // deleteStudent()
+                                        printf("Enter Student info: \n\n");
+                                        printf("Enter student's class: ");
+                                        scanf("%d", &student.class);
+                                        printf("Enter student's ID: ");
+                                        scanf("%d", &student.id);
+                                        deleteStudent(currentYearFile, student);
                                         break;
                                     case 4:     //update student info
                                         printf("\n\nChoose what to update");
@@ -328,6 +359,9 @@ int main() {
                                                 printf("Wrong number! Try again\n");
                                         }
                                         break;
+                                    case 5:
+                                        printStudentsFile(currentYearFile);
+                                        break;
                                     default:
                                         printf("Wrong number! Try again\n");
                                 }
@@ -356,15 +390,17 @@ int main() {
 
                     switch(choice){
                         case 1:
-                            strcpy(fileNameStringBuffer, "currentYear");
+                            intToString(yearStringBuffer, currentYear, 4);
+                            strcpy(fileNameStringBuffer, yearStringBuffer);
                             strcat(fileNameStringBuffer, ARCHIVE_FILE_NAME_SUFFIX);
                             archiveFile = ouvrirFichierTovc(fileNameStringBuffer, 'N');
-                            strcpy(fileNameStringBuffer, "currentYear");
-                            strcat(fileNameStringBuffer, ARCHIVE_FILE_NAME_SUFFIX);
+                            strcpy(fileNameStringBuffer, yearStringBuffer);
+                            strcat(fileNameStringBuffer, MOYENNE_INDEX_FILE_NAME_SUFFIX);
                             archiveIndexFile = ouvrirFichierMoyenne(fileNameStringBuffer, 'N');
                             currentYear++;
-                            strcpy(fileNameStringBuffer, "currentYear");
-                            strcat(fileNameStringBuffer, ARCHIVE_FILE_NAME_SUFFIX);
+                            intToString(yearStringBuffer, currentYear, 4);
+                            strcpy(fileNameStringBuffer, yearStringBuffer);
+                            strcat(fileNameStringBuffer, DATA_FILE_NAME_SUFFIX);
                             newYearFile = ouvrirFichierTovc(fileNameStringBuffer, 'N');
 
                             archive(currentYearFile, classIndexFile, archiveFile, archiveIndexFile, newYearFile, nextYearIndexFile);printf("\n\n=======================\n\n");
@@ -384,7 +420,7 @@ int main() {
                             scanf("%d", &student.id);
                             printf("Enter student's firstname (lower case only)");
                             scanf("%s", firstName); //then calculate length and assign it
-                            printf("Enter student's class");
+                            printf("Enter student's family name");
                             scanf("%s", lastName); //then calculate length and assign it
                             strcpy(student.fullName, lastName);
                             strcat(student.fullName, firstName);

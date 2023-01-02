@@ -29,51 +29,7 @@ void loadSubjects(){
     subjectsArray.totalLevels = i+1;
 }
 
-void loadGlobalVariables(){
-    FILE* globalVariablesFile = fopen(GLOBAL_VARIABLES_FILE_PATH,"r");
-
-    if(globalVariablesFile == NULL){
-        printf("globalVariables.txt is missing\n");
-        return;
-    }
-    char stringBufffer[100];
-
-    fscanf(globalVariablesFile, "%[^\n]\n", stringBufffer);
-    fscanf(globalVariablesFile, "%d\n", &STUDENT_ID_SIZE);
-
-    fscanf(globalVariablesFile, "%[^\n]\n", stringBufffer);
-    fscanf(globalVariablesFile, "%d\n", &CLASS_ID_SIZE);
-
-    fscanf(globalVariablesFile, "%[^\n]\n", stringBufffer);
-    fscanf(globalVariablesFile, "%d\n", &FIRST_LOAD_OF_CLASSES);
-
-    fscanf(globalVariablesFile, "%[^\n]\n", stringBufffer);
-    fscanf(globalVariablesFile, "%d\n", &FIRST_LOAD_OF_STUDENTS);
-
-    fscanf(globalVariablesFile, "%[^\n]\n", stringBufffer);
-    fscanf(globalVariablesFile, "%d\n", &MAX_STUDENT_PER_CLASS);
-
-    fscanf(globalVariablesFile, "%[^\n]\n", stringBufffer);
-    fscanf(globalVariablesFile, "%d\n", &MAX_STUDENTS_PER_YEAR);
-
-    fscanf(globalVariablesFile, "%[^\n]\n", stringBufffer);
-    fscanf(globalVariablesFile, "%d\n", &MAX_FIRST_NAME_LENGTH);
-
-    fscanf(globalVariablesFile, "%[^\n]\n", stringBufffer);
-    fscanf(globalVariablesFile, "%d\n", &MAX_LAST_NAME_LENGTH);
-
-    fscanf(globalVariablesFile, "%[^\n]\n", stringBufffer);
-    fscanf(globalVariablesFile, "%d\n", &MAX_NUMBER_OF_SUBJECTS);
-
-    fscanf(globalVariablesFile, "%[^\n]\n", stringBufffer);
-    fscanf(globalVariablesFile, "%d\n", &MARK_LENGTH);
-
-    fscanf(globalVariablesFile, "%[^\n]\n", stringBufffer);
-    fscanf(globalVariablesFile, "%d\n", &MARK_WHOLE_PART_LENGTH);
-
-    fscanf(globalVariablesFile, "%[^\n]\n", stringBufffer);
-    fscanf(globalVariablesFile, "%d\n", &MARK_DECIMAL_PART_LENGTH);
-}
+//
 
 void loadSettings(){
     //load subjects
